@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<uml:Package xmi:version="2.1" xmlns:xmi="http://schema.omg.org/spec/XMI/2.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:uml="http://schema.omg.org/spec/UML/2.1.1" xsi:schemaLocation="http://schema.omg.org/spec/UML/2.1.1 http://www.eclipse.org/uml2/2.1.0/UML" xmi:id="_K1wotjSuEeKtz5n8JZHypg" name="de.uni_koblenz.simple_java_schema.JavaSchema">
+  <packageImport xmi:type="uml:PackageImport" xmi:id="_K1wotzSuEeKtz5n8JZHypg">
+    <importedPackage xmi:type="uml:Model" href="http://schema.omg.org/spec/UML/2.1.1/uml.xml#_0"/>
+  </packageImport>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wouDSuEeKtz5n8JZHypg" name="SourceFile">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1wouTSuEeKtz5n8JZHypg" name="path" visibility="private">
+      <type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1.1/uml.xml#String"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1woujSuEeKtz5n8JZHypg" name="lines" visibility="private">
+      <type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1.1/uml.xml#Integer"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1wouzSuEeKtz5n8JZHypg" name="imports" visibility="private" type="_K1woxDSuEeKtz5n8JZHypg" association="_K1wo6DSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wovDSuEeKtz5n8JZHypg" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wovTSuEeKtz5n8JZHypg"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1wovjSuEeKtz5n8JZHypg" name="types" visibility="private" type="_K1wo0TSuEeKtz5n8JZHypg" association="_K1wo9TSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wovzSuEeKtz5n8JZHypg" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wowDSuEeKtz5n8JZHypg"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wowTSuEeKtz5n8JZHypg" name="JavaGraph">
+    <xmi:Extension extender="http://www.eclipse.org/emf/2002/Ecore">
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_K1wowjSuEeKtz5n8JZHypg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <details xmi:type="ecore:EStringToStringMapEntry" xmi:id="_K1wowzSuEeKtz5n8JZHypg" key="graphclass"/>
+      </eAnnotations>
+    </xmi:Extension>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1woxDSuEeKtz5n8JZHypg" name="NamedElement" isAbstract="true">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1woxTSuEeKtz5n8JZHypg" name="qualifiedName" visibility="private">
+      <type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1.1/uml.xml#String"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1woxjSuEeKtz5n8JZHypg" name="name" visibility="private">
+      <type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1.1/uml.xml#String"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1woxzSuEeKtz5n8JZHypg" name="Package">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1woyDSuEeKtz5n8JZHypg" general="_K1woxDSuEeKtz5n8JZHypg"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1woyTSuEeKtz5n8JZHypg" name="subPackages" visibility="private" type="_K1woxzSuEeKtz5n8JZHypg" aggregation="composite" association="_K1wo7TSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1woyjSuEeKtz5n8JZHypg" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1woyzSuEeKtz5n8JZHypg"/>
+    </ownedAttribute>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1wozDSuEeKtz5n8JZHypg" name="types" visibility="private" type="_K1wo0TSuEeKtz5n8JZHypg" aggregation="composite" association="_K1wo8TSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wozTSuEeKtz5n8JZHypg" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wozjSuEeKtz5n8JZHypg"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wozzSuEeKtz5n8JZHypg" name="Member" isAbstract="true">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo0DSuEeKtz5n8JZHypg" general="_K1woxDSuEeKtz5n8JZHypg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wo0TSuEeKtz5n8JZHypg" name="Type" isAbstract="true">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo0jSuEeKtz5n8JZHypg" general="_K1wozzSuEeKtz5n8JZHypg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wo0zSuEeKtz5n8JZHypg" name="TypedElement" isAbstract="true">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo1DSuEeKtz5n8JZHypg" general="_K1wozzSuEeKtz5n8JZHypg"/>
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1wo1TSuEeKtz5n8JZHypg" name="type" visibility="private" type="_K1wo0TSuEeKtz5n8JZHypg" association="_K1wo2DSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wo1jSuEeKtz5n8JZHypg" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wo1zSuEeKtz5n8JZHypg" value="1"/>
+    </ownedAttribute>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_K1wo2DSuEeKtz5n8JZHypg" name="HasType" memberEnd="_K1wo1TSuEeKtz5n8JZHypg _K1wo2TSuEeKtz5n8JZHypg">
+    <ownedEnd xmi:type="uml:Property" xmi:id="_K1wo2TSuEeKtz5n8JZHypg" name="" visibility="private" type="_K1wo0zSuEeKtz5n8JZHypg" association="_K1wo2DSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wo2jSuEeKtz5n8JZHypg" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wo2zSuEeKtz5n8JZHypg"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wo3DSuEeKtz5n8JZHypg" name="Field">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo3TSuEeKtz5n8JZHypg" general="_K1wo0zSuEeKtz5n8JZHypg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wo3jSuEeKtz5n8JZHypg" name="Method">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo3zSuEeKtz5n8JZHypg" general="_K1wo0zSuEeKtz5n8JZHypg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wo4DSuEeKtz5n8JZHypg" name="Class">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo4TSuEeKtz5n8JZHypg" general="_K1wo0TSuEeKtz5n8JZHypg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wo4jSuEeKtz5n8JZHypg" name="Interface">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo4zSuEeKtz5n8JZHypg" general="_K1wo0TSuEeKtz5n8JZHypg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wo5DSuEeKtz5n8JZHypg" name="Annotation">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo5TSuEeKtz5n8JZHypg" general="_K1wo0TSuEeKtz5n8JZHypg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Class" xmi:id="_K1wo5jSuEeKtz5n8JZHypg" name="Enum">
+    <generalization xmi:type="uml:Generalization" xmi:id="_K1wo5zSuEeKtz5n8JZHypg" general="_K1wo4DSuEeKtz5n8JZHypg"/>
+  </packagedElement>
+  <packagedElement xmi:type="uml:AssociationClass" xmi:id="_K1wo6DSuEeKtz5n8JZHypg" name="Imports" memberEnd="_K1wouzSuEeKtz5n8JZHypg _K1wo6jSuEeKtz5n8JZHypg">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1wo6TSuEeKtz5n8JZHypg" name="lineNo" visibility="private">
+      <type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1.1/uml.xml#Integer"/>
+    </ownedAttribute>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_K1wo6jSuEeKtz5n8JZHypg" name="importers" visibility="private" type="_K1wouDSuEeKtz5n8JZHypg" association="_K1wo6DSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wo6zSuEeKtz5n8JZHypg" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wo7DSuEeKtz5n8JZHypg"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_K1wo7TSuEeKtz5n8JZHypg" name="ContainsPackage" memberEnd="_K1woyTSuEeKtz5n8JZHypg _K1wo7jSuEeKtz5n8JZHypg">
+    <ownedEnd xmi:type="uml:Property" xmi:id="_K1wo7jSuEeKtz5n8JZHypg" name="" visibility="private" type="_K1woxzSuEeKtz5n8JZHypg" association="_K1wo7TSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wo7zSuEeKtz5n8JZHypg" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wo8DSuEeKtz5n8JZHypg"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:Association" xmi:id="_K1wo8TSuEeKtz5n8JZHypg" name="ContainsType" memberEnd="_K1wozDSuEeKtz5n8JZHypg _K1wo8jSuEeKtz5n8JZHypg">
+    <ownedEnd xmi:type="uml:Property" xmi:id="_K1wo8jSuEeKtz5n8JZHypg" name="" visibility="private" type="_K1woxzSuEeKtz5n8JZHypg" association="_K1wo8TSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wo8zSuEeKtz5n8JZHypg" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wo9DSuEeKtz5n8JZHypg" value="1"/>
+    </ownedEnd>
+  </packagedElement>
+  <packagedElement xmi:type="uml:AssociationClass" xmi:id="_K1wo9TSuEeKtz5n8JZHypg" name="Defines" memberEnd="_K1wovjSuEeKtz5n8JZHypg _K1wo9zSuEeKtz5n8JZHypg">
+    <ownedAttribute xmi:type="uml:Property" xmi:id="_K1wo9jSuEeKtz5n8JZHypg" name="lineNo" visibility="private">
+      <type xmi:type="uml:PrimitiveType" href="http://schema.omg.org/spec/UML/2.1.1/uml.xml#Integer"/>
+    </ownedAttribute>
+    <ownedEnd xmi:type="uml:Property" xmi:id="_K1wo9zSuEeKtz5n8JZHypg" name="sourceFile" visibility="private" type="_K1wouDSuEeKtz5n8JZHypg" association="_K1wo9TSuEeKtz5n8JZHypg">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_K1wo-DSuEeKtz5n8JZHypg" value="1"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_K1wo-TSuEeKtz5n8JZHypg"/>
+    </ownedEnd>
+  </packagedElement>
+  <profileApplication xmi:type="uml:ProfileApplication" xmi:id="_K1wo-jSuEeKtz5n8JZHypg">
+    <xmi:Extension extender="http://www.eclipse.org/emf/2002/Ecore">
+      <eAnnotations xmi:type="ecore:EAnnotation" xmi:id="_K1wo-zSuEeKtz5n8JZHypg" source="http://www.eclipse.org/uml2/2.0.0/UML">
+        <references xmi:type="ecore:EPackage" href="http://schema.omg.org/spec/UML/2.1.1/StandardProfileL2.xmi#_yzU58YinEdqtvbnfB2L_5w"/>
+      </eAnnotations>
+    </xmi:Extension>
+    <appliedProfile xmi:type="uml:Profile" href="http://schema.omg.org/spec/UML/2.1.1/StandardProfileL2.xmi#_0"/>
+  </profileApplication>
+</uml:Package>

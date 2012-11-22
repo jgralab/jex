@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="mini-java-parser" basedir="." default="build">
+
+	<property name="projectname" value="mini-java-parser" />
+	<property name="main" value="" />
+
+	<import file="../common/common.xml" />
+
+	<property name="schema.file" value="${project.dir}/java-schema/java-schema.rsa.tg" />
+	<property name="xmi.schema.file" value="${project.dir}/java-schema/java-schema.xmi" />
+
+</project>
