@@ -10,4 +10,23 @@
 	<property name="schema.file" value="${project.dir}/java-schema/java-schema.rsa.tg" />
 	<property name="xmi.schema.file" value="${project.dir}/java-schema/java-schema.xmi" />
 
+	<path id="classpath">
+	  <pathelement location="lib/jgralab.jar"/>
+	  <pathelement location="lib/strategoxt.jar"/>
+	  <pathelement location="lib/edl.jar"/>
+	</path>
+	    
+
+	<target name="process-edl">
+	  <java classname="de.uni_koblenz.edl.preprocessor.EDLPreprocessor"
+		classpathref="classpath">
+	    <arg value="-i"/> <arg value="grammar"/>
+	    <arg value="-m"/> <arg value="java/Main"/>
+	    <arg value="-o"/> <arg value="src"/>
+	    <arg value="-p"/> <arg value="IDontKnowWhatThisMeans"/>
+	    <arg value="-s"/> <arg value="java-schema/java-schema.rsa.tg"/>
+	  </java>
+	</target>
+
+
 </project>
