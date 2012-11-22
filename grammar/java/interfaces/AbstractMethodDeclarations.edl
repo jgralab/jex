@@ -7,8 +7,9 @@ imports
   
 global actions
   pattern _(9..10) -> AbstractMethodCec
-    #$ = JavaMember();
+    #$ = Method();
 	 $.simpleName = lexem($3);
+	 $.abstract = true;
 	 name2Member.declare($, $);
 	#
 

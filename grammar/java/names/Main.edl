@@ -29,7 +29,7 @@ exports
 	    Id #{
           if (isPackageDeclaration) {
 		    #$qualName = $qualName.concat(lexem($0));
-			 $package = JavaPackage();
+			 $package = Package();
 			 $package.simpleName = lexem($0);
 			 $package.qualifiedName = $qualName;
 			 $package = name2Package.useOrDeclare($qualName, $package);

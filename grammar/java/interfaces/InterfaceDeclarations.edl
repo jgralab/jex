@@ -29,8 +29,7 @@ exports
 
 	@Symboltable{name2Member}
     rule
-	  #$ = JavaType();
-	   $.kind = TypeKind.INTERFACE;
+	  #$ = Interface();
 	   name2Member.namespace = $;
 	  #
 	  InterfaceDecHead

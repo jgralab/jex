@@ -18,7 +18,8 @@
 	    
 
 	<target name="process-edl">
-	  <java classname="de.uni_koblenz.edl.preprocessor.EDLPreprocessor"
+	  <java fork="true"
+		classname="de.uni_koblenz.edl.preprocessor.EDLPreprocessor"
 		classpathref="classpath">
 	    <arg value="-i"/> <arg value="grammar"/>
 	    <arg value="-m"/> <arg value="java/Main"/>

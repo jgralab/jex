@@ -20,8 +20,7 @@ exports
   context-free syntax
     @Symboltable{name2Member}
     rule
-	  #$ = JavaType();
-	   $.kind = TypeKind.ENUM;
+	  #$ = Enum();
 	   name2Member.namespace = $;
 	  #
 	  EnumDecHead
@@ -40,7 +39,7 @@ exports
 	  "{"
 	  {
 	    EnumConst
-	    #$mem = JavaMember();
+	    #$mem = Field();
 	     $mem.simpleName = $0;
 	     name2Member.declare($mem.simpleName, $mem);
 	    #
@@ -51,7 +50,7 @@ exports
 	  "{"
 	  {
 	    EnumConst
-	    #$mem = JavaMember();
+	    #$mem = Field();
 	     $mem.simpleName = $0;
 	     name2Member.declare($mem.simpleName, $mem);
 	    #

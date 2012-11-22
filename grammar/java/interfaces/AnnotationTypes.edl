@@ -21,8 +21,7 @@ exports
   context-free syntax
     @Symboltable{name2Member}
     rule
-	  #$ = JavaType();
-	   $.kind = TypeKind.ANNOTATION;
+	  #$ = Annotation();
 	   name2Member.namespace = $;
 	  #
 	  AnnoDecHead

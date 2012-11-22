@@ -11,12 +11,12 @@ imports
   java/statements/Main
   java/expressions/Main
 symbol tables
-	name2Package<JavaPackage>
+	name2Package<Package>
 	name2NamedElement<NamedElement>
-	name2Member<NamedElement<--Declares>:JavaType
+	name2Member<Member<--Declares>:Type
 default values
-	Imports.lineNumber = line(omega);
-	Defines.lineNumber = line(omega);
+	Imports.lineNo = line(omega);
+	Defines.lineNo = line(omega);
 import declarations
 	java.util.List;
 	de.uni_koblenz.jgralab.TemporaryVertex;
@@ -25,7 +25,7 @@ user code{
 	private Vertex defaultPackage;
 	
 	{
-		defaultPackage = createVertex("JavaPackage", new Position());
+		defaultPackage = createVertex("Package", new Position());
 		defaultPackage.setAttribute("simpleName","");
 		defaultPackage.setAttribute("qualifiedName","");
 	}
@@ -37,14 +37,14 @@ user code{
 	private int statements = 0;
 
 	@SuppressWarnings("unchecked")
-	public void blessAllTemporaryVerticesToJavaTypes(){
+	public void blessAllTemporaryVerticesToTypes(){
 		List<TemporaryVertex> tempVertices = (List<TemporaryVertex>) #name2NamedElement.getTemporaryVertices()#;
 		for (TemporaryVertex tempVert: tempVertices) {
-			tempVert.bless(getVertexClass("JavaType"));
+			tempVert.bless(getVertexClass("Type"));
 		}
 		List<TemporaryVertex> tempPackages = (List<TemporaryVertex>) #name2Package.getTemporaryVertices()#;
 		for (TemporaryVertex tempPackage: tempPackages) {
-			tempPackage.bless(getVertexClass("JavaPackage"));
+			tempPackage.bless(getVertexClass("Package"));
 		}
 	}
 }

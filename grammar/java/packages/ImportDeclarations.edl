@@ -19,7 +19,6 @@ global actions
      {
        if (((Vertex) #$#).isTemporary()) {
 	     #$.qualifiedName = $import;
-	      $.kind = TypeKind.UNKNOWN;
 	     #
 	   }
      }

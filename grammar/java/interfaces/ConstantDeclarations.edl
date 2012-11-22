@@ -21,7 +21,7 @@ exports
 	Type
 	{
 	  VarDec
-	  #$mem = JavaMember();
+	  #$mem = Field();
 	   $mem.simpleName = $0;
 	   name2Member.declare($mem, $mem);
 	  #

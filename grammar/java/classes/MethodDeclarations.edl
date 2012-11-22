@@ -14,7 +14,7 @@ imports
   
 global actions
   pattern _(8..9) -> MethodDecHead
-    #$ = JavaMember();
+    #$ = Method();
 	 $.simpleName = lexem($3);
 	 name2Member.declare($, $);
 	#

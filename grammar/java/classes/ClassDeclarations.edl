@@ -31,8 +31,7 @@ exports
 
 	@Symboltable{name2Member}
     rule
-	  #$ = JavaType();
-	   $.kind = TypeKind.CLASS;
+	  #$ = Class();
 	   name2Member.namespace = $;
 	  #
 	  ClassDecHead
