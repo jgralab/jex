@@ -19,13 +19,14 @@
 	    
 
 	<target name="process-edl">
+	  <mkdir dir="src/de/uni_koblenz/simple_java/parser"/>
 	  <java fork="true"
 		classname="de.uni_koblenz.edl.preprocessor.EDLPreprocessor"
 		classpathref="classpath">
 	    <arg value="-i"/> <arg value="grammar"/>
 	    <arg value="-m"/> <arg value="java/Main"/>
-	    <arg value="-o"/> <arg value="src"/>
-	    <arg value="-p"/> <arg value="IDontKnowWhatThisMeans"/>
+	    <arg value="-o"/> <arg value="src/de/uni_koblenz/simple_java/parser"/>
+	    <arg value="-p"/> <arg value="de.uni_koblenz.simple_java.parser"/>
 	    <arg value="-s"/> <arg value="java-schema/java-schema.rsa.tg"/>
 	  </java>
 	</target>

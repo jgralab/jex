@@ -2,7 +2,7 @@
 <!--xtools2_universal_type_manager-->
 <?com.ibm.xtools.emf.core.signature <signature id="com.ibm.xtools.uml.msl.model" version="7.0.0"><feature description="" name="com.ibm.xtools.ruml.feature" url="" version="7.0.0"/></signature>?>
 <?com.ibm.xtools.emf.core.signature <signature id="com.ibm.xtools.mmi.ui.signatures.diagram" version="7.0.0"><feature description="" name="Rational Modeling Platform (com.ibm.xtools.rmp)" url="" version="7.0.0"/></signature>?>
-<uml:Package xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.1/notation" xmlns:uml="http://www.eclipse.org/uml2/2.1.0/UML" xmlns:umlnotation="http://www.ibm.com/xtools/1.5.2/Umlnotation" xmi:id="_8YsCQDSqEeKtz5n8JZHypg" name="de.uni_koblenz.simple_java_schema.JavaSchema">
+<uml:Package xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmlns:notation="http://www.eclipse.org/gmf/runtime/1.0.1/notation" xmlns:uml="http://www.eclipse.org/uml2/2.1.0/UML" xmlns:umlnotation="http://www.ibm.com/xtools/1.5.2/Umlnotation" xmi:id="_8YsCQDSqEeKtz5n8JZHypg" name="de.uni_koblenz.simple_java.schema.JavaSchema">
   <eAnnotations xmi:id="_8YsCQTSqEeKtz5n8JZHypg" source="uml2.diagrams" references="_8YsCQjSqEeKtz5n8JZHypg">
     <contents xmi:type="notation:Diagram" xmi:id="_8YsCQjSqEeKtz5n8JZHypg" type="Class" name="Main">
       <children xmi:id="_9rMzADSqEeKtz5n8JZHypg" element="_9rGsYDSqEeKtz5n8JZHypg">

@@ -1,5 +1,5 @@
 module java/Main
-schema de.uni_koblenz.simple_java_schema.JavaSchema
+schema de.uni_koblenz.simple_java.schema.JavaSchema
 imports
   java/lexical/Main
   java/types/Main
