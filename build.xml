@@ -11,9 +11,10 @@
 	<property name="xmi.schema.file" value="${project.dir}/java-schema/java-schema.xmi" />
 
 	<path id="classpath">
-	  <pathelement location="lib/jgralab.jar"/>
-	  <pathelement location="lib/strategoxt.jar"/>
-	  <pathelement location="lib/edl.jar"/>
+	  <pathelement location="../jgralab/build/jar/jgralab.jar"/>
+	  <pathelement path="build/classes/"/>
+	  <pathelement location="../edl/lib/strategoxt.jar"/>
+	  <pathelement location="../edl/build/jar/edl.jar"/>
 	</path>
 	    
 
