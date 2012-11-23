@@ -24,9 +24,9 @@ exports
 	   name2Member.namespace = $;
 	  #
 	  EnumDecHead
-	  #$.simpleName = $0;
+	  #$.name = $0;
 	   $packagePrefix = {return packagePrefix;};
-	   {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.simpleName#;}
+	   {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.name#;}
 	   $.qualifiedName = {return packagePrefix;};
 	   name2NamedElement.declare($.qualifiedName, $);
 	  #
@@ -39,9 +39,9 @@ exports
 	  "{"
 	  {
 	    EnumConst
-	    #$mem = Field();
-	     $mem.simpleName = $0;
-	     name2Member.declare($mem.simpleName, $mem);
+	    #$mem = EnumConst();
+	     $mem.name = $0;
+	     name2Member.declare($mem.name, $mem);
 	    #
 	    ","
 	   }*
@@ -50,9 +50,9 @@ exports
 	  "{"
 	  {
 	    EnumConst
-	    #$mem = Field();
-	     $mem.simpleName = $0;
-	     name2Member.declare($mem.simpleName, $mem);
+	    #$mem = EnumConst();
+	     $mem.name = $0;
+	     name2Member.declare($mem.name, $mem);
 	    #
 	    ","
 	  }* "," EnumBodyDecs? "}" -> EnumBody {cons("EnumBody")}

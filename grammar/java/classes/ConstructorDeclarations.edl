@@ -21,8 +21,8 @@ exports
   context-free syntax
     rule ConstrHead ConstrBody ->  ConstrDec {cons("ConstrDec")}
     rule (Anno | ConstrMod)* TypeParams? Id "(" {FormalParam ","}* ")" Throws? -> ConstrHead {cons("ConstrDecHead")}
-      #$ = Method();
-	   $.simpleName = lexem($2);
+      #$ = Constructor();
+	   $.name = lexem($2);
 	   name2Member.declare($, $);
 	  #
 

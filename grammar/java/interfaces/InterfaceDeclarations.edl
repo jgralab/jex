@@ -33,9 +33,9 @@ exports
 	   name2Member.namespace = $;
 	  #
 	  InterfaceDecHead
-	  #$.simpleName = $0;
+	  #$.name = $0;
 	   $packagePrefix = {return packagePrefix;};
-	   {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.simpleName#;}
+	   {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.name#;}
 	   $.qualifiedName = {return packagePrefix;};
 	   name2NamedElement.declare($.qualifiedName, $);
 	  #

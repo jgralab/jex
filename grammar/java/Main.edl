@@ -26,7 +26,7 @@ user code{
 	
 	{
 		defaultPackage = createVertex("Package", new Position());
-		defaultPackage.setAttribute("simpleName","");
+		defaultPackage.setAttribute("name","");
 		defaultPackage.setAttribute("qualifiedName","");
 	}
 	
@@ -40,13 +40,17 @@ user code{
 	public void blessAllTemporaryVerticesToTypes(){
 		List<TemporaryVertex> tempVertices = (List<TemporaryVertex>) #name2NamedElement.getTemporaryVertices()#;
 		for (TemporaryVertex tempVert: tempVertices) {
-			tempVert.bless(getVertexClass("Type"));
+			tempVert.bless(getVertexClass("Class"));
 		}
 		List<TemporaryVertex> tempPackages = (List<TemporaryVertex>) #name2Package.getTemporaryVertices()#;
 		for (TemporaryVertex tempPackage: tempPackages) {
 			tempPackage.bless(getVertexClass("Package"));
 		}
+		for (Vertex tmp : getGraph().vertices(graph.getGraphClass()
+					    .getTemporaryVertexClass())) {
+		    System.out.println("Left over TemporaryVertex: " + tmp);
+		}
 	}
 }
 exports
-  context-free start-symbols CompilationUnit
+  context-free start-symbols CompilationUnit #{blessAllTemporaryVerticesToTypes();}#

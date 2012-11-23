@@ -35,11 +35,10 @@ exports
 	   name2Member.namespace = $;
 	  #
 	  ClassDecHead
-	  #$.simpleName = $0;
+	  #$.name = $0;
 	   $packagePrefix = {return packagePrefix;};
-	   {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.simpleName#;}
+	   {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.name#;}
 	   $.qualifiedName = {return packagePrefix;};
-	   $.abstract = {return isAbstract;};
 	   name2NamedElement.declare($.qualifiedName, $);
 	  #
 	  ClassBody -> ClassDec {cons("ClassDec")}

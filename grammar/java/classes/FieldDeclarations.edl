@@ -30,7 +30,7 @@ exports
 	  {
         VarDec
 	    #$mem = Field();
-	     $mem.simpleName = $0;
+	     $mem.name = $0;
 	     name2Member.declare($mem, $mem);
 	    #
 	    ","

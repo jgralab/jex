@@ -17,7 +17,7 @@ exports
     rule
 	  #{statements = 0;}
 	   $ = SourceFile();
-	   $.name = file();
+	   $.path = file();
 	   $packageDecl = {return defaultPackage;};
 	   {packagePrefix = "";}
 	  #
@@ -38,5 +38,4 @@ exports
 		#
 	  * -> CompilationUnit   {cons("CompilationUnit")}
 	  #$.lines = {return currentElement.getLastLine();};
-	   $.numberOfStmts = {return statements;};
 	  #
