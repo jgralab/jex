@@ -12,7 +12,7 @@ exports
     ID
 
   context-free syntax
-    rule ID -> Id {cons("Id")}
+    rule ID -> Id
 
   lexical syntax
     rule [A-Za-z\_\$\255][A-Za-z0-9\_\$\255\254]* -> ID

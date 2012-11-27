@@ -13,15 +13,15 @@ exports
 
   context-free syntax
     rule NumType   -> PrimType
-    rule "boolean" -> PrimType {cons("Boolean")}
+    rule "boolean" -> PrimType
 
     rule IntType   -> NumType
     rule FloatType -> NumType
 
-    rule "byte"   -> IntType   {cons("Byte")}
-    rule "short"  -> IntType   {cons("Short")}
-    rule "int"    -> IntType   {cons("Int")}
-    rule "long"   -> IntType   {cons("Long")}
-    rule "char"   -> IntType   {cons("Char")}
-    rule "float"  -> FloatType {cons("Float")}
-    rule "double" -> FloatType {cons("Double")}
+    rule "byte"   -> IntType
+    rule "short"  -> IntType
+    rule "int"    -> IntType
+    rule "long"   -> IntType
+    rule "char"   -> IntType
+    rule "float"  -> FloatType
+    rule "double" -> FloatType

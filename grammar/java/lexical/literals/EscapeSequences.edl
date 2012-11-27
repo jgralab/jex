@@ -17,11 +17,11 @@ exports
     rule OctaEscape  -> EscapeSeq
     rule NamedEscape -> EscapeSeq
 
-    rule "\\" [btnfr\"\'\\]        -> NamedEscape {cons("NamedEscape")}
-    rule "\\" LastOcta             -> OctaEscape  {cons("OctaEscape1")}
-    rule "\\" [0-3] LastOcta       -> OctaEscape  {cons("OctaEscape2")}
-    rule "\\" [4-7] LastOcta       -> OctaEscape  {cons("OctaEscape2")}
-    rule "\\" [0-3] [0-7] LastOcta -> OctaEscape  {cons("OctaEscape3")}
+    rule "\\" [btnfr\"\'\\]        -> NamedEscape
+    rule "\\" LastOcta             -> OctaEscape
+    rule "\\" [0-3] LastOcta       -> OctaEscape
+    rule "\\" [4-7] LastOcta       -> OctaEscape
+    rule "\\" [0-3] [0-7] LastOcta -> OctaEscape
 
     rule [0-7] -> LastOcta
 

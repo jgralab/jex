@@ -36,6 +36,6 @@ exports
 	    #Defines($,$0);
 		 ContainsType($packageDecl, $0);
 		#
-	  * -> CompilationUnit   {cons("CompilationUnit")}
+	  * -> CompilationUnit
 	  #$.lines = {return currentElement.getLastLine();};
 	  #

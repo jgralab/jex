@@ -28,7 +28,7 @@ exports
 	  ","
 	}+
 	";"
-	-> ConstantDec {cons("ConstantDec")}
+	-> ConstantDec
 
     rule Public -> ConstantMod
     rule Static -> ConstantMod

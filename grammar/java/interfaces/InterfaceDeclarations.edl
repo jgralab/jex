@@ -39,18 +39,18 @@ exports
 	   $.qualifiedName = {return packagePrefix;};
 	   name2NamedElement.declare($.qualifiedName, $);
 	  #
-	  "{" InterfaceMemberDec* "}" -> InterfaceDec {cons("InterfaceDec")}
+	  "{" InterfaceMemberDec* "}" -> InterfaceDec
 	  #{packagePrefix = #$packagePrefix#.toString();}#
 
-    rule (Anno | InterfaceMod)* "interface" Id TypeParams? ExtendsInterfaces? -> InterfaceDecHead {cons("InterfaceDecHead")} #$=lexem($2);#
-    rule "extends" {InterfaceType ","}+ -> ExtendsInterfaces {cons("ExtendsInterfaces")}
+    rule (Anno | InterfaceMod)* "interface" Id TypeParams? ExtendsInterfaces? -> InterfaceDecHead #$=lexem($2);#
+    rule "extends" {InterfaceType ","}+ -> ExtendsInterfaces
 
   context-free syntax
     rule ConstantDec       -> InterfaceMemberDec
     rule AbstractMethodDec -> InterfaceMemberDec
     rule ClassDec          -> InterfaceMemberDec #name2Member.declare($0, $0);#
     rule InterfaceDec      -> InterfaceMemberDec #name2Member.declare($0, $0);#
-    rule ";"               -> InterfaceMemberDec {cons("Semicolon")}
+    rule ";"               -> InterfaceMemberDec
 
   context-free syntax
     rule Public         -> InterfaceMod

@@ -11,6 +11,6 @@ imports
 exports
   context-free syntax
 
-    rule          "new" TypeArgs? ClassOrInterfaceType "(" {Expr ","}* ")" ClassBody? -> Expr {cons("NewInstance")}
-    rule Expr "." "new" TypeArgs? Id         TypeArgs? "(" {Expr ","}* ")" ClassBody? -> Expr {cons("QNewInstance")}
+    rule          "new" TypeArgs? ClassOrInterfaceType "(" {Expr ","}* ")" ClassBody? -> Expr
+    rule Expr "." "new" TypeArgs? Id         TypeArgs? "(" {Expr ","}* ")" ClassBody? -> Expr
 

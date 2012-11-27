@@ -15,7 +15,7 @@ exports
    %%%
   sorts Literal
   context-free syntax
-    rule Literal -> Expr {cons("Lit")}
+    rule Literal -> Expr
 
     rule IntLiteral    -> Literal
     rule FloatLiteral  -> Literal
@@ -30,19 +30,19 @@ exports
   sorts ClassLiteral
   context-free syntax
     rule ClassLiteral -> Literal
-    rule Type   "." "class" -> ClassLiteral {cons("Class")}
-    rule "void" "." "class" -> ClassLiteral {cons("VoidClass")}
+    rule Type   "." "class" -> ClassLiteral
+    rule "void" "." "class" -> ClassLiteral
 
   %%%
    %% Section 15.8.3/4: (Qualified this)
    %%%
   context-free syntax
-    rule              "this" -> Expr {cons("This")}
-    rule TypeName "." "this" -> Expr {cons("QThis")}
+    rule              "this" -> Expr
+    rule TypeName "." "this" -> Expr
 
   %%%
    %% Section 15.8.5: Parenthesized Expression
    %%%
   context-free syntax
-    rule "(" Expr ")"          -> Expr {bracket}
+    rule "(" Expr ")"          -> Expr
 

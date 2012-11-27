@@ -14,10 +14,10 @@ exports
     WildcardBound
     
   context-free syntax
-    rule "<" {ActualTypeArg ","}+ ">" -> TypeArgs {cons("TypeArgs")}
+    rule "<" {ActualTypeArg ","}+ ">" -> TypeArgs
 
     rule Type               -> ActualTypeArg
-    rule "?" WildcardBound? -> ActualTypeArg {cons("Wildcard")}
+    rule "?" WildcardBound? -> ActualTypeArg
 
-    rule "extends" RefType -> WildcardBound {cons("WildcardUpperBound")}
-    rule "super"   RefType -> WildcardBound {cons("WildcardLowerBound")}
+    rule "extends" RefType -> WildcardBound
+    rule "super"   RefType -> WildcardBound

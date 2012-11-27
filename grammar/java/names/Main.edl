@@ -46,7 +46,7 @@ exports
 		  }
         }#		
 		"." #$qualName = $qualName.concat(".");#
-	  }+ -> PackageName {cons("PackageName")}
+	  }+ -> PackageName
 
   sorts
     TypeName
@@ -56,17 +56,17 @@ exports
     AmbName
 
   context-free syntax
-    rule Id             -> AmbName {cons("AmbName")}
-    rule AmbName "." Id -> AmbName {cons("AmbName")}
+    rule Id             -> AmbName
+    rule AmbName "." Id -> AmbName
 
-    rule Id                       -> TypeName {cons("TypeName")}
-    rule PackageOrTypeName "." Id -> TypeName {cons("TypeName")}
+    rule Id                       -> TypeName
+    rule PackageOrTypeName "." Id -> TypeName
 
-    rule Id             -> ExprName {cons("ExprName")}
-    rule AmbName "." Id -> ExprName {cons("ExprName")}
+    rule Id             -> ExprName
+    rule AmbName "." Id -> ExprName
 
-    rule Id             -> MethodName  {cons("MethodName")}
-    rule AmbName "." Id -> MethodName  {cons("MethodName")}
+    rule Id             -> MethodName
+    rule AmbName "." Id -> MethodName
 
-    rule Id                       -> PackageOrTypeName {cons("PackageOrTypeName")}
-    rule PackageOrTypeName "." Id -> PackageOrTypeName {cons("PackageOrTypeName")}
+    rule Id                       -> PackageOrTypeName
+    rule PackageOrTypeName "." Id -> PackageOrTypeName

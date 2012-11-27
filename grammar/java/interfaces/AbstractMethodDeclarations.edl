@@ -28,7 +28,7 @@ exports
     rule Protected -> AbstractMethodMod #$=Modifiers.PROTECTED;#
     rule Public    -> AbstractMethodMod #$=Modifiers.PUBLIC;#
     rule Static    -> AbstractMethodMod #$=Modifiers.STATIC;#
-    rule Strictfp  -> AbstractMethodMod #$=Modifiers.STRICTFP;#
+    rule StrictFP  -> AbstractMethodMod #$=Modifiers.STRICTFP;#
     rule Synchronized -> AbstractMethodMod #$=Modifiers.SYNCHRONIZED;#
     rule Transient -> AbstractMethodMod #$=Modifiers.TRANSIENT;#
     rule Volatile  -> AbstractMethodMod #$=Modifiers.VOLATILE;#

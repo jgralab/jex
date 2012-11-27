@@ -9,4 +9,4 @@ exports
     UnicodeEscape
 
   lexical syntax
-    rule "\\" [u]+ [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] -> UnicodeEscape {cons("UnicodeEscape")}
+    rule "\\" [u]+ [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] -> UnicodeEscape

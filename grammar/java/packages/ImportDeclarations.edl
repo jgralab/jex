@@ -29,8 +29,8 @@ exports
     ImportDec
 
   context-free syntax
-    rule "import" TypeName                  ";"  -> ImportDec {cons("TypeImportDec")}
-    rule "import" PackageName       "." "*" ";"  -> ImportDec {cons("TypeImportOnDemandDec")}
+    rule "import" TypeName                  ";"  -> ImportDec
+    rule "import" PackageName       "." "*" ";"  -> ImportDec
       #$ = name2Package.useOrDeclare($import);
        {
          if (((Vertex) #$#).isTemporary()) {
@@ -38,5 +38,5 @@ exports
          }
        }
       #
-    rule "import" "static" TypeName "." Id  ";"  -> ImportDec {cons("StaticImportDec")}
-    rule "import" "static" TypeName "." "*" ";"  -> ImportDec {cons("StaticImportOnDemandDec")}
+    rule "import" "static" TypeName "." Id  ";"  -> ImportDec
+    rule "import" "static" TypeName "." "*" ";"  -> ImportDec

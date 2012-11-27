@@ -14,7 +14,7 @@ exports
 
   context-free syntax
 
-    rule                 Expr "." Id -> FieldAccess {cons("Field")}
+    rule                 Expr "." Id -> FieldAccess
     rule             ExprName "." Id -> FieldAccess {reject}
-    rule              "super" "." Id -> FieldAccess {cons("SuperField")}
-    rule TypeName "." "super" "." Id -> FieldAccess {cons("QSuperField")}
+    rule              "super" "." Id -> FieldAccess
+    rule TypeName "." "super" "." Id -> FieldAccess

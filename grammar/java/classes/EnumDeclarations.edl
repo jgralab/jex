@@ -30,10 +30,10 @@ exports
 	   $.qualifiedName = {return packagePrefix;};
 	   name2NamedElement.declare($.qualifiedName, $);
 	  #
-	  EnumBody -> EnumDec {cons("EnumDec")}
+	  EnumBody -> EnumDec
 	  #{packagePrefix = #$packagePrefix#.toString();}#
 
-    rule (Anno | ClassMod)* "enum" Id Interfaces? -> EnumDecHead {cons("EnumDecHead")} #$=lexem($2);#
+    rule (Anno | ClassMod)* "enum" Id Interfaces? -> EnumDecHead #$=lexem($2);#
 
     rule
 	  "{"
@@ -45,7 +45,7 @@ exports
 	    #
 	    ","
 	   }*
-	   EnumBodyDecs? "}" -> EnumBody {cons("EnumBody")}
+	   EnumBodyDecs? "}" -> EnumBody
     rule
 	  "{"
 	  {
@@ -55,9 +55,9 @@ exports
 	     name2Member.declare($mem.name, $mem);
 	    #
 	    ","
-	  }* "," EnumBodyDecs? "}" -> EnumBody {cons("EnumBody")}
+	  }* "," EnumBodyDecs? "}" -> EnumBody
 
-    rule Id EnumConstArgs? ClassBody?  -> EnumConst {cons("EnumConst")} #$ = lexem($0);#
-    rule "(" {Expr ","}* ")"  -> EnumConstArgs {bracket}
+    rule Id EnumConstArgs? ClassBody?  -> EnumConst #$ = lexem($0);#
+    rule "(" {Expr ","}* ")"  -> EnumConstArgs
 
-    rule ";" ClassBodyDec* -> EnumBodyDecs {cons("EnumBodyDecs")}
+    rule ";" ClassBodyDec* -> EnumBodyDecs

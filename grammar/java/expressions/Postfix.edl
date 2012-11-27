@@ -10,5 +10,5 @@ imports
 exports
   context-free syntax
     rule ExprName  -> Expr
-    rule Expr "++" -> Expr {cons("PostIncr")}
-    rule Expr "--" -> Expr {cons("PostDecr")}
+    rule Expr "++" -> Expr
+    rule Expr "--" -> Expr

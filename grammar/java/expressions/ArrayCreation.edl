@@ -18,15 +18,15 @@ exports
     rule ArrayCreationExpr     -> Expr
 
     rule "new" ArrayBaseType DimExpr+ Dim* -> SubArrayCreationExpr 
-	rule SubArrayCreationExpr -> ArrayCreationExpr {cons("NewArray")}
-    rule "new" ArrayBaseType Dim+ ArrayInit -> ArrayCreationExpr {cons("NewArray")}
+	rule SubArrayCreationExpr -> ArrayCreationExpr
+    rule "new" ArrayBaseType Dim+ ArrayInit -> ArrayCreationExpr
 
     rule PrimType -> ArrayBaseType
     rule TypeName -> ArrayBaseType
-    rule TypeName "<" "?" ">" -> ArrayBaseType {cons("UnboundWld")}
+    rule TypeName "<" "?" ">" -> ArrayBaseType
 
-    rule "[" Expr "]" -> DimExpr {cons("Dim")}
-    rule "[" "]"      -> Dim     {cons("Dim")}
+    rule "[" Expr "]" -> DimExpr
+    rule "[" "]"      -> Dim
   context-free restrictions
     SubArrayCreationExpr -/- [\[]
 

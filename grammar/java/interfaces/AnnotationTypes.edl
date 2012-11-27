@@ -31,23 +31,23 @@ exports
 	   $.qualifiedName = {return packagePrefix;};
 	   name2NamedElement.declare($.qualifiedName, $);
 	  #
-	  "{" AnnoElemDec* "}" -> AnnoDec {cons("AnnoDec")}
+	  "{" AnnoElemDec* "}" -> AnnoDec
 	  #{packagePrefix = #$packagePrefix#.toString();}#
 	
-    rule (Anno | InterfaceMod)* "@" "interface" Id -> AnnoDecHead {cons("AnnoDecHead")} #$ = lexem($3);#
+    rule (Anno | InterfaceMod)* "@" "interface" Id -> AnnoDecHead #$ = lexem($3);#
 
   sorts
     AnnoElemDec
     DefaultVal
 
   context-free syntax
-    rule AbstractMethodMod* Type Id "(" ")" DefaultVal? ";" -> AnnoElemDec {cons("AnnoMethodDec")}
+    rule AbstractMethodMod* Type Id "(" ")" DefaultVal? ";" -> AnnoElemDec
 
     rule ConstantDec  -> AnnoElemDec
     rule ClassDec     -> AnnoElemDec #name2Member.declare($0, $0);#
     rule InterfaceDec -> AnnoElemDec #name2Member.declare($0, $0);#
     rule EnumDec      -> AnnoElemDec #name2Member.declare($0, $0);#
     rule AnnoDec      -> AnnoElemDec #name2Member.declare($0, $0);#
-    rule ";"          -> AnnoElemDec {cons("Semicolon")}
+    rule ";"          -> AnnoElemDec
 
-    rule "default" ElemVal -> DefaultVal {cons("DefaultVal")}
+    rule "default" ElemVal -> DefaultVal

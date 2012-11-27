@@ -15,4 +15,4 @@ exports
   context-free syntax
     rule ClassDec      -> TypeDec #$ = $0;#
     rule InterfaceDec  -> TypeDec #$ = $0;#
-    rule ";"           -> TypeDec {cons("Semicolon")} #$ = list();#
+    rule ";"           -> TypeDec #$ = list();#

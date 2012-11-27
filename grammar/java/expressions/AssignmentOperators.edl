@@ -10,20 +10,20 @@ imports
 exports
   sorts LHS
   context-free syntax
-    rule LHS "="    Expr -> Expr {cons("Assign")}
-    rule LHS "*="   Expr -> Expr {cons("AssignMul")}
-    rule LHS "/="   Expr -> Expr {cons("AssignDiv")}
-    rule LHS "%="   Expr -> Expr {cons("AssignRemain")}
-    rule LHS "+="   Expr -> Expr {cons("AssignPlus")}
-    rule LHS "-="   Expr -> Expr {cons("AssignMinus")}
-    rule LHS "<<="  Expr -> Expr {cons("AssignLeftShift")}
-    rule LHS ">>="  Expr -> Expr {cons("AssignRightShift")}
-    rule LHS ">>>=" Expr -> Expr {cons("AssignURightShift")}
-    rule LHS "&="   Expr -> Expr {cons("AssignAnd")}
-    rule LHS "^="   Expr -> Expr {cons("AssignExcOr")}
-    rule LHS "|="   Expr -> Expr {cons("AssignOr")}
+    rule LHS "="    Expr -> Expr
+    rule LHS "*="   Expr -> Expr
+    rule LHS "/="   Expr -> Expr
+    rule LHS "%="   Expr -> Expr
+    rule LHS "+="   Expr -> Expr
+    rule LHS "-="   Expr -> Expr
+    rule LHS "<<="  Expr -> Expr
+    rule LHS ">>="  Expr -> Expr
+    rule LHS ">>>=" Expr -> Expr
+    rule LHS "&="   Expr -> Expr
+    rule LHS "^="   Expr -> Expr
+    rule LHS "|="   Expr -> Expr
 
     rule ExprName    -> LHS
     rule FieldAccess -> LHS
     rule ArrayAccess -> LHS
-	rule "(" LHS ")" -> LHS {bracket} %% javac accepts this
+	rule "(" LHS ")" -> LHS %% javac accepts this

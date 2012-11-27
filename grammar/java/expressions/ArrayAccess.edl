@@ -10,7 +10,7 @@ exports
     rule ArrayAccess -> Expr
 
     %% todo: JFR-29
-    rule Expr ArraySubscript -> ArrayAccess {cons("ArrayAccess")}
-    rule "[" Expr "]" -> ArraySubscript {bracket}
+    rule Expr ArraySubscript -> ArrayAccess
+    rule "[" Expr "]" -> ArraySubscript
 
     %% rule ArrayCreationExpr ArraySubscript -> ArrayAccess {reject} %% chapter 18 permits it

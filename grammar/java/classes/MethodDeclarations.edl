@@ -26,17 +26,17 @@ exports
     ResultType
 
   context-free syntax
-    rule MethodDecHead MethodBody -> MethodDec {cons("MethodDec")}
+    rule MethodDecHead MethodBody -> MethodDec
 
-    rule (Anno | MethodMod)* TypeParams? ResultType Id "(" {FormalParam ","}* ")" Throws?      -> MethodDecHead {cons("MethodDecHead")}
+    rule (Anno | MethodMod)* TypeParams? ResultType Id "(" {FormalParam ","}* ")" Throws? -> MethodDecHead
 
     rule Type   -> ResultType
-    rule "void" -> ResultType {cons("Void")}
+    rule "void" -> ResultType
 
   sorts FormalParam
   context-free syntax
-    rule (Anno | VarMod)* Type       VarDecId -> FormalParam {cons("Param")}
-    rule (Anno | VarMod)* Type "..." VarDecId -> FormalParam {cons("VarArityParam")}
+    rule (Anno | VarMod)* Type       VarDecId -> FormalParam
+    rule (Anno | VarMod)* Type "..." VarDecId -> FormalParam
 
   sorts VarMod
   context-free syntax
@@ -63,7 +63,7 @@ exports
     ExceptionType
 
   context-free syntax
-    rule "throws" {ExceptionType ","}+ -> Throws {cons("ThrowsDec")}
+    rule "throws" {ExceptionType ","}+ -> Throws
     rule ClassType -> ExceptionType
     %% TypeVar -> ExceptionType
 
@@ -73,5 +73,5 @@ exports
   sorts MethodBody
   context-free syntax
     rule Block -> MethodBody
-    rule ";"   -> MethodBody {cons("NoMethodBody")}
+    rule ";"   -> MethodBody
 

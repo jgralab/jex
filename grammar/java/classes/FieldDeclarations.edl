@@ -36,15 +36,15 @@ exports
 	    ","
 	  }+
 	  ";"
-	  -> FieldDec {cons("FieldDec")}
+	  -> FieldDec
 
-    rule VarDecId             -> VarDec {cons("VarDec")}
-    rule VarDecId "=" VarInit -> VarDec {cons("VarDec")}
+    rule VarDecId             -> VarDec
+    rule VarDecId "=" VarInit -> VarDec
 
     rule Id      -> VarDecId
-    rule Id Dim+ -> VarDecId {cons("ArrayVarDecId")}
+    rule Id Dim+ -> VarDecId
 
-    rule "[" "]" -> Dim {cons("Dim")}
+    rule "[" "]" -> Dim
 
     rule Expr      -> VarInit
     rule ArrayInit -> VarInit

@@ -13,4 +13,4 @@ exports
     PackageDec
 
   context-free syntax
-    rule Anno* "package" PackageName ";" -> PackageDec {cons("PackageDec")} #$=name2Package.use(lexem($2).replaceAll("\\s+", ""));#
+    rule Anno* "package" PackageName ";" -> PackageDec #$=name2Package.use(lexem($2).replaceAll("\\s+", ""));#

@@ -15,8 +15,8 @@ exports
     Block
 
   context-free syntax
-    rule "{" BlockStm* "}" -> Block {cons("Block")}
+    rule "{" BlockStm* "}" -> Block
 
     rule LocalVarDecStm  -> BlockStm 
-    rule ClassDec        -> BlockStm {cons("ClassDecStm")}
+    rule ClassDec        -> BlockStm
     rule Stm             -> BlockStm

@@ -10,6 +10,6 @@ exports
     BoolLiteral
 
   context-free syntax
-    rule Bool -> BoolLiteral {cons("Bool")}
-    rule "true"  -> Bool {cons("True")}
-    rule "false" -> Bool {cons("False")}
+    rule Bool -> BoolLiteral
+    rule "true"  -> Bool
+    rule "false" -> Bool

@@ -10,5 +10,5 @@ imports
 exports
   sorts ArrayInit
   context-free syntax
-    rule "{" {VarInit ","}*     "}" -> ArrayInit {cons("ArrayInit")}
-    rule "{" {VarInit ","}* "," "}" -> ArrayInit {cons("ArrayInit")}
+    rule "{" {VarInit ","}*     "}" -> ArrayInit
+    rule "{" {VarInit ","}* "," "}" -> ArrayInit

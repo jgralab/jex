@@ -8,14 +8,14 @@ imports
   java/expressions/Main
 exports
   context-free syntax
-    rule "+" Expr -> Expr {cons("Plus")}
-    rule "-" Expr -> Expr {cons("Minus")}
+    rule "+" Expr -> Expr
+    rule "-" Expr -> Expr
 
-    rule "++" Expr -> Expr {cons("PreIncr")}
-    rule "--" Expr -> Expr {cons("PreDecr")}
+    rule "++" Expr -> Expr
+    rule "--" Expr -> Expr
 
-    rule "~" Expr -> Expr {cons("Complement")}
-    rule "!" Expr -> Expr {cons("Not")}
+    rule "~" Expr -> Expr
+    rule "!" Expr -> Expr
 
-    rule "(" PrimType ")" Expr -> Expr {cons("CastPrim")}
-    rule "(" RefType  ")" Expr -> Expr {cons("CastRef")}
+    rule "(" PrimType ")" Expr -> Expr
+    rule "(" RefType  ")" Expr -> Expr

@@ -15,18 +15,18 @@ exports
     Modifier
 
   context-free syntax
-    rule "public"       -> Public       {cons("Public")}
-    rule "private"      -> Private      {cons("Private")}
-    rule "protected"    -> Protected    {cons("Protected")}
+    rule "public"       -> Public
+    rule "private"      -> Private
+    rule "protected"    -> Protected
 
-    rule "abstract"     -> Abstract     {cons("Abstract")}
-    rule "final"        -> Final        {cons("Final")}
-    rule "static"       -> Static       {cons("Static")}
-    rule "native"       -> Native       {cons("Native")}
-    rule "transient"    -> Transient    {cons("Transient")}
-    rule "volatile"     -> Volatile     {cons("Volatile")}
-    rule "synchronized" -> Synchronized {cons("Synchronized")}
-    rule "strictfp"     -> StrictFP     {cons("StrictFP")}
+    rule "abstract"     -> Abstract
+    rule "final"        -> Final
+    rule "static"       -> Static
+    rule "native"       -> Native
+    rule "transient"    -> Transient
+    rule "volatile"     -> Volatile
+    rule "synchronized" -> Synchronized
+    rule "strictfp"     -> StrictFP
 
     rule Public       -> Modifier
     rule Private      -> Modifier

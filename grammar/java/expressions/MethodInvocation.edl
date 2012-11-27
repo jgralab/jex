@@ -10,13 +10,13 @@ imports
 exports
   sorts MethodSpec
   context-free syntax
-    rule MethodSpec "(" {Expr ","}* ")" -> Expr {cons("Invoke")}
+    rule MethodSpec "(" {Expr ","}* ")" -> Expr
 
-    rule                            MethodName -> MethodSpec {cons("Method")}
-    rule                 Expr "." TypeArgs? Id -> MethodSpec {cons("Method")}
-    rule              "super" "." TypeArgs? Id -> MethodSpec {cons("SuperMethod")}
-    rule TypeName "." "super" "." TypeArgs? Id -> MethodSpec {cons("QSuperMethod")}
-    rule              AmbName "." TypeArgs  Id -> MethodSpec {cons("GenericMethod")}
+    rule                            MethodName -> MethodSpec
+    rule                 Expr "." TypeArgs? Id -> MethodSpec
+    rule              "super" "." TypeArgs? Id -> MethodSpec
+    rule TypeName "." "super" "." TypeArgs? Id -> MethodSpec
+    rule              AmbName "." TypeArgs  Id -> MethodSpec
 
   %% This priority forbids a Expr "." MethodSpec if the expression is a plain ExprName.
   %% This solves an ambiguity with the MethodName and AmbName . TypeArgs MethodSpecs.

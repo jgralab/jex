@@ -16,10 +16,10 @@ exports
     TypeVarId
   
   context-free syntax
-    rule TypeVarId TypeBound? -> TypeParam {cons("TypeParam")}
+    rule TypeVarId TypeBound? -> TypeParam
     
-    rule "extends" {ClassOrInterfaceType "&"}+ -> TypeBound {cons("TypeBound")}
-    rule "<" {TypeParam ","}+ ">" -> TypeParams {cons("TypeParams")}
+    rule "extends" {ClassOrInterfaceType "&"}+ -> TypeBound
+    rule "<" {TypeParam ","}+ ">" -> TypeParams
 
     rule Id -> TypeVarId
     

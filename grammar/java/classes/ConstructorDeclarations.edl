@@ -19,19 +19,19 @@ exports
     ConstrInv
 
   context-free syntax
-    rule ConstrHead ConstrBody ->  ConstrDec {cons("ConstrDec")}
-    rule (Anno | ConstrMod)* TypeParams? Id "(" {FormalParam ","}* ")" Throws? -> ConstrHead {cons("ConstrDecHead")}
+    rule ConstrHead ConstrBody ->  ConstrDec
+    rule (Anno | ConstrMod)* TypeParams? Id "(" {FormalParam ","}* ")" Throws? -> ConstrHead
       #$ = Constructor();
 	   $.name = lexem($2);
 	   name2Member.declare($, $);
 	  #
 
 
-    rule "{" ConstrInv? BlockStm* "}" -> ConstrBody {cons("ConstrBody")}
+    rule "{" ConstrInv? BlockStm* "}" -> ConstrBody
 
-    rule          TypeArgs? "this"  "(" {Expr ","}* ")" ";" -> ConstrInv {cons("AltConstrInv")}
-    rule          TypeArgs? "super" "(" {Expr ","}* ")" ";" -> ConstrInv {cons("SuperConstrInv")}
-    rule Expr "." TypeArgs? "super" "(" {Expr ","}* ")" ";" -> ConstrInv {cons("QSuperConstrInv")}
+    rule          TypeArgs? "this"  "(" {Expr ","}* ")" ";" -> ConstrInv
+    rule          TypeArgs? "super" "(" {Expr ","}* ")" ";" -> ConstrInv
+    rule Expr "." TypeArgs? "super" "(" {Expr ","}* ")" ";" -> ConstrInv
 
   sorts ConstrMod
   context-free syntax  

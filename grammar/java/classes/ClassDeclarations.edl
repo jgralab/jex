@@ -41,15 +41,15 @@ exports
 	   $.qualifiedName = {return packagePrefix;};
 	   name2NamedElement.declare($.qualifiedName, $);
 	  #
-	  ClassBody -> ClassDec {cons("ClassDec")}
+	  ClassBody -> ClassDec
 	  #{packagePrefix = #$packagePrefix#.toString();
 	    isAbstract = false;
 	  }#
 	
 	
-    rule "{" ClassBodyDec* "}" -> ClassBody {cons("ClassBody")}
+    rule "{" ClassBodyDec* "}" -> ClassBody
 
-    rule (Anno | ClassMod)* "class" Id  TypeParams? Super? Interfaces? -> ClassDecHead {cons("ClassDecHead")} #$=lexem($2);#
+    rule (Anno | ClassMod)* "class" Id  TypeParams? Super? Interfaces? -> ClassDecHead #$=lexem($2);#
 
   %% 8.1.1: Class Modifiers
   sorts ClassMod
@@ -66,12 +66,12 @@ exports
   sorts Super
   context-free syntax
 
-    rule "extends" ClassType -> Super {cons("SuperDec")}
+    rule "extends" ClassType -> Super
 
   %% 8.1.5: Superinterfaces
   sorts Interfaces
   context-free syntax
-    rule "implements" {InterfaceType ","}+ -> Interfaces {cons("ImplementsDec")}
+    rule "implements" {InterfaceType ","}+ -> Interfaces
 
 
   %% 8.1.6: Class Body and Member Declarations
@@ -90,4 +90,4 @@ exports
     rule MethodDec    -> ClassMemberDec
     rule ClassDec     -> ClassMemberDec #name2Member.declare($0, $0);#
     rule InterfaceDec -> ClassMemberDec #name2Member.declare($0, $0);#
-    rule ";"          -> ClassMemberDec {cons("Semicolon")}
+    rule ";"          -> ClassMemberDec

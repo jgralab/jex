@@ -38,15 +38,15 @@ exports
     %% ClassType and InterfaceType are ambiguous. We modify the
     %% production of ClassOrInterfaceType to make this ambiguity explicit.
     
-    rule TypeDecSpec TypeArgs? -> ClassOrInterfaceType {cons("ClassOrInterfaceType")}
-    rule TypeDecSpec TypeArgs? -> ClassType {cons("ClassType")}
-    rule TypeDecSpec TypeArgs? -> InterfaceType {cons("InterfaceType")}
+    rule TypeDecSpec TypeArgs? -> ClassOrInterfaceType
+    rule TypeDecSpec TypeArgs? -> ClassType
+    rule TypeDecSpec TypeArgs? -> InterfaceType
 
     rule TypeName -> TypeDecSpec
-    rule TypeDecSpec TypeArgs "." Id -> TypeDecSpec {cons("Member")}
+    rule TypeDecSpec TypeArgs "." Id -> TypeDecSpec
     
   context-free syntax    
-    rule TypeVarId -> TypeVar {cons("TypeVar")}
+    rule TypeVarId -> TypeVar
 
   context-free syntax
-    rule Type "[" "]" -> ArrayType  {cons("ArrayType")}
+    rule Type "[" "]" -> ArrayType

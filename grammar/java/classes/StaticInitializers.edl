@@ -12,4 +12,4 @@ exports
     StaticInit
 
   context-free syntax
-    rule "static" Block -> StaticInit   {cons("StaticInit")}
+    rule "static" Block -> StaticInit

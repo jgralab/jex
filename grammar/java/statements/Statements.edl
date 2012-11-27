@@ -22,34 +22,34 @@ exports
    %% Section 14.6: The Empty Statement
    %%%
   context-free syntax
-    rule ";"        -> Stm {cons("Empty")}
+    rule ";"        -> Stm
 
   %%%
    %% Section 14.7: Labeled Statements
    %%%
   context-free syntax
-    rule Id ":" Stm -> Stm {cons("Labeled")}
-    rule Id ":" LocalVarDecStm -> Stm {cons("Labeled")}
+    rule Id ":" Stm -> Stm
+    rule Id ":" LocalVarDecStm -> Stm
 
   %%%
    %% Section 14.8: Expressions Statements
    %%%
   context-free syntax
-    rule Expr ";"   -> Stm {cons("ExprStm")}
+    rule Expr ";"   -> Stm
 
   %%%
    %% Section 14.9: The If Statement
    %%%
   context-free syntax
-    rule "if" "(" Expr ")" Stm             -> Stm {prefer, cons("If")}
-    rule "if" "(" Expr ")" Stm  "else" Stm -> Stm {cons("If")}
+    rule "if" "(" Expr ")" Stm             -> Stm {prefer}
+    rule "if" "(" Expr ")" Stm  "else" Stm -> Stm
 
   %%%
    %% Section 14.10: The Assert Statement
    %%%
   context-free syntax
-    rule "assert" Expr          ";" -> Stm  {cons("AssertStm")}
-    rule "assert" Expr ":" Expr ";" -> Stm  {cons("AssertStm")}
+    rule "assert" Expr          ";" -> Stm
+    rule "assert" Expr ":" Expr ";" -> Stm
 
 
   %%%
@@ -57,70 +57,70 @@ exports
    %%%
   sorts SwitchBlock SwitchGroup SwitchLabel
   context-free syntax
-    rule "switch" "(" Expr ")" SwitchBlock -> Stm {cons("Switch")}
-    rule "{" SwitchGroup* SwitchLabel* "}" -> SwitchBlock {cons("SwitchBlock")}
-    rule SwitchLabel+ BlockStm+ -> SwitchGroup  {cons("SwitchGroup")}
+    rule "switch" "(" Expr ")" SwitchBlock -> Stm
+    rule "{" SwitchGroup* SwitchLabel* "}" -> SwitchBlock
+    rule SwitchLabel+ BlockStm+ -> SwitchGroup
 
-    rule "case" Expr ":" -> SwitchLabel {cons("Case")}
-    rule "default"   ":" -> SwitchLabel {cons("Default")}
+    rule "case" Expr ":" -> SwitchLabel
+    rule "default"   ":" -> SwitchLabel
 
   %%%
    %% Section 14.12: The While Statement
    %%%
   context-free syntax
-    rule "while" "(" Expr ")" Stm -> Stm {cons("While")}
+    rule "while" "(" Expr ")" Stm -> Stm
 
   %%%
    %% Section 14.13: The Do Statement
    %%%
   context-free syntax
-    rule "do" Stm "while" "(" Expr ")" ";" -> Stm {cons("DoWhile")}
+    rule "do" Stm "while" "(" Expr ")" ";" -> Stm
 
 
   %%%
    %% Section 14.14: The For Statement
    %%%
   context-free syntax
-    rule "for" "(" LocalVarDec ";" Expr? ";" {Expr ","}* ")" Stm -> Stm {cons("For")}
-    rule "for" "(" {Expr ","}* ";" Expr? ";" {Expr ","}* ")" Stm -> Stm {cons("For")}
+    rule "for" "(" LocalVarDec ";" Expr? ";" {Expr ","}* ")" Stm -> Stm
+    rule "for" "(" {Expr ","}* ";" Expr? ";" {Expr ","}* ")" Stm -> Stm
 
-    rule "for" "(" FormalParam ":" Expr ")" Stm -> Stm {cons("ForEach")}
+    rule "for" "(" FormalParam ":" Expr ")" Stm -> Stm
 
   %%%
    %% Section 14.15: The Break Statement
    %%%
   context-free syntax
-    rule "break"    Id? ";"   -> Stm {cons("Break")}
+    rule "break"    Id? ";"   -> Stm
 
   %%%
    %% Section 14.16: The Continue Statement
    %%%
   context-free syntax
-    rule "continue" Id? ";"   -> Stm {cons("Continue")}
+    rule "continue" Id? ";"   -> Stm
 
   %%%
    %% Section 14.17: The Return Statement
    %%%
   context-free syntax
-    rule "return"   Expr? ";" -> Stm {cons("Return")}
+    rule "return"   Expr? ";" -> Stm
 
   %%%
    %% Section 14.18: The Throw Statement
    %%%
   context-free syntax
-    rule "throw"    Expr  ";" -> Stm {cons("Throw")}
+    rule "throw"    Expr  ";" -> Stm
 
   %%%
    %% Section 14.19: The Synchronized Statement
    %%%
   context-free syntax
-    rule "synchronized" "(" Expr ")" Block -> Stm {cons("Synchronized")}
+    rule "synchronized" "(" Expr ")" Block -> Stm
 
   %%%
    %% Section 14.20: The Try Statement
    %%%
   sorts CatchClause
   context-free syntax
-    rule "try" Block CatchClause+ -> Stm {cons("Try")}
-    rule "try" Block CatchClause* "finally" Block -> Stm {cons("Try")}
-    rule "catch" "(" FormalParam ")" Block -> CatchClause {cons("Catch")}
+    rule "try" Block CatchClause+ -> Stm
+    rule "try" Block CatchClause* "finally" Block -> Stm
+    rule "catch" "(" FormalParam ")" Block -> CatchClause

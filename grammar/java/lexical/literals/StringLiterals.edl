@@ -16,8 +16,8 @@ exports
     FooStringChars
 
   lexical syntax
-    rule "\"" StringPart* "\"" -> StringLiteral {cons("String")}
-    rule StringChars    -> StringPart {cons("Chars")}
+    rule "\"" StringPart* "\"" -> StringLiteral
+    rule StringChars    -> StringPart
     rule UnicodeEscape  -> StringPart
     rule EscapeSeq      -> StringPart
 
