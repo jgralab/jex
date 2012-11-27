@@ -29,11 +29,16 @@ exports
 	    Id #{
           if (isPackageDeclaration) {
 		    #$qualName = $qualName.concat(lexem($0));
-			 $package = Package();
-			 $package.name = lexem($0);
-			 $package.qualifiedName = $qualName;
-			 $package = name2Package.useOrDeclare($qualName, $package);
+			 $package = name2Package.use($qualName);
 			#
+			if (#$package#==null) {
+				#
+				 $package = Package();
+				 $package.name = lexem($0);
+				 $package.qualifiedName = $qualName;
+				 $package = name2Package.declare($qualName, $package);
+				#
+			}
 		    if (!isContainsPackageAlreadyCreated((Vertex) #$parentPackage#, (Vertex) #$package#)) {
 			    #ContainsPackage($parentPackage, $package);#
 			}

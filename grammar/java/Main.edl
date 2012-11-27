@@ -37,7 +37,8 @@ user code{
 	private int statements = 0;
 
 	@SuppressWarnings("unchecked")
-	public void blessAllTemporaryVerticesToTypes(){
+	@Override
+	public void finalize() {
 		List<TemporaryVertex> tempVertices = (List<TemporaryVertex>) #name2NamedElement.getTemporaryVertices()#;
 		for (TemporaryVertex tempVert: tempVertices) {
 			tempVert.bless(getVertexClass("Class"));
@@ -53,4 +54,4 @@ user code{
 	}
 }
 exports
-  context-free start-symbols CompilationUnit #{blessAllTemporaryVerticesToTypes();}#
+  context-free start-symbols CompilationUnit

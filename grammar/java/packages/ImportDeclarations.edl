@@ -15,7 +15,7 @@ global actions
   pattern "import" "static" TypeName "." _ ";" -> ImportDec
     #$import = lexem($2).replaceAll("\\s+", "");#
   pattern "import" "static"(0..1) TypeName _(0..2) ";" -> ImportDec
-    #$ = name2NamedElement.use($import);
+    #$ = name2NamedElement.useOrDeclare($import);
      {
        if (((Vertex) #$#).isTemporary()) {
 	     #$.qualifiedName = $import;
@@ -31,7 +31,7 @@ exports
   context-free syntax
     rule "import" TypeName                  ";"  -> ImportDec {cons("TypeImportDec")}
     rule "import" PackageName       "." "*" ";"  -> ImportDec {cons("TypeImportOnDemandDec")}
-      #$ = name2Package.use($import);
+      #$ = name2Package.useOrDeclare($import);
        {
          if (((Vertex) #$#).isTemporary()) {
            #$.qualifiedName = $import;#
