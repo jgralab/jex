@@ -28,7 +28,8 @@ exports
   context-free syntax
     rule MethodDecHead MethodBody -> MethodDec
 
-    rule (Anno | MethodMod)* TypeParams? ResultType Id "(" {FormalParam ","}* ")" Throws? -> MethodDecHead
+    rule #$mods = set();# (Anno | (MethodMod #$mods.add($0);#))* TypeParams?
+	 ResultType Id "(" {FormalParam ","}* ")" Throws? -> MethodDecHead #$.modifiers = $mods;#
 
     rule Type   -> ResultType
     rule "void" -> ResultType
@@ -44,16 +45,16 @@ exports
 
   sorts MethodMod
   context-free syntax
-    rule Public         -> MethodMod
-    rule Protected      -> MethodMod
-    rule Private        -> MethodMod
+    rule Public         -> MethodMod #$=Modifiers.PUBLIC;#
+    rule Protected      -> MethodMod #$=Modifiers.PROTECTED;#
+    rule Private        -> MethodMod #$=Modifiers.PRIVATE;#
 
-    rule Abstract       -> MethodMod
-    rule Static         -> MethodMod
-    rule Final          -> MethodMod
-    rule Synchronized   -> MethodMod
-    rule Native         -> MethodMod
-    rule StrictFP       -> MethodMod
+    rule Abstract       -> MethodMod #$=Modifiers.PRIVATE;#
+    rule Static         -> MethodMod #$=Modifiers.STATIC;#
+    rule Final          -> MethodMod #$=Modifiers.FINAL;#
+    rule Synchronized   -> MethodMod #$=Modifiers.SYNCHRONIZED;#
+    rule Native         -> MethodMod #$=Modifiers.NATIVE;#
+    rule StrictFP       -> MethodMod #$=Modifiers.STRICTFP;#
 
   %%%
    %% Section 8.4.6: Method Throws

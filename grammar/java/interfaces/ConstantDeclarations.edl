@@ -16,20 +16,21 @@ exports
     ConstantMod
 
   context-free syntax
-    rule
-	(Anno | ConstantMod)*
+    rule #$mods = set();#
+	(Anno | (ConstantMod #$mods.add($0);#))*
 	Type
 	{
 	  VarDec
 	  #$mem = Field();
 	   $mem.name = $0;
 	   name2Member.declare($mem, $mem);
+	   $mem.modifiers = $mods;
 	  #
 	  ","
 	}+
 	";"
 	-> ConstantDec
 
-    rule Public -> ConstantMod
-    rule Static -> ConstantMod
-    rule Final  -> ConstantMod
+    rule Public -> ConstantMod #$=Modifiers.PUBLIC;#
+    rule Static -> ConstantMod #$=Modifiers.STATIC;#
+    rule Final  -> ConstantMod #$=Modifiers.FINAL;#

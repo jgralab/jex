@@ -24,14 +24,15 @@ exports
     VarInit
 
   context-free syntax
-    rule
-	  (Anno | FieldMod)*
+    rule  #$mods = set();#
+	  (Anno | (FieldMod #$mods.add($0);#))*
 	  Type
 	  {
         VarDec
 	    #$mem = Field();
 	     $mem.name = $0;
 	     name2Member.declare($mem, $mem);
+             $mem.modifiers = $mods;
 	    #
 	    ","
 	  }+
@@ -51,11 +52,11 @@ exports
 
   sorts FieldMod
   context-free syntax
-    rule Public    -> FieldMod
-    rule Protected -> FieldMod
-    rule Private   -> FieldMod
+    rule Public    -> FieldMod #$=Modifiers.PUBLIC;#
+    rule Protected -> FieldMod #$=Modifiers.PROTECTED;#
+    rule Private   -> FieldMod #$=Modifiers.PRIVATE;#
 
-    rule Static    -> FieldMod
-    rule Final     -> FieldMod
-    rule Transient -> FieldMod
-    rule Volatile  -> FieldMod
+    rule Static    -> FieldMod #$=Modifiers.STATIC;#
+    rule Final     -> FieldMod #$=Modifiers.FINAL;#
+    rule Transient -> FieldMod #$=Modifiers.TRANSIENT;#
+    rule Volatile  -> FieldMod #$=Modifiers.VOLATILE;#
