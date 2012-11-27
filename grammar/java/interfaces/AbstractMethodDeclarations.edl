@@ -21,9 +21,6 @@ exports
     rule #$mods = set();# (Anno | (AbstractMethodMod #$mods.add($0);#))* TypeParams? ResultType
        Id "(" {FormalParam ","}* ")" Throws? ";" -> AbstractMethodDec #$.modifiers = $mods;#
 
-    rule #$mods = set();# (Anno | (AbstractMethodMod #$mods.add($0);#))* TypeParams? ResultType
-       Id "(" {FormalParam ","}* ")" Dim+ Throws? ";" -> AbstractMethodDec #$.modifiers = $mods;#
-
     rule Abstract  -> AbstractMethodMod #$=Modifiers.ABSTRACT;#
     rule Final     -> AbstractMethodMod #$=Modifiers.FINAL;#
     rule Native    -> AbstractMethodMod #$=Modifiers.NATIVE;#

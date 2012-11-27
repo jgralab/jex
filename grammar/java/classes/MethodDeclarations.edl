@@ -29,7 +29,6 @@ exports
     rule MethodDecHead MethodBody -> MethodDec {cons("MethodDec")}
 
     rule (Anno | MethodMod)* TypeParams? ResultType Id "(" {FormalParam ","}* ")" Throws?      -> MethodDecHead {cons("MethodDecHead")}
-    rule (Anno | MethodMod)* TypeParams? ResultType Id "(" {FormalParam ","}* ")" Dim+ Throws? -> MethodDecHead {cons("DeprMethodDecHead")}
 
     rule Type   -> ResultType
     rule "void" -> ResultType {cons("Void")}
