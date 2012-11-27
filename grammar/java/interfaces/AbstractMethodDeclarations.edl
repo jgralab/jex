@@ -6,7 +6,7 @@ imports
   java/classes/MethodDeclarations
   
 global actions
-  pattern _(9..10) -> AbstractMethodCec
+  pattern _(9..10) -> AbstractMethodDec
     #$ = Method();
 	 $.name = lexem($3);
 	 name2Member.declare($, $);
@@ -18,12 +18,20 @@ exports
     AbstractMethodMod
 
   context-free syntax
-    rule (Anno | AbstractMethodMod)* TypeParams? ResultType
-       Id "(" {FormalParam ","}* ")" Throws? ";" -> AbstractMethodDec {cons("AbstractMethodDec")}
+    rule #$mods = set();# (Anno | (AbstractMethodMod #$mods.add($0);#))* TypeParams? ResultType
+       Id "(" {FormalParam ","}* ")" Throws? ";" -> AbstractMethodDec #$.modifiers = $mods;#
 
-    rule (Anno | AbstractMethodMod)* TypeParams? ResultType
-       Id "(" {FormalParam ","}* ")" Dim+ Throws? ";" -> AbstractMethodDec {cons("DeprAbstractMethodDec")}
+    rule #$mods = set();# (Anno | (AbstractMethodMod #$mods.add($0);#))* TypeParams? ResultType
+       Id "(" {FormalParam ","}* ")" Dim+ Throws? ";" -> AbstractMethodDec #$.modifiers = $mods;#
 
-    rule Public   -> AbstractMethodMod
-    rule Abstract -> AbstractMethodMod
-
+    rule Abstract  -> AbstractMethodMod #$=Modifiers.ABSTRACT;#
+    rule Final     -> AbstractMethodMod #$=Modifiers.FINAL;#
+    rule Native    -> AbstractMethodMod #$=Modifiers.NATIVE;#
+    rule Private   -> AbstractMethodMod #$=Modifiers.PRIVATE;#
+    rule Protected -> AbstractMethodMod #$=Modifiers.PROTECTED;#
+    rule Public    -> AbstractMethodMod #$=Modifiers.PUBLIC;#
+    rule Static    -> AbstractMethodMod #$=Modifiers.STATIC;#
+    rule Strictfp  -> AbstractMethodMod #$=Modifiers.STRICTFP;#
+    rule Synchronized -> AbstractMethodMod #$=Modifiers.SYNCHRONIZED;#
+    rule Transient -> AbstractMethodMod #$=Modifiers.TRANSIENT;#
+    rule Volatile  -> AbstractMethodMod #$=Modifiers.VOLATILE;#
