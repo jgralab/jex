@@ -29,7 +29,9 @@
 	    <arg value="-p"/> <arg value="de.uni_koblenz.simple_java.parser"/>
 	    <arg value="-s"/> <arg value="java-schema/java-schema.rsa.tg"/>
 	  </java>
-	  <javac fork="true" classpathref="classpath" srcdir="src" includes="src/de/uni_koblenz/simple_java/builder/**/*.java src/de/uni_koblenz/simple_java/parser/**/*.java" />
+	  <javac includeantruntime="false" fork="true"
+		 classpathref="classpath"
+		 srcdir="src" destdir="build/classes"/>
 	</target>
 
 </project>

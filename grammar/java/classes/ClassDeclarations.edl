@@ -42,25 +42,25 @@ exports
 	   name2NamedElement.declare($.qualifiedName, $);
 	  #
 	  ClassBody -> ClassDec
-	  #{packagePrefix = #$packagePrefix#.toString();
-	    isAbstract = false;
-	  }#
+	  #{packagePrefix = #$packagePrefix#.toString();}#
 	
 	
     rule "{" ClassBodyDec* "}" -> ClassBody
 
-    rule (Anno | ClassMod)* "class" Id  TypeParams? Super? Interfaces? -> ClassDecHead #$=lexem($2);#
+    rule #$mods = set();# (Anno | (ClassMod #$mods.add($0);#))* "class"
+	 Id  TypeParams? Super? Interfaces? -> ClassDecHead
+	 #$=lexem($2);#
 
   %% 8.1.1: Class Modifiers
   sorts ClassMod
   context-free syntax
-    rule Abstract  -> ClassMod #{isAbstract = true;}#
-    rule Public    -> ClassMod
-    rule Protected -> ClassMod
-    rule Private   -> ClassMod
-    rule Static    -> ClassMod
-    rule Final     -> ClassMod
-    rule StrictFP  -> ClassMod
+    rule Abstract  -> ClassMod %% #$=Modifiers.ABSTRACT;#
+    rule Public    -> ClassMod %% #$=Modifiers.PUBLIC;#
+    rule Protected -> ClassMod %% #$=Modifiers.PROTECTED;#
+    rule Private   -> ClassMod %% #$=Modifiers.PRIVATE;#
+    rule Static    -> ClassMod %% #$=Modifiers.STATIC;#
+    rule Final     -> ClassMod %% #$=Modifiers.FINAL;#
+    rule StrictFP  -> ClassMod %% #$=Modifiers.STRICTFP;#
 
   %% 8.1.4: Superclasses and Subclasses
   sorts Super
