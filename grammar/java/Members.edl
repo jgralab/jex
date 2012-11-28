@@ -1,0 +1,11 @@
+module java/Members
+imports
+
+exports
+  sorts
+    Member
+
+  context-free syntax
+
+    %% FieldDeclaration
+    (Modifier | Annotation)* TypeSpec Id %% TODO: FieldInit skippen

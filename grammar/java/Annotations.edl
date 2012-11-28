@@ -1,0 +1,13 @@
+module java/Annotations
+imports
+  java/Names  %% TypeName
+
+exports
+  sorts
+    Annotation
+
+  context-free syntax
+
+    rule "@" TypeName
+
+

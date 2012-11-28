@@ -1,0 +1,18 @@
+module java/Names
+imports
+  java/Identifiers
+
+exports
+  sorts
+    TypeSpec
+    TypeParam
+
+  context-free syntax
+
+    rule "<" TypeSpec {TypeSpec ","}* ">" -> TypeParam
+
+    rule TypeName                         -> TypeSpec
+    rule TypeName "." TypeName            -> TypeSpec
+    rule TypeSpec "<" {TypeSpec ","}* ">" -> TypeSpec
+    rule Id                               -> TypeName
+

@@ -1,0 +1,30 @@
+module java/ClassifierDeclarations
+imports
+  java/Modifiers     %% Modifier
+  java/Identifiers   %% Id
+  java/Names         %% TypeSpec, TypeParam
+  java/Blocks        %% Block
+  java/Members       %% Member
+
+exports
+  sorts
+    ClassDeclaration
+    InterfaceDeclaration
+    EnumDeclaration
+    AnnotationDeclaration
+
+  context-free syntax
+
+    rule (Modifier|Annotation)* "class" Id TypeParam? ("extends" TypeSpec)?
+         ("implements" {TypeSpec ","}+)? ClassifierBody -> ClassDeclaration
+
+    rule (Modifier|Annotation)* "enum" Id
+	 ("implements" {TypeSpec ","}+)? ClassifierBody -> EnumDeclaration
+
+    rule (Modifier|Annotation)* "interface" Id TypeParam?
+	 ("extends" {TypeSpec ","}+)? ClassifierBody -> InterfaceDeclaration
+
+    rule (Modifier|Annotation)* "@interface" Id
+	 ("extends" {TypeSpec ","}+)? ClassifierBody -> AnnotationDeclaration
+
+    rule "{" Member* "}" -> ClassifierBody

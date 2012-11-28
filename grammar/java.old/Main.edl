@@ -1,24 +1,26 @@
 module java/Main
 schema de.uni_koblenz.simple_java.schema.JavaSchema
 imports
-	java/ClassifierDeclarations
-	java/WhiteSpace
-	java/Comments
-
+  java/lexical/Main
+  java/types/Main
+  java/names/Main
+  java/packages/Main
+  java/classes/Main
+  java/interfaces/Main
+  java/arrays/Main
+  java/statements/Main
+  java/expressions/Main
 symbol tables
 	name2Package<Package>
 	name2NamedElement<NamedElement>
 	name2Member<Member<--Declares>:Type
-
 default values
 	Imports.lineNo = line(omega);
 	Defines.lineNo = line(omega);
-
 import declarations
 	java.util.List;
 	de.uni_koblenz.jgralab.TemporaryVertex;
 	de.uni_koblenz.edl.parser.Position;
-
 user code{
 	private Vertex defaultPackage;
 	
@@ -52,4 +54,4 @@ user code{
 	}
 }
 exports
-  context-free start-symbols ClassDeclaration InterfaceDeclaration EnumDeclaration
+  context-free start-symbols CompilationUnit

@@ -1,0 +1,42 @@
+module java/Blocks
+imports
+  java/Comments
+  java/EscapeSequences
+  java/UnicodeEscapes
+
+exports
+  sorts
+    Block
+
+	lexical syntax
+		rule "{" {Content* Block}+ "}" -> Block
+		
+		rule (~[\}\{\"\'\/]|Slash)	-> Content
+		rule StringLiteral	-> Content
+		rule CharLiteral	-> Content
+		rule Comment		-> Content
+		
+		rule [\/]	-> Slash
+	
+	lexical restrictions
+		Slash -/- [\/\*]
+
+  lexical syntax
+    rule "'" CharContent "'" -> CharLiteral
+    rule SingleChar    -> CharContent
+    rule UnicodeEscape -> CharContent
+    rule EscapeSeq     -> CharContent
+
+    rule ~[\r\n\'\\] -> SingleChar
+
+  lexical syntax
+    rule "\"" StringPart* "\"" -> StringLiteral
+    rule StringChars    -> StringPart
+    rule UnicodeEscape  -> StringPart
+    rule EscapeSeq      -> StringPart
+
+    rule FooStringChars -> StringChars
+    rule ~[\"\\\n\13]+  -> FooStringChars
+
+  lexical restrictions
+    StringChars -/- ~[\"\\\n\13]
