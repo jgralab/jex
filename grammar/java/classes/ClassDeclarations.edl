@@ -49,7 +49,8 @@ exports
 
     rule #$mods = set();# (Anno | (ClassMod #$mods.add($0);#))* "class"
 	 Id  TypeParams? Super? Interfaces? -> ClassDecHead
-	 #$=lexem($2);#
+	 #$=lexem($2);
+	  $.modifiers = $mods;#
 
   %% 8.1.1: Class Modifiers
   sorts ClassMod
