@@ -30,7 +30,7 @@
 	    <arg value="-s"/> <arg value="java-schema/java-schema.rsa.tg"/>
 	  </java>
 	  <javac includeantruntime="false" fork="true"
-		 classpathref="classpath"
+		 classpathref="classpath" debug="true"
 		 srcdir="src" destdir="build/classes"/>
 	</target>
 
