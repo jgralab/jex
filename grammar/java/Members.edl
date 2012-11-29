@@ -28,20 +28,15 @@ exports
 
   lexical syntax
     rule "{" BlockContent "}"                 -> Block
-	rule Content*	-> BlockContent
-    rule "=" Content*                     -> Initializer
-    rule (~[\"\'\/\ \t\12\n\r]|Slash|LAYOUT)       -> Content
-    rule StringLiteral                    -> Content
-    rule CharLiteral                      -> Content
-    %% rule Block                            -> Content
-
-
-    rule [\/]                             -> Slash
+    rule Content*                             -> BlockContent
+    rule "=" Content*                         -> Initializer
+    rule (~[\"\'\/\ \t\12\n\r]|Slash|LAYOUT)  -> Content
+    rule StringLiteral                        -> Content
+    rule CharLiteral                          -> Content
+    rule [\/]                                 -> Slash
 
   lexical restrictions
     Initializer -/- ~[\}\;]
     BlockContent   -/- ~[\}]
     Slash   -/- [\/\*]
 
-%%   lexical restrictions
-%%     Content -/- ~[\;]

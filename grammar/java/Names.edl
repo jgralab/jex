@@ -9,12 +9,29 @@ exports
 
   context-free syntax
 
-    rule "<" TypeSpec {TypeSpec ","}* ">" -> TypeParam
+    rule "<" {TypeSpec ","}+ ">"          -> TypeParam
 
+    rule RefType "<" {RefType ","}* ">"   -> TypeSpec
     rule TypeName                         -> TypeSpec
-    rule TypeName "." TypeName            -> TypeSpec
-    rule TypeSpec "<" {TypeSpec ","}* ">" -> TypeSpec
-    rule Id                               -> TypeName
-	
-	rule "int"							  -> TypeName
+    rule ArrayType                        -> TypeSpec
+
+    rule RefType                          -> TypeName
+    rule PrimType                         -> TypeName
+
+    rule TypeName ("[" "]")+              -> ArrayType
+
+    %% Reference types
+    rule Id                               -> RefType
+    rule RefType "." RefType              -> RefType
+
+    %% Primitive types
+    rule "boolean"                        -> PrimType
+    rule "int"                            -> PrimType
+    rule "long"                           -> PrimType
+    rule "char"                           -> PrimType
+    rule "byte"                           -> PrimType
+    rule "short"                          -> PrimType
+    rule "float"                          -> PrimType
+    rule "double"                         -> PrimType
+    rule "void"                           -> PrimType
 

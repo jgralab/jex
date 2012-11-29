@@ -54,7 +54,6 @@ exports
     rule "while"         -> Keyword
 
   lexical restrictions
-
     "abstract"
     "assert"
     "boolean" 
