@@ -22,16 +22,15 @@ exports
     rule (Modifier | Annotation)* TypeSpec Id "(" {ParamDeclaration ","}* ")" Block ";"?
          -> MethodDeclaration
 
-    rule FieldDeclaration  -> Member
     rule MethodDeclaration -> Member
 
     rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
 
-    rule "{" Content* "}"                 -> Block
-
   lexical syntax
+    rule "{" BlockContent "}"                 -> Block
+	rule Content*	-> BlockContent
     rule "=" Content*                     -> Initializer
-    rule (~[\"\'\/\ ]|Slash|LAYOUT)       -> Content
+    rule (~[\"\'\/\ \t\12\n\r]|Slash|LAYOUT)       -> Content
     rule StringLiteral                    -> Content
     rule CharLiteral                      -> Content
     %% rule Block                            -> Content
@@ -40,8 +39,8 @@ exports
     rule [\/]                             -> Slash
 
   lexical restrictions
-    Content -/- ~[ \t\}\;]
-    Block   -/- [\}]
+    Initializer -/- ~[\}\;]
+    BlockContent   -/- ~[\}]
     Slash   -/- [\/\*]
 
 %%   lexical restrictions

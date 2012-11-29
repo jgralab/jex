@@ -15,4 +15,6 @@ exports
     rule TypeName "." TypeName            -> TypeSpec
     rule TypeSpec "<" {TypeSpec ","}* ">" -> TypeSpec
     rule Id                               -> TypeName
+	
+	rule "int"							  -> TypeName
 
