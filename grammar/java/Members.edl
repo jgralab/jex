@@ -14,7 +14,7 @@ exports
   context-free syntax
 
     %% FieldDeclaration
-    rule (Modifier | Annotation)* TypeSpec Id ("=" InitContent*)? ";"
+    rule (Modifier | Annotation)* TypeSpec Id Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
 
@@ -28,12 +28,19 @@ exports
     rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
 
   lexical syntax
-    rule "=" InitContent* ";"   -> Initializer
-    rule (~[\;\"\'\/]|Slash)    -> InitContent
-    rule StringLiteral          -> InitContent
-    rule CharLiteral            -> InitContent
-    rule Comment                -> InitContent
-    rule Block                  -> InitContent
-        
-   lexical restrictions
-     InitContent -/- ~[\;]
+    rule "=" Content*                     -> Initializer
+    rule (~[\;\"\'\/\ ]|Slash|LAYOUT)     -> Content
+    rule StringLiteral                    -> Content
+    rule CharLiteral                      -> Content
+    rule Comment                          -> Content
+    rule Block                            -> Content
+
+    rule "{" Content* "}"                 -> Block
+    rule [\/]                             -> Slash
+
+  lexical restrictions
+    Content -/- ~[\}\;]
+    Slash   -/- [\/\*]
+
+%%   lexical restrictions
+%%     Content -/- ~[\;]
