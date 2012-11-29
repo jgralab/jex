@@ -12,6 +12,7 @@ exports
     InterfaceDeclaration
     EnumDeclaration
     AnnotationDeclaration
+    ClassifierDeclaration
 
   context-free syntax
 
@@ -19,12 +20,17 @@ exports
          ("implements" {TypeSpec ","}+)? ClassifierBody -> ClassDeclaration
 
     rule (Modifier|Annotation)* "enum" Id
-	 ("implements" {TypeSpec ","}+)? ClassifierBody -> EnumDeclaration
+         ("implements" {TypeSpec ","}+)? ClassifierBody -> EnumDeclaration
 
     rule (Modifier|Annotation)* "interface" Id TypeParam?
-	 ("extends" {TypeSpec ","}+)? ClassifierBody -> InterfaceDeclaration
+         ("extends" {TypeSpec ","}+)? ClassifierBody -> InterfaceDeclaration
 
     rule (Modifier|Annotation)* "@interface" Id
-	 ("extends" {TypeSpec ","}+)? ClassifierBody -> AnnotationDeclaration
+         ("extends" {TypeSpec ","}+)? ClassifierBody -> AnnotationDeclaration
+
+    rule ClassDeclaration      -> ClassifierDeclaration
+    rule EnumDeclaration       -> ClassifierDeclaration
+    rule InterfaceDeclaration  -> ClassifierDeclaration
+    rule AnnotationDeclaration -> ClassifierDeclaration
 
     rule "{" Member* "}" -> ClassifierBody

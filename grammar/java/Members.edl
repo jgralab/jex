@@ -1,5 +1,11 @@
 module java/Members
 imports
+  java/Modifiers         %% Modifier
+  java/Identifiers       %% Id
+  java/Names             %% TypeSpec, TypeParam
+  java/Blocks            %% Block
+  java/CharacterLiterals %% CharLiteral
+  java/StringLiterals    %% StringLiteral
 
 exports
   sorts
@@ -8,4 +14,26 @@ exports
   context-free syntax
 
     %% FieldDeclaration
-    (Modifier | Annotation)* TypeSpec Id %% TODO: FieldInit skippen
+    rule (Modifier | Annotation)* TypeSpec Id ("=" InitContent*)? ";"
+         -> FieldDeclaration
+    rule FieldDeclaration -> Member
+
+    %% MethodDeclaration
+    rule (Modifier | Annotation)* TypeSpec Id "(" {ParamDeclaration ","}* ")" Block ";"?
+         -> MethodDeclaration
+
+    rule FieldDeclaration  -> Member
+    rule MethodDeclaration -> Member
+
+    rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
+
+  lexical syntax
+    rule "=" InitContent* ";"   -> Initializer
+    rule (~[\;\"\'\/]|Slash)    -> InitContent
+    rule StringLiteral          -> InitContent
+    rule CharLiteral            -> InitContent
+    rule Comment                -> InitContent
+    rule Block                  -> InitContent
+        
+   lexical restrictions
+     InitContent -/- ~[\;]

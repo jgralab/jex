@@ -1,0 +1,18 @@
+module java/CharacterLiterals
+imports
+  java/EscapeSequences
+  java/UnicodeEscapes
+
+exports
+  sorts
+    CharLiteral
+    CharContent
+    SingleChar
+
+  lexical syntax
+    rule "'" CharContent "'" -> CharLiteral
+    rule SingleChar          -> CharContent
+    rule UnicodeEscape       -> CharContent
+    rule EscapeSeq           -> CharContent
+
+    rule ~[\r\n\'\\]         -> SingleChar

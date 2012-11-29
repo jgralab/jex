@@ -1,7 +1,7 @@
 module java/Main
 schema de.uni_koblenz.simple_java.schema.JavaSchema
 imports
-	java/ClassifierDeclarations
+	java/ClassifierDeclarations %% ClassifierDeclaration
 	java/WhiteSpace
 	java/Comments
 
@@ -52,4 +52,4 @@ user code{
 	}
 }
 exports
-  context-free start-symbols ClassDeclaration InterfaceDeclaration EnumDeclaration
+  context-free start-symbols ClassifierDeclaration
