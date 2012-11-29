@@ -3,7 +3,6 @@ imports
   java/Modifiers     %% Modifier
   java/Identifiers   %% Id
   java/Names         %% TypeSpec, TypeParam
-  java/Blocks        %% Block
   java/Members       %% Member
 
 exports

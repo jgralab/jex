@@ -3,9 +3,9 @@ imports
   java/Modifiers         %% Modifier
   java/Identifiers       %% Id
   java/Names             %% TypeSpec, TypeParam
-  java/Blocks            %% Block
   java/CharacterLiterals %% CharLiteral
   java/StringLiterals    %% StringLiteral
+  java/Comments          %% Comment
 
 exports
   sorts
@@ -27,19 +27,21 @@ exports
 
     rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
 
+    rule "{" Content* "}"                 -> Block
+
   lexical syntax
     rule "=" Content*                     -> Initializer
-    rule (~[\;\"\'\/\ ]|Slash|LAYOUT)     -> Content
+    rule (~[\"\'\/\ ]|Slash|LAYOUT)       -> Content
     rule StringLiteral                    -> Content
     rule CharLiteral                      -> Content
-    rule Comment                          -> Content
-    rule Block                            -> Content
+    %% rule Block                            -> Content
 
-    rule "{" Content* "}"                 -> Block
+
     rule [\/]                             -> Slash
 
   lexical restrictions
-    Content -/- ~[\}\;]
+    Content -/- ~[ \t\}\;]
+    Block   -/- [\}]
     Slash   -/- [\/\*]
 
 %%   lexical restrictions
