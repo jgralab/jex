@@ -32,4 +32,6 @@ exports
     rule InterfaceDeclaration  -> ClassifierDeclaration
     rule AnnotationDeclaration -> ClassifierDeclaration
 
+    rule ClassifierDeclaration -> Member
+
     rule "{" Member* "}" -> ClassifierBody
