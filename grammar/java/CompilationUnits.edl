@@ -1,0 +1,66 @@
+module java/CompilationUnits
+
+imports
+  java/ClassifierDeclarations   %% ClassifierDeclaration
+  java/Annotations              %% Annotation
+  java/Names                    %% PackageName
+
+import declarations
+	de.uni_koblenz.jgralab.TemporaryVertex;
+
+global actions
+  pattern "import" _(1) _(0..2) ";"                     -> ImportDeclaration
+    #$import = lexem($1).replaceAll("\\s+", "");#
+  pattern "import" "static" TypeName "." _ ";"          -> ImportDeclaration
+    #$import = lexem($2).replaceAll("\\s+", "");#
+  pattern "import" "static"(0..1) TypeName _(0..2) ";"  -> ImportDeclaration
+    #$ = name2NamedElement.useOrDeclare($import);
+     {
+       if (((Vertex) #$#).isTemporary()) {
+	       #$.qualifiedName = $import;#
+	     }
+     }#
+
+exports
+  sorts
+    CompilationUnit
+
+  context-free syntax
+    rule #{statements = 0;}
+          $ = SourceFile();
+          $.path = file();
+          $packageDecl = {return defaultPackage;};
+          {packagePrefix = "";}#
+
+         (#{isPackageDeclaration = true;}#
+          PackageDeclaration
+          #{isPackageDeclaration = false;}
+           $packageDecl = $0;
+           {packagePrefix = #$0.qualifiedName#.toString();}#)?
+
+                             %% TODO: Comment in, once we create Classifier vertices
+          (ImportDeclaration %% #Imports($,$0);#
+          )*
+
+                                 %% TODO: Comment in, once we create Classifier vertices
+          (ClassifierDeclaration %% #Defines($,$0);
+                                 %% ContainsType($packageDecl, $0);#
+                                  )*
+         -> CompilationUnit #$.lines = {return currentElement.getLastLine();};#
+
+    %% PackageDeclaration
+    rule Annotation* "package" PackageName ";"
+         -> PackageDeclaration
+            #$=name2Package.use(lexem($2).replaceAll("\\s+", ""));#
+
+    %% ImportDeclaration
+    rule "import" TypeName                  ";"  -> ImportDeclaration
+    rule "import" PackageName       "." "*" ";"  -> ImportDeclaration
+      #$ = name2Package.useOrDeclare($import);
+       {
+         if (((Vertex) #$#).isTemporary()) {
+           #$.qualifiedName = $import;#
+         }
+       }#
+    rule "import" "static" TypeName "." Id  ";"  -> ImportDeclaration
+    rule "import" "static" TypeName "." "*" ";"  -> ImportDeclaration

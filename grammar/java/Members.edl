@@ -15,11 +15,12 @@ exports
   context-free syntax
 
     %% EnumConstant
-    rule Id "," (LeadingEnumConstant | LastEnumConstant) -> LeadingEnumConstant
-    rule Id ";"                                          -> LastEnumConstant
-    rule LeadingEnumConstant                             -> EnumConstant
-    rule LastEnumConstant                                -> EnumConstant
-    rule EnumConstant                                    -> Member
+    rule EnumConst "," (LeadingEnumConstant | LastEnumConstant) -> LeadingEnumConstant
+    rule EnumConst ";"                                          -> LastEnumConstant
+    rule Id ParenBlock?                                         -> EnumConst
+    rule LeadingEnumConstant                                    -> EnumConstant
+    rule LastEnumConstant                                       -> EnumConstant
+    rule EnumConstant                                           -> Member
 
     %% FieldDeclaration
     rule (Modifier | Annotation)* TypeSpec Id Initializer? ";"
@@ -30,27 +31,35 @@ exports
     rule (Modifier | Annotation)* TypeSpec Id "(" {ParamDeclaration ","}* ")"
          (Block | ";")
          -> MethodDeclaration
-
+    rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
     rule MethodDeclaration -> Member
 
-    rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
+    %% ConstructorDeclaration
+    rule (Modifier | Annotation)* Id "(" {ParamDeclaration ","}* ")" Block
+         -> ConstructorDeclaration
+    rule ConstructorDeclaration -> Member
 
   lexical syntax
     rule "{" BlockContent* "}"                     -> Block
-    rule (~[\"\'\/\ \t\12\n\r\{\}]|Slash|LAYOUT)   -> BlockContent
-    rule StringLiteral                             -> BlockContent
-    rule CharLiteral                               -> BlockContent
+    rule ~[\"\'\/\ \t\12\n\r\{\}]                  -> BlockContent
     rule Block                                     -> BlockContent
 
+    rule "(" ParenBlockContent* ")"                -> ParenBlock
+    rule ~[\"\'\/\ \t\12\n\r\(\)]                  -> ParenBlockContent
+
     rule "=" InitializerContent+                   -> Initializer
-    rule (~[\"\'\/\ \t\12\n\r\;]|Slash|LAYOUT)     -> InitializerContent
-    rule StringLiteral                             -> InitializerContent
-    rule CharLiteral                               -> InitializerContent
+    rule ~[\"\'\/\ \t\12\n\r\;]                    -> InitializerContent
 
     rule [\/]                                      -> Slash
+    rule StringLiteral                             -> Content
+    rule CharLiteral                               -> Content
+    rule (Slash | LAYOUT)                          -> Content
+    rule Content                                   -> BlockContent
+    rule Content                                   -> ParenBlockContent
+    rule Content                                   -> InitializerContent
 
   lexical restrictions
     Initializer  -/- ~[\;]
-    %%Block        -/- ~[\}]
+    %%Block      -/- ~[\}]
     Slash        -/- [\/\*]
 
