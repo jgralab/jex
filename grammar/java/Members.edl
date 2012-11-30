@@ -28,7 +28,7 @@ exports
     rule FieldDeclaration -> Member
 
     %% MethodDeclaration
-    rule (Modifier | Annotation)* TypeSpec Id "(" {ParamDeclaration ","}* ")"
+    rule (Modifier | Annotation)* TypeParam? TypeSpec Id "(" {ParamDeclaration ","}* ")"
          (Block | ";")
          -> MethodDeclaration
     rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
@@ -41,14 +41,19 @@ exports
 
   lexical syntax
     rule "{" BlockContent* "}"                     -> Block
-    rule ~[\"\'\/\ \t\12\n\r\{\}]                  -> BlockContent
+    rule ~[\"\'\/\ \t\12\n\r\{\}\(\)]              -> BlockContent
     rule Block                                     -> BlockContent
+    rule ParenBlock                                -> BlockContent
 
     rule "(" ParenBlockContent* ")"                -> ParenBlock
     rule ~[\"\'\/\ \t\12\n\r\(\)]                  -> ParenBlockContent
+    rule ParenBlock                                -> ParenBlockContent
+    rule Block                                     -> ParenBlockContent
 
     rule "=" InitializerContent+                   -> Initializer
-    rule ~[\"\'\/\ \t\12\n\r\;]                    -> InitializerContent
+    rule Block                                     -> InitializerContent
+    rule ParenBlock                                -> InitializerContent
+    rule ~[\"\'\/\ \t\12\n\r\;\(\)\{\}]            -> InitializerContent
 
     rule [\/]                                      -> Slash
     rule StringLiteral                             -> Content
