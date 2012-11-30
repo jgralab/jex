@@ -22,13 +22,13 @@ exports
   context-free syntax
 
     rule "<" {TypeParamName ","}+ ">"     -> TypeParam
-    rule (Id | "?")                       -> TypeParamName
+    rule (RefType | "?")                  -> TypeParamName
     rule TypeParamName "extends" TypeSpec -> TypeParamName
     rule TypeParamName "super" TypeSpec   -> TypeParamName
 
-    rule RefType "<" {RefType ","}* ">"   -> TypeSpec
-    rule TypeName                         -> TypeSpec
-    rule ArrayType                        -> TypeSpec
+    rule RefType "<" {TypeParamName ","}* ">"   -> TypeSpec
+    rule TypeName                               -> TypeSpec
+    rule ArrayType                              -> TypeSpec
 
     %% PackageName
     rule #$qualName = "";

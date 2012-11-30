@@ -3,7 +3,7 @@ imports
   java/Modifiers     %% Modifier
   java/Identifiers   %% Id
   java/Names         %% TypeSpec, TypeParam
-  java/Members       %% Member
+  java/Members       %% Member, InitializerBlock
 
 exports
   sorts
@@ -19,7 +19,8 @@ exports
          ("implements" {TypeSpec ","}+)? ClassifierBody -> ClassDeclaration
 
     rule (Modifier|Annotation)* "enum" Id
-         ("implements" {TypeSpec ","}+)? ClassifierBody -> EnumDeclaration
+         ("implements" {TypeSpec ","}+)? EnumBody -> EnumDeclaration
+    rule "{" EnumConstant+ Member* "}" -> EnumBody
 
     rule (Modifier|Annotation)* "interface" Id TypeParam?
          ("extends" {TypeSpec ","}+)? ClassifierBody -> InterfaceDeclaration
@@ -34,4 +35,4 @@ exports
 
     rule ClassifierDeclaration -> Member
 
-    rule "{" Member* "}" -> ClassifierBody
+    rule "{" (Member | InitializerBlock)* "}" -> ClassifierBody

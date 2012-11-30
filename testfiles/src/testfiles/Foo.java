@@ -21,7 +21,7 @@ public class Foo extends Object implements Serializable, Bar {
 		}
 	};
 
-	@Override
+	@java.lang.Override
 	public int compareTo(Bar o) {
 		{
 			return o.gimme(foo, 10)[0] - gimme(foo - 1, 10)[1];

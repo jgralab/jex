@@ -1,7 +1,7 @@
 module java/Annotations
 imports
-  java/Names     %% TypeName
-  java/Members   %% Content
+  java/Names     %% RefType
+  java/Members   %% ParenBlock
 
 exports
   sorts
@@ -9,7 +9,4 @@ exports
 
   context-free syntax
 
-    rule "@" TypeName ("(" AnnotationArgs ")")?         -> Annotation
-
-    rule {AnnotationArg ","}* -> AnnotationArgs
-    rule Id "=" Content       -> AnnotationArg
+    rule "@" RefType ParenBlock? -> Annotation

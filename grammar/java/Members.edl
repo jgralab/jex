@@ -10,7 +10,7 @@ imports
 exports
   sorts
     Member
-    Content
+    InitializerBlock
 
   context-free syntax
 
@@ -19,8 +19,7 @@ exports
     rule EnumConst ";"?                                         -> LastEnumConstant
     rule Id ParenBlock?                                         -> EnumConst
     rule LeadingEnumConstant                                    -> EnumConstant
-    rule LastEnumConstant                                       -> EnumConstant
-    rule EnumConstant                                           -> Member
+    rule LastEnumConstant                                       -> EnumConstant {prefer}
 
     %% FieldDeclaration
     rule (Modifier | Annotation)* TypeSpec Id Initializer? ";"
@@ -29,15 +28,26 @@ exports
 
     %% MethodDeclaration
     rule (Modifier | Annotation)* TypeParam? TypeSpec Id "(" {ParamDeclaration ","}* ")"
-         (Block | ";")
+         ThrowsClause? (Block | ";")
          -> MethodDeclaration
     rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
     rule MethodDeclaration -> Member
 
     %% ConstructorDeclaration
-    rule (Modifier | Annotation)* Id "(" {ParamDeclaration ","}* ")" Block
+    rule (Modifier | Annotation)* Id "(" {ParamDeclaration ","}* ")" ThrowsClause? Block
          -> ConstructorDeclaration
     rule ConstructorDeclaration -> Member
+
+    %% ThrowsClause
+    rule "throws" {TypeSpec ","}+                  -> ThrowsClause
+
+    %% StaticInitializer
+    rule "static" Block ";"?                       -> StaticInitializer
+    rule StaticInitializer                         -> InitializerBlock
+
+    %% InstanceInitializer
+    rule Block ";"?                                -> InstanceInitializer
+    rule InstanceInitializer                       -> InitializerBlock
 
   lexical syntax
     rule "{" BlockContent* "}"                     -> Block
@@ -46,7 +56,7 @@ exports
     rule ParenBlock                                -> BlockContent
 
     rule "(" ParenBlockContent* ")"                -> ParenBlock
-    rule ~[\"\'\/\ \t\12\n\r\(\)]                  -> ParenBlockContent
+    rule ~[\"\'\/\ \t\12\n\r\(\)\{\}]              -> ParenBlockContent
     rule ParenBlock                                -> ParenBlockContent
     rule Block                                     -> ParenBlockContent
 
