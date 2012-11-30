@@ -22,4 +22,8 @@ public interface Bar extends Comparable<Bar> {
 	}
 
 	public int[] gimme(int a, long b);
+	
+	public enum EnumAsSingleton {
+		THE
+	}
 }

@@ -16,7 +16,7 @@ exports
 
     %% EnumConstant
     rule EnumConst "," (LeadingEnumConstant | LastEnumConstant) -> LeadingEnumConstant
-    rule EnumConst ";"                                          -> LastEnumConstant
+    rule EnumConst ";"?                                         -> LastEnumConstant
     rule Id ParenBlock?                                         -> EnumConst
     rule LeadingEnumConstant                                    -> EnumConstant
     rule LastEnumConstant                                       -> EnumConstant
