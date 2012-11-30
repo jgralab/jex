@@ -1,6 +1,7 @@
 module java/Annotations
 imports
-  java/Names  %% TypeName
+  java/Names     %% TypeName
+  java/Members   %% Content
 
 exports
   sorts
@@ -8,6 +9,7 @@ exports
 
   context-free syntax
 
-    rule "@" TypeName
+    rule "@" TypeName ("(" AnnotationArgs ")")?         -> Annotation
 
-
+    rule {AnnotationArg ","}* -> AnnotationArgs
+    rule Id "=" Content       -> AnnotationArg

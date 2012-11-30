@@ -10,6 +10,7 @@ imports
 exports
   sorts
     Member
+    Content
 
   context-free syntax
 
@@ -19,7 +20,7 @@ exports
     rule FieldDeclaration -> Member
 
     %% MethodDeclaration
-    rule (Modifier | Annotation)* TypeSpec Id "(" {ParamDeclaration ","}* ")" Block ";"?
+    rule (Modifier | Annotation)* TypeSpec Id "(" {ParamDeclaration ","}* ")" Block? ";"?
          -> MethodDeclaration
 
     rule MethodDeclaration -> Member
@@ -27,16 +28,17 @@ exports
     rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
 
   lexical syntax
-    rule "{" BlockContent "}"                 -> Block
-    rule Content*                             -> BlockContent
-    rule "=" Content*                         -> Initializer
-    rule (~[\"\'\/\ \t\12\n\r]|Slash|LAYOUT)  -> Content
-    rule StringLiteral                        -> Content
-    rule CharLiteral                          -> Content
-    rule [\/]                                 -> Slash
+    rule "{" BlockContent "}"                      -> Block
+    rule "=" InitializerContent ";"                -> Initializer
+    rule Content*                                  -> InitializerContent
+    rule Content*                                  -> BlockContent
+    rule (~[\"\'\/\ \t\12\n\r\{\}\;]|Slash|LAYOUT) -> Content
+    rule StringLiteral                             -> Content
+    rule CharLiteral                               -> Content
+    rule [\/]                                      -> Slash
 
   lexical restrictions
-    Initializer -/- ~[\}\;]
-    BlockContent   -/- ~[\}]
-    Slash   -/- [\/\*]
+    InitializerContent  -/- ~[\;]
+    BlockContent        -/- ~[\}]
+    Slash               -/- [\/\*]
 

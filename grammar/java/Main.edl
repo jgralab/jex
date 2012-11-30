@@ -1,55 +1,55 @@
 module java/Main
 schema de.uni_koblenz.simple_java.schema.JavaSchema
+
 imports
-	java/ClassifierDeclarations %% ClassifierDeclaration
-	java/WhiteSpace
-	java/Comments
+  java/CompilationUnits   %% CompilationUnit
+  java/WhiteSpace
+  java/Comments
 
 symbol tables
-	name2Package<Package>
-	name2NamedElement<NamedElement>
-	name2Member<Member<--Declares>:Type
+  name2Package<Package>
+  name2NamedElement<NamedElement>
+  name2Member<Member<--Declares>:Type
 
 default values
-	Imports.lineNo = line(omega);
-	Defines.lineNo = line(omega);
+  Imports.lineNo = line(omega);
+  Defines.lineNo = line(omega);
 
 import declarations
-	java.util.List;
-	de.uni_koblenz.jgralab.TemporaryVertex;
-	de.uni_koblenz.edl.parser.Position;
+  java.util.List;
+  de.uni_koblenz.jgralab.TemporaryVertex;
+  de.uni_koblenz.edl.parser.Position;
 
 user code{
-	private Vertex defaultPackage;
+  private Vertex defaultPackage;
 	
-	{
-		defaultPackage = createVertex("Package", new Position());
-		defaultPackage.setAttribute("name","");
-		defaultPackage.setAttribute("qualifiedName","");
-	}
+  {
+    defaultPackage = createVertex("Package", new Position());
+    defaultPackage.setAttribute("name","");
+    defaultPackage.setAttribute("qualifiedName","");
+  }
 	
-	private boolean isPackageDeclaration = false;
-	
-	private String packagePrefix;
-	
-	private int statements = 0;
+  private boolean isPackageDeclaration = false;
+  private String packagePrefix;
+  private int statements = 0;
 
-	@SuppressWarnings("unchecked")
-	@Override
-	public void finalize() {
-		List<TemporaryVertex> tempVertices = (List<TemporaryVertex>) #name2NamedElement.getTemporaryVertices()#;
-		for (TemporaryVertex tempVert: tempVertices) {
-			tempVert.bless(getVertexClass("Class"));
-		}
-		List<TemporaryVertex> tempPackages = (List<TemporaryVertex>) #name2Package.getTemporaryVertices()#;
-		for (TemporaryVertex tempPackage: tempPackages) {
-			tempPackage.bless(getVertexClass("Package"));
-		}
-		for (Vertex tmp : getGraph().vertices(graph.getGraphClass()
-					    .getTemporaryVertexClass())) {
-		    System.out.println("Left over TemporaryVertex: " + tmp);
-		}
-	}
+  @SuppressWarnings("unchecked")
+  @Override
+  public void finalize() {
+    List<TemporaryVertex> tempVertices = (List<TemporaryVertex>)
+      #name2NamedElement.getTemporaryVertices()#;
+    for (TemporaryVertex tempVert: tempVertices) {
+      tempVert.bless(getVertexClass("Class"));
+    }
+    List<TemporaryVertex> tempPackages = (List<TemporaryVertex>)
+      #name2Package.getTemporaryVertices()#;
+    for (TemporaryVertex tempPackage: tempPackages) {
+      tempPackage.bless(getVertexClass("Package"));
+    }
+    for (Vertex tmp : getGraph().vertices(graph.getGraphClass().getTemporaryVertexClass())) {
+      System.out.println("Left over TemporaryVertex: " + tmp);
+    }
+  }
 }
 exports
-  context-free start-symbols ClassifierDeclaration
+  context-free start-symbols CompilationUnit
