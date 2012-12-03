@@ -20,13 +20,13 @@ exports
 
     rule (Modifier|Annotation)* "enum" Id
          ("implements" {TypeSpec ","}+)? EnumBody -> EnumDeclaration
-    rule "{" EnumConstant+ Member* "}" -> EnumBody
+    rule "{" EnumConstant+ Member* "}" ";"? -> EnumBody
 
     rule (Modifier|Annotation)* "interface" Id TypeParams?
          ("extends" {TypeSpec ","}+)? ClassifierBody -> InterfaceDeclaration
 
     rule (Modifier|Annotation)* "@interface" Id AnnotationBody -> AnnotationDeclaration
-    rule "{" AnnotationField* "}" -> AnnotationBody
+    rule "{" AnnotationField* "}" ";"? -> AnnotationBody
 
     rule ClassDeclaration      -> ClassifierDeclaration
     rule EnumDeclaration       -> ClassifierDeclaration
@@ -35,4 +35,4 @@ exports
 
     rule ClassifierDeclaration -> Member
 
-    rule "{" (Member | InitializerBlock)* "}" -> ClassifierBody
+    rule "{" (Member | InitializerBlock)* "}" ";"? -> ClassifierBody

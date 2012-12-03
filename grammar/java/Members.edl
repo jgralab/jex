@@ -31,7 +31,7 @@ exports
 
     %% MethodDeclaration
     rule (Modifier | Annotation)* TypeParams? TypeSpec Id "(" {ParamDeclaration ","}* ")"
-         ThrowsClause? (Block | ";")
+         ThrowsClause? (Block | ";" | (Block ";"))
          -> MethodDeclaration
     rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
     rule MethodDeclaration -> Member
