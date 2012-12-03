@@ -24,6 +24,7 @@ exports
   context-free syntax
 
     rule "<" {TypeParamName ","}+ ">"                -> TypeParams
+    rule ArrayType                                   -> TypeParamName
     rule ("?" | RefTypeName) TypeParams?             -> TypeParamName
     rule ("?" | RefTypeName) "extends" TypeParamName -> TypeParamName
     rule ("?" | RefTypeName) "super" TypeParamName   -> TypeParamName
@@ -58,8 +59,10 @@ exports
     rule RefTypeName                      -> TypeName
     rule PrimType                         -> TypeName
 
-    rule TypeName ("[" "]")+              -> ArrayType
-    rule TypeName "..."                   -> ArrayType
+    rule TypeName ("[" "]")+               -> ArrayType
+    rule TypeName "..."                    -> ArrayType
+    rule RefTypeName TypeParams ("[" "]")+ -> ArrayType
+    rule RefTypeName TypeParams "..."      -> ArrayType
 
     %% Reference types
     rule Id                               -> RefTypeName
