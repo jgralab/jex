@@ -22,7 +22,7 @@ exports
     rule LastEnumConstant                                       -> EnumConstant
 
     %% AnnotationField
-    rule TypeSpec Id "(" ")" AnnoInit? ";" -> AnnotationField
+    rule TypeSpec Id "(" ")" AnnoInitializer? ";" -> AnnotationField
 
     %% FieldDeclaration
     rule (Modifier | Annotation)* TypeSpec {(Id ("[" "]")* Initializer?) ","}+ ";"
@@ -63,7 +63,7 @@ exports
     rule ParenBlock                                -> ParenBlockContent
     rule Block                                     -> ParenBlockContent
 
-	rule "default" InitializerContent+		       -> AnnoInit
+    rule "default" InitializerContent+             -> AnnoInitializer
     rule "=" InitializerContent+                   -> Initializer
     rule Block                                     -> InitializerContent
     rule ParenBlock                                -> InitializerContent
@@ -78,6 +78,6 @@ exports
     rule Content                                   -> InitializerContent
 
   lexical restrictions
-    Initializer  -/- ~[\;]
-    Slash        -/- [\/\*]
-	AnnoInit     -/- ~[\;]
+    Initializer      -/- ~[\;]
+    Slash            -/- [\/\*]
+    AnnoInitializer  -/- ~[\;]
