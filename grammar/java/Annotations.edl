@@ -1,6 +1,6 @@
 module java/Annotations
 imports
-  java/Names     %% RefType
+  java/Names     %% RefTypeName
   java/Members   %% ParenBlock
 
 exports
@@ -9,4 +9,4 @@ exports
 
   context-free syntax
 
-    rule "@" RefType ParenBlock? -> Annotation
+    rule "@" RefTypeName ParenBlock? -> Annotation

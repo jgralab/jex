@@ -16,19 +16,21 @@ user code{
 exports
   sorts
     TypeSpec
-    TypeParam
+    TypeParams
     PackageName
+    RefTypeName
+    TypeName
 
   context-free syntax
 
-    rule "<" {TypeParamName ","}+ ">"     -> TypeParam
-    rule (RefType | "?")                  -> TypeParamName
-    rule TypeParamName "extends" TypeSpec -> TypeParamName
-    rule TypeParamName "super" TypeSpec   -> TypeParamName
+    rule "<" {TypeParamName ","}+ ">"                -> TypeParams
+    rule ("?" | RefTypeName) TypeParams?             -> TypeParamName
+    rule ("?" | RefTypeName) "extends" TypeParamName -> TypeParamName
+    rule ("?" | RefTypeName) "super" TypeParamName   -> TypeParamName
 
-    rule RefType "<" {TypeParamName ","}* ">"   -> TypeSpec
-    rule TypeName                               -> TypeSpec
-    rule ArrayType                              -> TypeSpec
+    rule TypeName                          -> TypeSpec
+    rule ArrayType                         -> TypeSpec
+    rule RefTypeName TypeParams            -> TypeSpec
 
     %% PackageName
     rule #$qualName = "";
@@ -53,14 +55,15 @@ exports
            "." #$qualName = $qualName.concat(".");#
          }+ -> PackageName
 
-    rule RefType                          -> TypeName
+    rule RefTypeName                      -> TypeName
     rule PrimType                         -> TypeName
 
     rule TypeName ("[" "]")+              -> ArrayType
+    rule TypeName "..."                   -> ArrayType
 
     %% Reference types
-    rule Id                               -> RefType
-    rule PackageName "." Id               -> RefType
+    rule Id                               -> RefTypeName
+    rule PackageName "." Id               -> RefTypeName
 
     %% Primitive types
     rule "boolean"                        -> PrimType
