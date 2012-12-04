@@ -31,7 +31,9 @@ exports
           #$extType = {return getRefedType(#lexem($1)#, currentElement);};
            Extends($, $extType);#)?
          ("implements" {(TypeSpec
-          
+          #$impledIFace = {return getRefedType(#lexem($0)#, currentElement);};
+           {((TemporaryVertex) #$impledIFace#).setPreliminaryType(getVertexClass("Interface"));};
+           Implements($, $impledIFace);#
           ) ","}+)?
          ClassifierBody -> ClassDeclaration
          #{packagePrefix = (String) #$packagePrefix#;}#

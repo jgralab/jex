@@ -41,15 +41,26 @@ user code {
     List<TemporaryVertex> tempVertices = (List<TemporaryVertex>)
       #name2NamedElement.getTemporaryVertices()#;
     for (TemporaryVertex tempVert: tempVertices) {
-      tempVert.bless(getVertexClass("Class"));
+      if (tempVert.getPreliminaryType() != null) {
+        tempVert.bless();
+      } else {
+        tempVert.bless(getVertexClass("Class"));
+      }
     }
     List<TemporaryVertex> tempPackages = (List<TemporaryVertex>)
       #name2Package.getTemporaryVertices()#;
     for (TemporaryVertex tempPackage: tempPackages) {
       tempPackage.bless(getVertexClass("Package"));
     }
-    for (Vertex tmp : getGraph().vertices(graph.getGraphClass().getTemporaryVertexClass())) {
+    for (Vertex tmp : getGraph().vertices(graph.getGraphClass()
+                                .getTemporaryVertexClass())) {
       System.out.println("Left over TemporaryVertex: " + tmp);
+    }
+    for (Edge tmp : getGraph().edges(graph.getGraphClass()
+                                .getTemporaryEdgeClass())) {
+      System.out.println("Left over TemporaryEdge: " + tmp);
+      System.out.println("  alpha: " + tmp.getAlpha());
+      System.out.println("  omega: " + tmp.getOmega());
     }
   }
 
@@ -84,10 +95,11 @@ user code {
     } else {
       Vertex x = ((SymbolTableStack) #simpleName2Classifier#).use(tn);
       if (x == null) {
-        // This one is not explicitly imported: either it's from java.lang or
+        // This one is not explicitly imported: either it's from java.lang,
+        // from the same package as this classifier, or
         // in a package that was imported using "import foo.*;".  Currently, we
         // assume they are in java.lang.
-        x = createVertex(getVertexClass("Class"), ce.getPosition());
+        x = createTemporaryVertex(getVertexClass("Class"), ce.getPosition());
         String xqn = "java.lang." + tn;
         x.setAttribute("qualifiedName", xqn);
         x.setAttribute("name", tn);
