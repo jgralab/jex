@@ -27,7 +27,7 @@ exports
 
   context-free syntax
 
-    @Symboltable{simpleName2Classifier}
+    @Symboltable{importedPackages, importedClassifiers}
     rule #{statements = 0;}
           $ = SourceFile();
           $.path = file();
@@ -40,12 +40,7 @@ exports
            $packageDecl = $0;
            {packagePrefix = #$0.qualifiedName#.toString();}#)?
 
-          (ImportDeclaration
-           #Imports($,$0);
-            %% Inside this compilation unit, the simple name may be used
-            %% to refer to the imported classifier.
-            simpleName2Classifier.declare($0.name, $0);#
-          )*
+          (ImportDeclaration #Imports($,$0);#)*
 
                                  %% TODO: Comment in, once we create Classifier vertices
           (ClassifierDeclaration %% #Defines($,$0);
@@ -59,9 +54,14 @@ exports
             #$=name2Package.use(lexem($2).replaceAll("\\s+", ""));#
 
     %% ImportDeclaration
-    rule "import" TypeName                  ";"  -> ImportDeclaration
+    rule "import" TypeName ";"
+         #$ = {return getRefedType(#lexem($1)#, currentElement);};
+          $.qualifiedName = lexem($1);
+          importedClassifiers.declare($.name, $);#
+         -> ImportDeclaration
     rule "import" PackageName       "." "*" ";"  -> ImportDeclaration
       #$ = name2Package.useOrDeclare($import);
+       importedPackages.declare($import, $);
        {
          if (((Vertex) #$#).isTemporary()) {
            #$.qualifiedName = $import;#

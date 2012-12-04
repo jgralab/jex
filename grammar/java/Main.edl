@@ -10,7 +10,8 @@ symbol tables
   name2Package<Package>
   name2NamedElement<NamedElement>
   name2Member<Member<--Declares>:Type
-  simpleName2Classifier<Classifier>
+  importedPackages<Package>
+  importedClassifiers<Classifier>
 
 default values
   Imports.lineNo = line(omega);
@@ -87,26 +88,65 @@ user code {
     return ((String) qn).indexOf('.') != -1;
   }
 
+  Class reflectiveGetType(String qn) {
+    try {
+      return Class.forName(qn);
+    } catch (ClassNotFoundException e) {
+      return null;
+    }
+  }
+
+  Vertex createTmpClassifierVertex(String qn, StackElement ce) {
+    Class cls = reflectiveGetType(qn);
+    if (cls == null) throw new RuntimeException("Unknown classifier: " + qn);
+    Vertex x = null;
+    if (cls.isInterface())
+      x = createTemporaryVertex(getVertexClass("Interface"), ce.getPosition());
+    else if (cls.isEnum())
+      x = createTemporaryVertex(getVertexClass("Enum"), ce.getPosition());
+    else if (cls.isAnnotation())
+      x = createTemporaryVertex(getVertexClass("Annotation"), ce.getPosition());
+    else
+      x = createTemporaryVertex(getVertexClass("Class"), ce.getPosition());
+    x.setAttribute("qualifiedName", qn);
+    x.setAttribute("name", getSimpleName(qn));
+    return x;
+  }
+
   Vertex getRefedType(Object typeSpec, Object currentElement) {
     String tn = stripTypeParams(typeSpec);
     StackElement ce = (StackElement) currentElement;
+    Vertex x = null;
     if (isQualified(tn)) {
-      return ((SymbolTableStack) #name2NamedElement#).use(tn);
-    } else {
-      Vertex x = ((SymbolTableStack) #simpleName2Classifier#).use(tn);
+      // TODO: This is false for nested types like SomeClass.SomeInnerClass
+      x = ((SymbolTableStack) #name2NamedElement#).use(tn);
       if (x == null) {
-        // This one is not explicitly imported: either it's from java.lang,
-        // from the same package as this classifier, or
-        // in a package that was imported using "import foo.*;".  Currently, we
-        // assume they are in java.lang.
-        x = createTemporaryVertex(getVertexClass("Class"), ce.getPosition());
-        String xqn = "java.lang." + tn;
-        x.setAttribute("qualifiedName", xqn);
-        x.setAttribute("name", tn);
-        ((SymbolTableStack) #simpleName2Classifier#).declare(tn, x);
-        ((SymbolTableStack) #name2NamedElement#).declare(xqn, x);
+        x = createTmpClassifierVertex(tn, ce);
+        ((SymbolTableStack) #name2NamedElement#).declare(tn, x);
       }
       return x;
+    } else {
+      x = ((SymbolTableStack) #importedClassifiers#).use(tn);
+      if (x != null) {
+        return x;
+      }
+      String qn = packagePrefix + "." + tn;
+      if (reflectiveGetType(qn) != null) {
+        x = createTmpClassifierVertex(qn, ce);
+        return x;
+      }
+      for (Object pn : ((SymbolTableStack) #importedPackages#)
+                       .getTop().getMap().keySet()) {
+        qn = pn + "." + tn;
+        if (reflectiveGetType(qn) != null) {
+          x = createTmpClassifierVertex(qn, ce);
+          return x;
+        }
+      }
+      // The type was not in this package and not in some imported package,
+      // so it must be java.lang!
+      qn = "java.lang." + tn;
+      return createTmpClassifierVertex(qn, ce);
     }
   }
 }
