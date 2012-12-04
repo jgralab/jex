@@ -10,6 +10,7 @@ symbol tables
   name2Package<Package>
   name2NamedElement<NamedElement>
   name2Member<Member<--Declares>:Type
+  simple2QName<Classifier>
 
 default values
   Imports.lineNo = line(omega);
@@ -49,6 +50,29 @@ user code{
     for (Vertex tmp : getGraph().vertices(graph.getGraphClass().getTemporaryVertexClass())) {
       System.out.println("Left over TemporaryVertex: " + tmp);
     }
+  }
+
+  public static String stripTypeParams(Object typeSpec) {
+    String ts = (String) typeSpec;
+    int idx = ts.indexOf('<');
+    if (idx != -1)
+      ts = ts.substring(0, idx);
+    // System.out.println("Stripped TypeSpec " + typeSpec + " to " + ts);
+    return ts;
+  }
+
+  // Rips out the simple name of a qualified name, possibly including type parameters
+  public static String getSimpleName(Object qn) {
+    String qname = stripTypeParams(qn);
+    int idx = qname.lastIndexOf('.');
+    if (idx != -1)
+      qname = qname.substring(idx + 1);
+    // System.out.println("Stripped QName " + qn + " to simple name " + qname);
+    return qname;
+  }
+
+  public static boolean isQualified(Object qn) {
+    return ((String) qn).indexOf('.') != -1;
   }
 }
 exports

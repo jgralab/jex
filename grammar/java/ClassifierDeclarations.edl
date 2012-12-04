@@ -15,8 +15,40 @@ exports
 
   context-free syntax
 
-    rule (Modifier|Annotation)* "class" Id TypeParams? ("extends" TypeSpec)?
+    @Symboltable{name2Member}
+    rule #$mods = set();#
+         ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
+         #$=Class();
+          name2Member.namespace = $;
+          $.modifiers = $mods;
+          $.name = lexem($2);
+          $packagePrefix = {return packagePrefix;};
+          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.name#;}
+          $.qualifiedName = {return packagePrefix;};
+          name2NamedElement.declare($.qualifiedName, $);#
+         TypeParams?
+         ("extends" TypeSpec
+          #$extType = {return stripTypeParams(#lexem($1)#);};
+           $extType = {if (isQualified(#$extType#)) {
+                         return #name2NamedElement.use($extType)#;
+                       } else {
+                         // This could either be a classifier from java.lang that is
+                         // automatically imported, or it could be a classifier imported
+                         // by a package import (import foo.*;).  We simply assume it's a
+                         // java.lang classifier right now.
+                         #$et = simple2QName.use($extType);#
+                         {if (#$et# == null) {
+                           #$qname = {return "java.lang." + #$extType#;};#
+                           #$et = name2NamedElement.declare($qname, Class());#
+                           #$et.qualifiedName = $qname;#
+                           #$et.name = $extType;#
+                         }};
+                         return #simple2QName.declare($extType, $et)#;
+                       }};
+           {System.out.println(#$# + " extends " + #$extType#);};
+           Extends($, $extType);#)?
          ("implements" {TypeSpec ","}+)? ClassifierBody -> ClassDeclaration
+         #{packagePrefix = (String) #$packagePrefix#;}#
 
     rule (Modifier|Annotation)* "enum" Id
          ("implements" {TypeSpec ","}+)? EnumBody -> EnumDeclaration
