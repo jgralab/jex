@@ -27,7 +27,7 @@ exports
 
   context-free syntax
 
-    @Symboltable{simple2QName}
+    @Symboltable{simpleName2Classifier}
     rule #{statements = 0;}
           $ = SourceFile();
           $.path = file();
@@ -44,7 +44,7 @@ exports
            #Imports($,$0);
             %% Inside this compilation unit, the simple name may be used
             %% to refer to the imported classifier.
-            simple2QName.declare($0.name, $0);#
+            simpleName2Classifier.declare($0.name, $0);#
           )*
 
                                  %% TODO: Comment in, once we create Classifier vertices

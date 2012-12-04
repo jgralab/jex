@@ -10,7 +10,7 @@ symbol tables
   name2Package<Package>
   name2NamedElement<NamedElement>
   name2Member<Member<--Declares>:Type
-  simple2QName<Classifier>
+  simpleName2Classifier<Classifier>
 
 default values
   Imports.lineNo = line(omega);
@@ -20,16 +20,17 @@ import declarations
   java.util.List;
   de.uni_koblenz.jgralab.TemporaryVertex;
   de.uni_koblenz.edl.parser.Position;
+  de.uni_koblenz.edl.parser.stack.elements.StackElement;
 
-user code{
+user code {
   private Vertex defaultPackage;
-	
+  
   {
     defaultPackage = createVertex("Package", new Position());
     defaultPackage.setAttribute("name","");
     defaultPackage.setAttribute("qualifiedName","");
   }
-	
+  
   private boolean isPackageDeclaration = false;
   private String packagePrefix;
   private int statements = 0;
@@ -52,7 +53,7 @@ user code{
     }
   }
 
-  public static String stripTypeParams(Object typeSpec) {
+  static String stripTypeParams(Object typeSpec) {
     String ts = (String) typeSpec;
     int idx = ts.indexOf('<');
     if (idx != -1)
@@ -62,7 +63,7 @@ user code{
   }
 
   // Rips out the simple name of a qualified name, possibly including type parameters
-  public static String getSimpleName(Object qn) {
+  static String getSimpleName(Object qn) {
     String qname = stripTypeParams(qn);
     int idx = qname.lastIndexOf('.');
     if (idx != -1)
@@ -71,9 +72,32 @@ user code{
     return qname;
   }
 
-  public static boolean isQualified(Object qn) {
+  static boolean isQualified(Object qn) {
     return ((String) qn).indexOf('.') != -1;
   }
+
+  Vertex getRefedType(Object typeSpec, Object currentElement) {
+    String tn = stripTypeParams(typeSpec);
+    StackElement ce = (StackElement) currentElement;
+    if (isQualified(tn)) {
+      return ((SymbolTableStack) #name2NamedElement#).use(tn);
+    } else {
+      Vertex x = ((SymbolTableStack) #simpleName2Classifier#).use(tn);
+      if (x == null) {
+        // This one is not explicitly imported: either it's from java.lang or
+        // in a package that was imported using "import foo.*;".  Currently, we
+        // assume they are in java.lang.
+        x = createVertex(getVertexClass("Class"), ce.getPosition());
+        String xqn = "java.lang." + tn;
+        x.setAttribute("qualifiedName", xqn);
+        x.setAttribute("name", tn);
+        ((SymbolTableStack) #simpleName2Classifier#).declare(tn, x);
+        ((SymbolTableStack) #name2NamedElement#).declare(xqn, x);
+      }
+      return x;
+    }
+  }
 }
+
 exports
   context-free start-symbols CompilationUnit
