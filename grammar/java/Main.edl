@@ -96,20 +96,30 @@ user code {
     }
   }
 
-  Vertex createTmpClassifierVertex(String qn, StackElement ce) {
+  Vertex getOrCreateClassifierVertex(String qn, StackElement ce) {
     Class cls = reflectiveGetType(qn);
     if (cls == null) throw new RuntimeException("Unknown classifier: " + qn);
-    Vertex x = null;
+
+    // Maybe there's already an existing vertex for this classifier
+    Vertex vx = ((SymbolTableStack) #name2NamedElement#).use(qn);
+    if (vx != null) {
+      // TODO: Maybe check if the type and attr vals are correct...
+      return vx;
+    }
+
+    TemporaryVertex x = createTemporaryVertex(ce.getPosition());
     if (cls.isInterface())
-      x = createTemporaryVertex(getVertexClass("Interface"), ce.getPosition());
+      x.setPreliminaryType(getVertexClass("Interface"));
     else if (cls.isEnum())
-      x = createTemporaryVertex(getVertexClass("Enum"), ce.getPosition());
+      x.setPreliminaryType(getVertexClass("Enum"));
     else if (cls.isAnnotation())
-      x = createTemporaryVertex(getVertexClass("Annotation"), ce.getPosition());
+      x.setPreliminaryType(getVertexClass("Annotation"));
     else
-      x = createTemporaryVertex(getVertexClass("Class"), ce.getPosition());
+      x.setPreliminaryType(getVertexClass("Class"));
+
     x.setAttribute("qualifiedName", qn);
     x.setAttribute("name", getSimpleName(qn));
+    ((SymbolTableStack) #name2NamedElement#).declare(qn, x);
     return x;
   }
 
@@ -117,37 +127,43 @@ user code {
     String tn = stripTypeParams(typeSpec);
     StackElement ce = (StackElement) currentElement;
     Vertex x = null;
-    if (isQualified(tn)) {
-      // TODO: This is false for nested types like SomeClass.SomeInnerClass
-      x = ((SymbolTableStack) #name2NamedElement#).use(tn);
-      if (x == null) {
-        x = createTmpClassifierVertex(tn, ce);
-        ((SymbolTableStack) #name2NamedElement#).declare(tn, x);
-      }
+
+    // Is tn already fully qualified?
+    if (reflectiveGetType(tn) != null) {
+      x = getOrCreateClassifierVertex(tn, ce);
       return x;
-    } else {
-      x = ((SymbolTableStack) #importedClassifiers#).use(tn);
-      if (x != null) {
-        return x;
-      }
-      String qn = packagePrefix + "." + tn;
-      if (reflectiveGetType(qn) != null) {
-        x = createTmpClassifierVertex(qn, ce);
-        return x;
-      }
-      for (Object pn : ((SymbolTableStack) #importedPackages#)
-                       .getTop().getMap().keySet()) {
-        qn = pn + "." + tn;
-        if (reflectiveGetType(qn) != null) {
-          x = createTmpClassifierVertex(qn, ce);
-          return x;
-        }
-      }
-      // The type was not in this package and not in some imported package,
-      // so it must be java.lang!
-      qn = "java.lang." + tn;
-      return createTmpClassifierVertex(qn, ce);
     }
+
+    // Is it an imported class foo.bar.Baz?
+    x = ((SymbolTableStack) #importedClassifiers#).use(tn);
+    if (x != null) {
+      return x;
+    }
+
+    // Is it a class in the same package?
+    String qn = packagePrefix + "." + tn;
+    if (reflectiveGetType(qn) != null) {
+      x = getOrCreateClassifierVertex(qn, ce);
+      return x;
+    }
+
+    // Is it a class imported by a package import foo.bar.*?
+    for (Object pn : ((SymbolTableStack) #importedPackages#)
+                     .getTop().getMap().keySet()) {
+      qn = pn + "." + tn;
+      if (reflectiveGetType(qn) != null) {
+        x = getOrCreateClassifierVertex(qn, ce);
+        return x;
+      }
+    }
+
+    // Is it a class from java.lang?
+    qn = "java.lang." + tn;
+    if (reflectiveGetType(qn) != null) {
+      x = getOrCreateClassifierVertex(qn, ce);
+      return x;
+    }
+    throw new RuntimeException("Couldn't resolve type " + tn);
   }
 }
 
