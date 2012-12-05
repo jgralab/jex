@@ -10,14 +10,14 @@ global actions
     #name2Member.namespace = $;
      $.modifiers = $mods;
      $.name = lexem($2);
-     $packagePrefix = {return packagePrefix;};
-     {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.name#;}
      $.qualifiedName = {return packagePrefix;};
-     name2NamedElement.declare($.qualifiedName, $);#
+     name2NamedElement.declare($.qualifiedName, $);
+     {packagePrefix = (String) #$packagePrefix#;}#
 
  @Before
  pattern _ (1..*) Id _ (0..*) -> _
-         #$mods = set();#
+         #$mods = set();
+          $packagePrefix = {return packagePrefix;};#
 
 exports
   sorts
@@ -32,7 +32,8 @@ exports
     %% Classes
     @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
-         #$=Class();#
+         #$=Class();
+          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#
          TypeParams?
          ("extends" TypeSpec
           #$extType = {return resolveType(#lexem($1)#, currentElement);};
@@ -42,36 +43,37 @@ exports
            Implements($, $impledIFace);#
           ) ","}+)?
          ClassifierBody -> ClassDeclaration
-         #{packagePrefix = (String) #$packagePrefix#;}#
 
     %% Enums
     @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "enum" Id
-         #$=Enum();#        
+         #$=Enum();
+          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#        
          ("implements" {(TypeSpec
           #$impledIFace = {return resolveType(#lexem($0)#, currentElement);};
            Implements($, $impledIFace);#           
           ) ","}+)?
          EnumBody -> EnumDeclaration
-         #{packagePrefix = (String) #$packagePrefix#;}#
     rule "{" EnumConstant+ Member* "}" ";"? -> EnumBody
 
     %% Interfaces
     @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "interface" Id
-         #$=Interface();#        
+         #$=Interface();
+          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#        
          TypeParams?
          ("extends" {(TypeSpec
           #$extType = {return resolveType(#lexem($0)#, currentElement);};
            Extends($, $extType);#
           ) ","}+)?
          ClassifierBody -> InterfaceDeclaration
-         #{packagePrefix = (String) #$packagePrefix#;}#
+
 
     %% Annotations
     @Symboltable{name2Member}
-    rule ((Modifier #$mods.add($0);)|Annotation)* "@interface" Id
-         #$=Annotation();#
+    rule ((Modifier #$mods.add($0);#)|Annotation)* "@interface" Id
+         #$=Annotation();
+          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#
          AnnotationBody -> AnnotationDeclaration
     rule "{" AnnotationField* "}" ";"? -> AnnotationBody
 

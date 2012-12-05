@@ -9,7 +9,7 @@ imports
 symbol tables
   name2Package<Package>
   name2NamedElement<NamedElement>
-  name2Member<Member<--Declares>:Type
+  name2Member<Member<--Declares>:Classifier
   importedPackages<Package>
   importedClassifiers<Classifier>
 

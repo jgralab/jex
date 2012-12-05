@@ -18,6 +18,10 @@ exports
     rule EnumConst "," (LeadingEnumConstant | LastEnumConstant) -> LeadingEnumConstant
     rule EnumConst ";"?                                         -> LastEnumConstant
     rule Id ParenBlock?                                         -> EnumConst
+         #$=EnumConst();
+          $.name = lexem($0);
+          $.qualifiedName = {return packagePrefix + "." + #$.name#;};
+          name2Member.declare($.name, $);#
     rule LeadingEnumConstant                                    -> EnumConstant
     rule LastEnumConstant                                       -> EnumConstant
 
