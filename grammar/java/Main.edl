@@ -96,12 +96,12 @@ user code {
     }
   }
 
-  Vertex getOrCreateClassifierVertex(String qn, StackElement ce) {
-    Class cls = reflectiveGetType(qn);
-    if (cls == null) throw new RuntimeException("Unknown classifier: " + qn);
-
+  Vertex getOrCreateClassifierVertex(Class cls, StackElement ce) {
+    assert (cls == null);
+    String qn = cls.getName();
+    SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
     // Maybe there's already an existing vertex for this classifier
-    Vertex vx = ((SymbolTableStack) #name2NamedElement#).use(qn);
+    Vertex vx = stck.use(qn);
     if (vx != null) {
       // TODO: Maybe check if the type and attr vals are correct...
       return vx;
@@ -118,52 +118,50 @@ user code {
       x.setPreliminaryType(getVertexClass("Class"));
 
     x.setAttribute("qualifiedName", qn);
-    x.setAttribute("name", getSimpleName(qn));
-    ((SymbolTableStack) #name2NamedElement#).declare(qn, x);
+    x.setAttribute("name", cls.getSimpleName());
+
+    // Declare it in the symbol table!
+    stck.declare(qn, x);
     return x;
   }
 
-  Vertex getRefedType(Object typeSpec, Object currentElement) {
+  Vertex resolveType(Object typeSpec, Object currentElement) {
     String tn = stripTypeParams(typeSpec);
     StackElement ce = (StackElement) currentElement;
-    Vertex x = null;
 
     // Is tn already fully qualified?
-    if (reflectiveGetType(tn) != null) {
-      x = getOrCreateClassifierVertex(tn, ce);
-      return x;
+    Class cls = reflectiveGetType(tn);
+    if (cls != null) {
+      return getOrCreateClassifierVertex(cls, ce);
     }
 
     // Is it an imported class foo.bar.Baz?
-    x = ((SymbolTableStack) #importedClassifiers#).use(tn);
+    Vertex x = ((SymbolTableStack) #importedClassifiers#).use(tn);
     if (x != null) {
       return x;
     }
 
     // Is it a class in the same package?
-    String qn = packagePrefix + "." + tn;
-    if (reflectiveGetType(qn) != null) {
-      x = getOrCreateClassifierVertex(qn, ce);
-      return x;
+    cls = reflectiveGetType(packagePrefix + "." + tn);
+    if (cls != null) {
+      return getOrCreateClassifierVertex(cls, ce);
     }
 
     // Is it a class imported by a package import foo.bar.*?
     for (Object pn : ((SymbolTableStack) #importedPackages#)
                      .getTop().getMap().keySet()) {
-      qn = pn + "." + tn;
-      if (reflectiveGetType(qn) != null) {
-        x = getOrCreateClassifierVertex(qn, ce);
-        return x;
+      cls = reflectiveGetType(pn + "." + tn);
+      if (cls != null) {
+        return getOrCreateClassifierVertex(cls, ce);
       }
     }
 
     // Is it a class from java.lang?
-    qn = "java.lang." + tn;
-    if (reflectiveGetType(qn) != null) {
-      x = getOrCreateClassifierVertex(qn, ce);
-      return x;
+    cls = reflectiveGetType("java.lang." + tn);
+    if (cls != null) {
+      return getOrCreateClassifierVertex(cls, ce);
     }
-    throw new RuntimeException("Couldn't resolve type " + tn);
+    throw new RuntimeException("Couldn't resolve type " + tn + ". Is your CLASSPATH ok?");
   }
 }
 
