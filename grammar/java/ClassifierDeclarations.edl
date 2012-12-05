@@ -5,6 +5,20 @@ imports
   java/Names         %% TypeSpec, TypeParams
   java/Members       %% Member, InitializerBlock, EnumConstant, AnnotationField
 
+global actions
+  pattern _ (1..*) Id _ (0..*) -> _
+    #name2Member.namespace = $;
+     $.modifiers = $mods;
+     $.name = lexem($2);
+     $packagePrefix = {return packagePrefix;};
+     {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.name#;}
+     $.qualifiedName = {return packagePrefix;};
+     name2NamedElement.declare($.qualifiedName, $);#
+
+ @Before
+ pattern _ (1..*) Id _ (0..*) -> _
+         #$mods = set();#
+
 exports
   sorts
     ClassDeclaration
@@ -15,37 +29,50 @@ exports
 
   context-free syntax
 
+    %% Classes
     @Symboltable{name2Member}
-    rule #$mods = set();#
-         ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
-         #$=Class();
-          name2Member.namespace = $;
-          $.modifiers = $mods;
-          $.name = lexem($2);
-          $packagePrefix = {return packagePrefix;};
-          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #$.name#;}
-          $.qualifiedName = {return packagePrefix;};
-          name2NamedElement.declare($.qualifiedName, $);#
+    rule ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
+         #$=Class();#
          TypeParams?
          ("extends" TypeSpec
           #$extType = {return resolveType(#lexem($1)#, currentElement);};
            Extends($, $extType);#)?
          ("implements" {(TypeSpec
           #$impledIFace = {return resolveType(#lexem($0)#, currentElement);};
-           {((TemporaryVertex) #$impledIFace#).setPreliminaryType(getVertexClass("Interface"));};
            Implements($, $impledIFace);#
           ) ","}+)?
          ClassifierBody -> ClassDeclaration
          #{packagePrefix = (String) #$packagePrefix#;}#
 
-    rule (Modifier|Annotation)* "enum" Id
-         ("implements" {TypeSpec ","}+)? EnumBody -> EnumDeclaration
+    %% Enums
+    @Symboltable{name2Member}
+    rule ((Modifier #$mods.add($0);#)|Annotation)* "enum" Id
+         #$=Enum();#        
+         ("implements" {(TypeSpec
+          #$impledIFace = {return resolveType(#lexem($0)#, currentElement);};
+           Implements($, $impledIFace);#           
+          ) ","}+)?
+         EnumBody -> EnumDeclaration
+         #{packagePrefix = (String) #$packagePrefix#;}#
     rule "{" EnumConstant+ Member* "}" ";"? -> EnumBody
 
-    rule (Modifier|Annotation)* "interface" Id TypeParams?
-         ("extends" {TypeSpec ","}+)? ClassifierBody -> InterfaceDeclaration
+    %% Interfaces
+    @Symboltable{name2Member}
+    rule ((Modifier #$mods.add($0);#)|Annotation)* "interface" Id
+         #$=Interface();#        
+         TypeParams?
+         ("extends" {(TypeSpec
+          #$extType = {return resolveType(#lexem($0)#, currentElement);};
+           Extends($, $extType);#
+          ) ","}+)?
+         ClassifierBody -> InterfaceDeclaration
+         #{packagePrefix = (String) #$packagePrefix#;}#
 
-    rule (Modifier|Annotation)* "@interface" Id AnnotationBody -> AnnotationDeclaration
+    %% Annotations
+    @Symboltable{name2Member}
+    rule ((Modifier #$mods.add($0);)|Annotation)* "@interface" Id
+         #$=Annotation();#
+         AnnotationBody -> AnnotationDeclaration
     rule "{" AnnotationField* "}" ";"? -> AnnotationBody
 
     rule ClassDeclaration      -> ClassifierDeclaration
