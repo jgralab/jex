@@ -34,10 +34,8 @@ exports
             }};#
            )*
 
-                                 %% TODO: Comment in, once we create Classifier vertices
-          (ClassifierDeclaration %% #Defines($,$0);
-                                 %% ContainsType($packageDecl, $0);#
-                                  )*
+          (ClassifierDeclaration #Defines($,$0);
+                                  ContainsClassifier($packageDecl, $0);#)*
          -> CompilationUnit #$.lines = {return currentElement.getLastLine();};#
 
     %% PackageDeclaration

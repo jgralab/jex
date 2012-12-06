@@ -9,7 +9,6 @@ imports
 symbol tables
   name2Package<Package>
   name2NamedElement<NamedElement>
-  name2Member<Member<--Declares>:Classifier
   importedPackages<Package>
   importedClassifiers<Classifier>
 
@@ -25,6 +24,7 @@ import declarations
   java.util.regex.Pattern;
   java.util.regex.Matcher;
   de.uni_koblenz.jgralab.TemporaryVertex;
+  de.uni_koblenz.jgralab.EdgeDirection;
   de.uni_koblenz.edl.parser.Position;
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
 

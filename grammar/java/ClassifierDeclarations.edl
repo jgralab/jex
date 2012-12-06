@@ -7,8 +7,7 @@ imports
 
 global actions
   pattern _ (1..*) Id _ (0..*) -> _
-    #name2Member.namespace = $;
-     $.modifiers = $mods;
+    #$.modifiers = $mods;
      $.name = lexem($2);
      $.qualifiedName = {return curQName;};
      name2NamedElement.declare($.qualifiedName, $);
@@ -30,7 +29,6 @@ exports
   context-free syntax
 
     %% Classes
-    @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
          #$=Class();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
@@ -45,7 +43,6 @@ exports
          ClassifierBody -> ClassDeclaration
 
     %% Enums
-    @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "enum" Id
          #$=Enum();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#        
@@ -57,7 +54,6 @@ exports
     rule "{" EnumConstant+ Member* "}" ";"? -> EnumBody
 
     %% Interfaces
-    @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "interface" Id
          #$=Interface();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#        
@@ -70,7 +66,6 @@ exports
 
 
     %% Annotations
-    @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "@interface" Id
          #$=Annotation();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#

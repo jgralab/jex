@@ -23,7 +23,10 @@ public interface Bar extends Comparable<Bar> {
 		int i;
 		int j;
 
-		ComplexEnum(int i, int j) {
+		ComplexEnum(int i, int j) throws RuntimeException {
+			if (i < 10) {
+				throw new RuntimeException();
+			}
 			this.i = i;
 			this.j = i;
 		}

@@ -22,8 +22,8 @@ exports
     rule Id ParenBlock?                                         -> EnumConst
          #$=EnumConst();
           $.name = lexem($0);
-          $.qualifiedName = {return curQName + "." + #$.name#;};
-          name2Member.declare($.name, $);#
+          $parent = {return resolveClassifier(curQName, currentElement);};
+          Declares($parent, $);#
     rule LeadingEnumConstant                                    -> EnumConstant
     rule LastEnumConstant                                       -> EnumConstant
 
@@ -36,9 +36,8 @@ exports
           HasType($, $type);
           $.modifiers = $mods;
           $.name = lexem($2);
-          $.qualifiedName = {return curQName + "." + #lexem($2)#;};
-          name2NamedElement.declare($.qualifiedName, $);
-          name2Member.declare($.name, $);#
+          $parent = {return resolveClassifier(curQName, currentElement);};
+          Declares($parent, $);#
          "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration
@@ -50,9 +49,8 @@ exports
           HasType($, $type);
           $.modifiers = $mods;
           $.name = lexem($2);
-          $.qualifiedName = {return curQName + "." + #lexem($2)#;};
-          name2NamedElement.declare($.qualifiedName, $);
-          name2Member.declare($.name, $);#
+          $parent = {return resolveClassifier(curQName, currentElement);};
+          Declares($parent, $);#
          Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
@@ -67,11 +65,13 @@ exports
           HasType($, $type);
           $.modifiers = $mods;
           $.name = lexem($3);
-          $.qualifiedName = {return curQName + "." + #lexem($3)#;};
-          name2NamedElement.declare($.qualifiedName, $);
-          name2Member.declare($.name, $);#
+          $parent = {return resolveClassifier(curQName, currentElement);};
+          Declares($parent, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
-         ThrowsClause? (Block | ";" | (Block ";"))
+         ("throws" {(TypeSpec
+          #$ex = {return resolveType(#lexem($0)#, currentElement);};
+           Throws($, $ex);#) ","}+)?
+         (Block | ";" | (Block ";"))
          -> MethodDeclaration
     %% ParamDeclaration
     rule #$mods = set();#
@@ -92,16 +92,15 @@ exports
          #$=Constructor();
           $.modifiers = $mods;
           $.name = lexem($1);
-          $.qualifiedName = {return curQName + "." + #lexem($1)#;};
-          name2NamedElement.declare($.qualifiedName, $);
-          name2Member.declare($.name, $);#
+          $parent = {return resolveClassifier(curQName, currentElement);};
+          Declares($parent, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
-         ThrowsClause? Block
+         ("throws" {(TypeSpec
+          #$ex = {return resolveType(#lexem($0)#, currentElement);};
+           Throws($, $ex);#) ","}+)?
+         Block
          -> ConstructorDeclaration
     rule ConstructorDeclaration -> Member
-
-    %% ThrowsClause
-    rule "throws" {TypeSpec ","}+                  -> ThrowsClause
 
     %% StaticInitializer
     rule "static" Block ";"?                       -> StaticInitializer
