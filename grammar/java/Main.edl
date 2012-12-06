@@ -129,8 +129,32 @@ user code {
     return x;
   }
 
+  static List<String> nestedClassifierNames(String name) {
+    List<String> l = new LinkedList<String>();
+    StringBuilder sb = new StringBuilder(name);
+    int idx = name.lastIndexOf('.');
+    while (idx != -1) {
+      sb.replace(idx, idx + 1, "$");
+      name = sb.toString();
+      l.add(name);
+      idx = name.lastIndexOf('.');
+    }
+    return l;
+  }
+
   Vertex resolveType(Object typeSpec, Object currentElement) {
     String tn = stripTypeParams(typeSpec);
+    if (tn.endsWith("[]") {
+      return resolveArrayType(tn, currentElement);
+    }
+    return resolveClassifier(tn, currentElement);
+  }
+
+  Vertex resolveArrayType(String tn, Object currentElement) {
+    return null;
+  }
+
+  Vertex resolveClassifier(String tn, Object currentElement) {
     StackElement ce = (StackElement) currentElement;
     List<String> triedNames = new LinkedList<String>();
 
@@ -141,9 +165,16 @@ user code {
       return getOrCreateClassifierVertex(cls, ce);
     }
     triedNames.add(qn);
+    for (String nqn : nestedClassifierNames(qn)) {
+      cls = reflectiveGetType(nqn);
+      if (cls != null) {
+        return getOrCreateClassifierVertex(cls, ce);
+      }
+      triedNames.add(nqn);
+    }
 
     // Is it an imported class foo.bar.Baz?
-    Vertex x = ((SymbolTableStack) #importedClassifiers#).use(tn);
+    Vertex x = ((SymbolTableStack) #importedClassifiers#).use(qn);
     if (x != null) {
       return x;
     }
@@ -155,6 +186,14 @@ user code {
       return getOrCreateClassifierVertex(cls, ce);
     }
     triedNames.add(qn);
+    for (String nqn : nestedClassifierNames(qn)) {
+      cls = reflectiveGetType(nqn);
+      if (cls != null) {
+        return getOrCreateClassifierVertex(cls, ce);
+      }
+      triedNames.add(nqn);
+    }
+
 
     // Is it a class in the same package?
     qn = curPkgQName + "." + tn;
@@ -163,6 +202,13 @@ user code {
       return getOrCreateClassifierVertex(cls, ce);
     }
     triedNames.add(qn);
+    for (String nqn : nestedClassifierNames(qn)) {
+      cls = reflectiveGetType(nqn);
+      if (cls != null) {
+        return getOrCreateClassifierVertex(cls, ce);
+      }
+      triedNames.add(nqn);
+    }
 
     // Is it a class imported by a package import foo.bar.*?
     for (Object pn : ((SymbolTableStack) #importedPackages#)
@@ -174,6 +220,13 @@ user code {
       }
       triedNames.add(qn);
     }
+    for (String nqn : nestedClassifierNames(qn)) {
+      cls = reflectiveGetType(nqn);
+      if (cls != null) {
+        return getOrCreateClassifierVertex(cls, ce);
+      }
+      triedNames.add(nqn);
+    }
 
     // Is it a class from java.lang?
     qn = "java.lang." + tn;
@@ -182,6 +235,14 @@ user code {
       return getOrCreateClassifierVertex(cls, ce);
     }
     triedNames.add(qn);
+    for (String nqn : nestedClassifierNames(qn)) {
+      cls = reflectiveGetType(nqn);
+      if (cls != null) {
+        return getOrCreateClassifierVertex(cls, ce);
+      }
+      triedNames.add(nqn);
+    }
+
     throw new RuntimeException("Couldn't resolve type " + tn
       + ".  I've tried " + triedNames
       + ".  Is your CLASSPATH ok?");

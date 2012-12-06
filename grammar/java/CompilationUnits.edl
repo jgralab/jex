@@ -8,19 +8,6 @@ imports
 import declarations
 	de.uni_koblenz.jgralab.TemporaryVertex;
 
-global actions
-  pattern "import" _(1) _(0..2) ";"                     -> ImportDeclaration
-    #$import = lexem($1).replaceAll("\\s+", "");#
-  pattern "import" "static" TypeName "." _ ";"          -> ImportDeclaration
-    #$import = lexem($2).replaceAll("\\s+", "");#
-  pattern "import" "static"(0..1) TypeName _(0..2) ";"  -> ImportDeclaration
-    #$ = name2NamedElement.useOrDeclare($import);
-     {
-       if (((Vertex) #$#).isTemporary()) {
-	       #$.qualifiedName = $import;#
-	     }
-     }#
-
 exports
   sorts
     CompilationUnit
@@ -41,7 +28,11 @@ exports
            {curQName = #$0.qualifiedName#.toString();
             curPkgQName = curQName;}#)?
 
-          (ImportDeclaration #Imports($,$0);#)*
+          (ImportDeclaration
+           #{if (#$0# != null) { // There's no $0 for static imports
+              createEdge("Imports", #$#, #$0#);
+            }};#
+           )*
 
                                  %% TODO: Comment in, once we create Classifier vertices
           (ClassifierDeclaration %% #Defines($,$0);
@@ -61,12 +52,8 @@ exports
           importedClassifiers.declare($.name, $);#
          -> ImportDeclaration
     rule "import" PackageName       "." "*" ";"  -> ImportDeclaration
-      #$ = name2Package.useOrDeclare($import);
-       importedPackages.declare($import, $);
-       {
-         if (((Vertex) #$#).isTemporary()) {
-           #$.qualifiedName = $import;#
-         }
-       }#
+      #$ = name2Package.useOrDeclare(lexem($1));
+       $.qualifiedName = lexem($1);
+       importedPackages.declare(lexem($1), $);#
     rule "import" "static" TypeName "." Id  ";"  -> ImportDeclaration
     rule "import" "static" TypeName "." "*" ";"  -> ImportDeclaration

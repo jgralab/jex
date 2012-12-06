@@ -41,7 +41,7 @@ exports
          "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration
-    rule (Modifier | Annotation)* TypeSpec {(Id ("[" "]")* Initializer?) ","}+ ";"
+    rule (Modifier | Annotation)* TypeSpec Id Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
 
