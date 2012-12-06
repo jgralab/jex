@@ -110,7 +110,7 @@ user code {
 
   Class reflectiveGetType(String qn) {
     try {
-      return Class.forName(qn);
+      return Class.forName(qn, false, Thread.currentThread().getContextClassLoader());
     } catch (ClassNotFoundException e) {
       return null;
     }

@@ -37,4 +37,8 @@ public class Foo extends Object implements Serializable, Bar {
 	public int[] gimme(int a, long b) {
 		return new int[] { a + (int) b, (int) b - a };
 	}
+
+	public static void main(String[] args) throws ClassNotFoundException {
+		Class.forName("testfiles.Bar$ComplexEnum", false, Thread.currentThread().getContextClassLoader());
+	}
 }

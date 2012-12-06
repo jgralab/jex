@@ -1,5 +1,5 @@
-java-schema/java-schema.rsa.tg
-bin/
-build/
-src/
-testfiles/bin/
+/java-schema/java-schema.rsa.tg
+/bin/
+/build/
+/src/
+/testfiles/bin/

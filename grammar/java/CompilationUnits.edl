@@ -30,7 +30,7 @@ exports
 
           (ImportDeclaration
            #{if (#$0# != null) { // There's no $0 for static imports
-              createEdge("Imports", #$#, #$0#);
+              #Imports($, $0);#
             }};#
            )*
 

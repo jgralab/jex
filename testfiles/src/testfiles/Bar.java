@@ -17,7 +17,7 @@ public interface Bar extends Comparable<Bar> {
 		}
 	}
 
-	enum ComplexEnum {
+	public enum ComplexEnum {
 		X(1, 2), Y(2, 3), Z(3, 4);
 
 		int i;
@@ -57,4 +57,5 @@ public interface Bar extends Comparable<Bar> {
 	public enum EnumAsSingleton {
 		THE
 	}
+
 }

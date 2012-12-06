@@ -22,8 +22,8 @@ exports
     rule Id ParenBlock?                                         -> EnumConst
          #$=EnumConst();
           $.name = lexem($0);
-          $parent = {return resolveClassifier(curQName, currentElement);};
-          Declares($parent, $);#
+          $classifier = {return resolveClassifier(curQName, currentElement);};
+          Declares($classifier, $);#
     rule LeadingEnumConstant                                    -> EnumConstant
     rule LastEnumConstant                                       -> EnumConstant
 
@@ -36,8 +36,8 @@ exports
           HasType($, $type);
           $.modifiers = $mods;
           $.name = lexem($2);
-          $parent = {return resolveClassifier(curQName, currentElement);};
-          Declares($parent, $);#
+          $classifier = {return resolveClassifier(curQName, currentElement);};
+          Declares($classifier, $);#
          "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration
@@ -49,8 +49,8 @@ exports
           HasType($, $type);
           $.modifiers = $mods;
           $.name = lexem($2);
-          $parent = {return resolveClassifier(curQName, currentElement);};
-          Declares($parent, $);#
+          $classifier = {return resolveClassifier(curQName, currentElement);};
+          Declares($classifier, $);#
          Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
@@ -65,8 +65,8 @@ exports
           HasType($, $type);
           $.modifiers = $mods;
           $.name = lexem($3);
-          $parent = {return resolveClassifier(curQName, currentElement);};
-          Declares($parent, $);#
+          $classifier = {return resolveClassifier(curQName, currentElement);};
+          Declares($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ("throws" {(TypeSpec
           #$ex = {return resolveType(#lexem($0)#, currentElement);};
@@ -92,8 +92,8 @@ exports
          #$=Constructor();
           $.modifiers = $mods;
           $.name = lexem($1);
-          $parent = {return resolveClassifier(curQName, currentElement);};
-          Declares($parent, $);#
+          $classifier = {return resolveClassifier(curQName, currentElement);};
+          Declares($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ("throws" {(TypeSpec
           #$ex = {return resolveType(#lexem($0)#, currentElement);};

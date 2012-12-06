@@ -72,10 +72,10 @@ exports
          AnnotationBody -> AnnotationDeclaration
     rule "{" AnnotationElementDecl* "}" ";"? -> AnnotationBody
 
-    rule ClassDeclaration      -> ClassifierDeclaration
-    rule EnumDeclaration       -> ClassifierDeclaration
-    rule InterfaceDeclaration  -> ClassifierDeclaration
-    rule AnnotationDeclaration -> ClassifierDeclaration
+    rule ClassDeclaration      -> ClassifierDeclaration #$ = $0;#
+    rule EnumDeclaration       -> ClassifierDeclaration #$ = $0;#
+    rule InterfaceDeclaration  -> ClassifierDeclaration #$ = $0;#
+    rule AnnotationDeclaration -> ClassifierDeclaration #$ = $0;#
 
     rule ClassifierDeclaration -> Member
 
