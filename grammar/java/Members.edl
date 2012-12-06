@@ -11,6 +11,8 @@ exports
   sorts
     Member
     InitializerBlock
+    AnnotationElementDecl
+    EnumConstant
 
   context-free syntax
 
@@ -25,8 +27,8 @@ exports
     rule LeadingEnumConstant                                    -> EnumConstant
     rule LastEnumConstant                                       -> EnumConstant
 
-    %% AnnotationField
-    rule TypeSpec Id "(" ")" AnnoInitializer? ";" -> AnnotationField
+    %% AnnotationElementDecl
+    rule TypeSpec Id "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration
     rule (Modifier | Annotation)* TypeSpec {(Id ("[" "]")* Initializer?) ","}+ ";"

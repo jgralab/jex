@@ -3,7 +3,7 @@ imports
   java/Modifiers     %% Modifier
   java/Identifiers   %% Id
   java/Names         %% TypeSpec, TypeParams
-  java/Members       %% Member, InitializerBlock, EnumConstant, AnnotationField
+  java/Members       %% Member, InitializerBlock, EnumConstant, AnnotationElementDecl
 
 global actions
   pattern _ (1..*) Id _ (0..*) -> _
@@ -75,7 +75,7 @@ exports
          #$=Annotation();
           {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#
          AnnotationBody -> AnnotationDeclaration
-    rule "{" AnnotationField* "}" ";"? -> AnnotationBody
+    rule "{" AnnotationElementDecl* "}" ";"? -> AnnotationBody
 
     rule ClassDeclaration      -> ClassifierDeclaration
     rule EnumDeclaration       -> ClassifierDeclaration
