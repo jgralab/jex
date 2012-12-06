@@ -6,7 +6,12 @@ public class Foo extends Object implements Serializable, Bar {
 
 	private static final long serialVersionUID = Math.random() > 0.5 ? 17L
 			: 19L;
+
 	private final int foo = 17 + ((int) Math.random() * 1000);
+
+	private boolean[] answers = { true, false };
+
+	public int[][][][][] fiveDimIntArray;
 
 	protected final Bar bar = new Bar() {
 

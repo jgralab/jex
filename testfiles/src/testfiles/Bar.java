@@ -29,25 +29,25 @@ public interface Bar extends Comparable<Bar> {
 		}
 	}
 
-	public static class Box<T> {
-		private T boxedItem;
-
-		private Box(T x) {
-			boxedItem = x;
-		}
-
-		public static <T> Box<T> makeBox(T x) {
-			return new Box<T>(x);
-		}
-
-		public void set(T t) {
-			this.boxedItem = t;
-		}
-
-		public T get() {
-			return boxedItem;
-		}
-	}
+	// public static class Box<T> {
+	// private T boxedItem;
+	//
+	// private Box(T x) {
+	// boxedItem = x;
+	// }
+	//
+	// public static <T> Box<T> makeBox(T x) {
+	// return new Box<T>(x);
+	// }
+	//
+	// public void set(T t) {
+	// this.boxedItem = t;
+	// }
+	//
+	// public T get() {
+	// return boxedItem;
+	// }
+	// }
 
 	public int[] gimme(int a, long b);
 

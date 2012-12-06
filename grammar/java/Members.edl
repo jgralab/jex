@@ -42,7 +42,18 @@ exports
          "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration
-    rule (Modifier | Annotation)* TypeSpec Id Initializer? ";"
+    rule #$mods = set();#
+         ((Modifier #$mods.add($0);#) | Annotation)*
+         TypeSpec Id
+         #$=Field();
+          $type = {return resolveType(#lexem($1)#, currentElement);};
+          HasType($, $type);
+          $.modifiers = $mods;
+          $.name = lexem($2);
+          $.qualifiedName = {return curQName + "." + #lexem($2)#;};
+          name2NamedElement.declare($.qualifiedName, $);
+          name2Member.declare($.name, $);#
+         Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
 
