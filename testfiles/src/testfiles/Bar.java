@@ -1,54 +1,57 @@
 package testfiles;
 
 public interface Bar extends Comparable<Bar> {
-        
-        @interface TestAnnotation {
-                String desc() default "description";
-                String[] keywords();
-        }
 
-        enum ABC {
-                A, B, C;
+	@interface TestAnnotation {
+		String desc() default "description";
 
-                public void foo() {
-                }
-        }
+		String[] keywords();
 
-        enum ComplexEnum {
-                X(1, 2), Y(2, 3), Z(3, 4);
+		int[] nums();
+	}
 
-                int i;
-                int j;
+	enum ABC {
+		A, B, C;
 
-                ComplexEnum(int i, int j) {
-                        this.i = i;
-                        this.j = i;
-                }
-        }
+		public void foo() {
+		}
+	}
 
-        public static class Box<T> {
-                private T boxedItem;
+	enum ComplexEnum {
+		X(1, 2), Y(2, 3), Z(3, 4);
 
-                private Box(T x) {
-                        boxedItem = x;
-                }
+		int i;
+		int j;
 
-                public static <T> Box<T> makeBox(T x) {
-                        return new Box<T>(x);
-                }
+		ComplexEnum(int i, int j) {
+			this.i = i;
+			this.j = i;
+		}
+	}
 
-                public void set(T t) {
-                        this.boxedItem = t;
-                }
+	public static class Box<T> {
+		private T boxedItem;
 
-                public T get() {
-                        return boxedItem;
-                }
-        }
+		private Box(T x) {
+			boxedItem = x;
+		}
 
-        public int[] gimme(int a, long b);
+		public static <T> Box<T> makeBox(T x) {
+			return new Box<T>(x);
+		}
 
-        public enum EnumAsSingleton {
-                THE
-        }
+		public void set(T t) {
+			this.boxedItem = t;
+		}
+
+		public T get() {
+			return boxedItem;
+		}
+	}
+
+	public int[] gimme(int a, long b);
+
+	public enum EnumAsSingleton {
+		THE
+	}
 }

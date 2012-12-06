@@ -37,7 +37,8 @@ exports
           $.modifiers = $mods;
           $.name = lexem($2);
           $.qualifiedName = {return curQName + "." + #lexem($2)#;};
-          name2NamedElement.declare($.qualifiedName, $);#
+          name2NamedElement.declare($.qualifiedName, $);
+          name2Member.declare($.name, $);#
          "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration

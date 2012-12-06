@@ -20,6 +20,10 @@ default values
 import declarations
   java.util.List;
   java.util.LinkedList;
+  java.util.Map;
+  java.util.HashMap;
+  java.util.regex.Pattern;
+  java.util.regex.Matcher;
   de.uni_koblenz.jgralab.TemporaryVertex;
   de.uni_koblenz.edl.parser.Position;
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
@@ -32,7 +36,20 @@ user code {
     defaultPackage.setAttribute("name","");
     defaultPackage.setAttribute("qualifiedName","");
   }
-  
+
+  private Map<String, Vertex> primTypes = new HashMap<String, Vertex>();
+  {
+    for (String n : new String[] {"boolean", "char", "byte", "short",
+                                  "int", "long", "float", "double", "void"}) {
+      Vertex p = getGraph().createVertex(de.uni_koblenz.simple_java.schema.PrimitiveType.VC);
+      p.setAttribute("qualifiedName", n);
+      p.setAttribute("name", n);
+      p.setAttribute("type",
+        de.uni_koblenz.simple_java.schema.PrimitiveTypes.valueOf(n.toUpperCase()));
+      primTypes.put(n, p);
+    }
+  }
+
   private boolean isPackageDeclaration = false;
   // The qname of the element we are currently parsing
   private String curQName;
@@ -101,13 +118,12 @@ user code {
 
   Vertex getOrCreateClassifierVertex(Class cls, StackElement ce) {
     assert (cls == null);
+
     String qn = cls.getName();
     SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
-
-    // Maybe there's already an existing vertex for this classifier
+    // Maybe there's already an existing vertex for this type
     Vertex vx = stck.use(qn);
     if (vx != null) {
-      // TODO: Maybe check if the type and attr vals are correct...
       return vx;
     }
 
@@ -144,14 +160,50 @@ user code {
 
   Vertex resolveType(Object typeSpec, Object currentElement) {
     String tn = stripTypeParams(typeSpec);
-    if (tn.endsWith("[]") {
+
+    if (primTypes.containsKey(tn)) {
+      return primTypes.get(tn);
+    } if (tn.endsWith("[]")) {
       return resolveArrayType(tn, currentElement);
     }
     return resolveClassifier(tn, currentElement);
   }
 
+  private static final Pattern BRACKETS = Pattern.compile("\\[\\s*\\]");
+
+  private String getSimpleName(String qn) {
+    int idx = qn.lastIndexOf('.');
+    if (idx != -1)
+      return qn.substring(idx + 1);
+    return qn;
+  }
+
   Vertex resolveArrayType(String tn, Object currentElement) {
-    return null;
+    int dim = 0;
+    Matcher m = BRACKETS.matcher(tn);
+    while (m.find()) {
+      dim++;
+    }
+    int idx = tn.indexOf('[');
+    String baseTypeName = tn.substring(0, idx);
+    String brackets = tn.substring(idx);
+    Vertex baseType = resolveType(baseTypeName, currentElement);
+    String qn = ((String) baseType.getAttribute("qualifiedName")) + brackets;
+
+    // Maybe it exists?
+    SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
+    Vertex vx = stck.use(qn);
+    if (vx != null) {
+      return vx;
+    }
+
+    Vertex x = createVertex("ArrayType", ((StackElement) currentElement).getPosition());
+    x.setAttribute("dimensions", dim);
+    x.setAttribute("qualifiedName", qn);
+    x.setAttribute("name", getSimpleName(qn));
+    createEdge("HasElementType", x, baseType);
+    stck.declare(qn, x);
+    return x;
   }
 
   Vertex resolveClassifier(String tn, Object currentElement) {
