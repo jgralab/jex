@@ -10,14 +10,14 @@ global actions
     #name2Member.namespace = $;
      $.modifiers = $mods;
      $.name = lexem($2);
-     $.qualifiedName = {return packagePrefix;};
+     $.qualifiedName = {return curQName;};
      name2NamedElement.declare($.qualifiedName, $);
-     {packagePrefix = (String) #$packagePrefix#;}#
+     {curQName = (String) #$prevQName#;}#
 
  @Before
  pattern _ (1..*) Id _ (0..*) -> _
          #$mods = set();
-          $packagePrefix = {return packagePrefix;};#
+          $prevQName = {return curQName;};#
 
 exports
   sorts
@@ -33,7 +33,7 @@ exports
     @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
          #$=Class();
-          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#
+          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
          TypeParams?
          ("extends" TypeSpec
           #$extType = {return resolveType(#lexem($1)#, currentElement);};
@@ -48,7 +48,7 @@ exports
     @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "enum" Id
          #$=Enum();
-          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#        
+          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#        
          ("implements" {(TypeSpec
           #$impledIFace = {return resolveType(#lexem($0)#, currentElement);};
            Implements($, $impledIFace);#           
@@ -60,7 +60,7 @@ exports
     @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "interface" Id
          #$=Interface();
-          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#        
+          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#        
          TypeParams?
          ("extends" {(TypeSpec
           #$extType = {return resolveType(#lexem($0)#, currentElement);};
@@ -73,7 +73,7 @@ exports
     @Symboltable{name2Member}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "@interface" Id
          #$=Annotation();
-          {packagePrefix += (packagePrefix.isEmpty()? "" : ".") + #lexem($2)#;}#
+          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
          AnnotationBody -> AnnotationDeclaration
     rule "{" AnnotationElementDecl* "}" ";"? -> AnnotationBody
 

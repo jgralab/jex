@@ -504,7 +504,7 @@
         <children xmi:id="_Heh-yT7yEeKUR8bUwZ_76A" visible="false" type="StructureCompartment">
           <styles xmi:type="umlnotation:UMLShapeCompartmentStyle" xmi:id="_Heh-yj7yEeKUR8bUwZ_76A"/>
         </children>
-        <styles xmi:type="umlnotation:UMLShapeStyle" xmi:id="_Heb4IT7yEeKUR8bUwZ_76A" showListStereotype="Text" showListVisibility="Text" showListSignature="true" showStereotype="Text"/>
+        <styles xmi:type="umlnotation:UMLShapeStyle" xmi:id="_Heb4IT7yEeKUR8bUwZ_76A" showListStereotype="Text" showListVisibility="Text" showListSignature="true" lineColor="0" showStereotype="Text"/>
         <layoutConstraint xmi:type="notation:Bounds" xmi:id="_Heb4Ij7yEeKUR8bUwZ_76A" x="-5412" y="10428" width="3939"/>
       </children>
       <styles xmi:type="umlnotation:UMLDiagramStyle" xmi:id="_8YsCQzSqEeKtz5n8JZHypg"/>
@@ -1005,7 +1005,7 @@
           <layoutConstraint xmi:type="notation:Bounds" xmi:id="_vK0vBTVIEeKtz5n8JZHypg" y="-186"/>
         </children>
         <styles xmi:type="umlnotation:UMLConnectorStyle" xmi:id="_vK0vAjVIEeKtz5n8JZHypg" routing="Tree" lineWidth="1" showStereotype="Text"/>
-        <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_vK0vAzVIEeKtz5n8JZHypg" points="[-226, 436, 4736, -1980]$[-226, 999, 4736, -1417]$[-3592, 999, 1370, -1417]$[-3592, 1941, 1370, -475]"/>
+        <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_vK0vAzVIEeKtz5n8JZHypg" points="[-226, 436, 4736, -1848]$[-226, 955, 4736, -1329]$[-3592, 955, 1370, -1329]$[-3592, 1809, 1370, -475]"/>
       </edges>
       <edges xmi:id="_rwssUDVaEeKUR8bUwZ_76A" element="_rwmlsDVaEeKUR8bUwZ_76A" source="_nbQ9IDVaEeKUR8bUwZ_76A" target="_SbDtQTSrEeKtz5n8JZHypg">
         <children xmi:id="_rwssUzVaEeKUR8bUwZ_76A" type="NameLabel">
@@ -1197,7 +1197,7 @@
           <layoutConstraint xmi:type="notation:Bounds" xmi:id="_rkdLcT7vEeKUR8bUwZ_76A" y="-186"/>
         </children>
         <styles xmi:type="umlnotation:UMLConnectorStyle" xmi:id="_rkXE0j7vEeKUR8bUwZ_76A" routing="Tree" lineWidth="1" showStereotype="Text"/>
-        <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_rkXE0z7vEeKUR8bUwZ_76A" points="[0, 436, 539, -3828]$[0, 2847, 539, -1417]$[831, 2847, 1370, -1417]$[831, 3789, 1370, -475]"/>
+        <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_rkXE0z7vEeKUR8bUwZ_76A" points="[300, 436, 839, -3828]$[300, 2935, 839, -1329]$[831, 2935, 1370, -1329]$[831, 3789, 1370, -475]"/>
       </edges>
       <edges xmi:id="_yrzMID7wEeKUR8bUwZ_76A" element="_yrtFgD7wEeKUR8bUwZ_76A" source="_CSQk8DihEeKUR8bUwZ_76A" target="_lQcwkDVIEeKtz5n8JZHypg">
         <children xmi:id="_yrzMIz7wEeKUR8bUwZ_76A" type="NameLabel">

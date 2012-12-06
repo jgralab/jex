@@ -19,6 +19,7 @@ default values
 
 import declarations
   java.util.List;
+  java.util.LinkedList;
   de.uni_koblenz.jgralab.TemporaryVertex;
   de.uni_koblenz.edl.parser.Position;
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
@@ -33,7 +34,9 @@ user code {
   }
   
   private boolean isPackageDeclaration = false;
-  private String packagePrefix;
+  // The qname of the element we are currently parsing
+  private String curQName;
+  private String curPkgQName;
   private int statements = 0;
 
   @SuppressWarnings("unchecked")
@@ -100,6 +103,7 @@ user code {
     assert (cls == null);
     String qn = cls.getName();
     SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
+
     // Maybe there's already an existing vertex for this classifier
     Vertex vx = stck.use(qn);
     if (vx != null) {
@@ -128,12 +132,15 @@ user code {
   Vertex resolveType(Object typeSpec, Object currentElement) {
     String tn = stripTypeParams(typeSpec);
     StackElement ce = (StackElement) currentElement;
+    List<String> triedNames = new LinkedList<String>();
 
     // Is tn already fully qualified?
-    Class cls = reflectiveGetType(tn);
+    String qn = tn;
+    Class cls = reflectiveGetType(qn);
     if (cls != null) {
       return getOrCreateClassifierVertex(cls, ce);
     }
+    triedNames.add(qn);
 
     // Is it an imported class foo.bar.Baz?
     Vertex x = ((SymbolTableStack) #importedClassifiers#).use(tn);
@@ -141,27 +148,43 @@ user code {
       return x;
     }
 
-    // Is it a class in the same package?
-    cls = reflectiveGetType(packagePrefix + "." + tn);
+    // Is it a class nested in this class?
+    qn = curQName + "." + tn;
+    cls = reflectiveGetType(qn);
     if (cls != null) {
       return getOrCreateClassifierVertex(cls, ce);
     }
+    triedNames.add(qn);
+
+    // Is it a class in the same package?
+    qn = curPkgQName + "." + tn;
+    cls = reflectiveGetType(qn);
+    if (cls != null) {
+      return getOrCreateClassifierVertex(cls, ce);
+    }
+    triedNames.add(qn);
 
     // Is it a class imported by a package import foo.bar.*?
     for (Object pn : ((SymbolTableStack) #importedPackages#)
                      .getTop().getMap().keySet()) {
-      cls = reflectiveGetType(pn + "." + tn);
+      qn = pn + "." + tn;
+      cls = reflectiveGetType(qn);
       if (cls != null) {
         return getOrCreateClassifierVertex(cls, ce);
       }
+      triedNames.add(qn);
     }
 
     // Is it a class from java.lang?
-    cls = reflectiveGetType("java.lang." + tn);
+    qn = "java.lang." + tn;
+    cls = reflectiveGetType(qn);
     if (cls != null) {
       return getOrCreateClassifierVertex(cls, ce);
     }
-    throw new RuntimeException("Couldn't resolve type " + tn + ". Is your CLASSPATH ok?");
+    triedNames.add(qn);
+    throw new RuntimeException("Couldn't resolve type " + tn
+      + ".  I've tried " + triedNames
+      + ".  Is your CLASSPATH ok?");
   }
 }
 

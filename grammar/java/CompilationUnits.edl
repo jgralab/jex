@@ -32,13 +32,14 @@ exports
           $ = SourceFile();
           $.path = file();
           $packageDecl = {return defaultPackage;};
-          {packagePrefix = "";}#
+          {curQName = "";}#
 
          (#{isPackageDeclaration = true;}#
           PackageDeclaration
           #{isPackageDeclaration = false;}
            $packageDecl = $0;
-           {packagePrefix = #$0.qualifiedName#.toString();}#)?
+           {curQName = #$0.qualifiedName#.toString();
+            curPkgQName = curQName;}#)?
 
           (ImportDeclaration #Imports($,$0);#)*
 

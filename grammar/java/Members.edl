@@ -22,13 +22,21 @@ exports
     rule Id ParenBlock?                                         -> EnumConst
          #$=EnumConst();
           $.name = lexem($0);
-          $.qualifiedName = {return packagePrefix + "." + #$.name#;};
+          $.qualifiedName = {return curQName + "." + #$.name#;};
           name2Member.declare($.name, $);#
     rule LeadingEnumConstant                                    -> EnumConstant
     rule LastEnumConstant                                       -> EnumConstant
 
     %% AnnotationElementDecl
-    rule TypeSpec Id "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
+    rule #$mods = set();#
+         ((Modifier #$mods.add($0);#)| Annotation)*
+         TypeSpec Id
+         #$=AnnotationElement();
+          $.modifiers = $mods;
+          $.name = lexem($2);
+          $.qualifiedName = {return curQName + "." + #lexem($2)#;};
+          name2NamedElement.declare($.qualifiedName, $);#
+         "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration
     rule (Modifier | Annotation)* TypeSpec {(Id ("[" "]")* Initializer?) ","}+ ";"
