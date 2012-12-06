@@ -58,14 +58,45 @@ exports
     rule FieldDeclaration -> Member
 
     %% MethodDeclaration
-    rule (Modifier | Annotation)* TypeParams? TypeSpec Id "(" {ParamDeclaration ","}* ")"
+    rule #$mods = set();#
+         ((Modifier #$mods.add($0);#) | Annotation)*
+         TypeParams?
+         TypeSpec Id
+         #$=Method();
+          $type = {return resolveType(#lexem($2)#, currentElement);};
+          HasType($, $type);
+          $.modifiers = $mods;
+          $.name = lexem($3);
+          $.qualifiedName = {return curQName + "." + #lexem($3)#;};
+          name2NamedElement.declare($.qualifiedName, $);
+          name2Member.declare($.name, $);#
+         "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ThrowsClause? (Block | ";" | (Block ";"))
          -> MethodDeclaration
-    rule (Modifier | Annotation)* TypeSpec Id -> ParamDeclaration
+    %% ParamDeclaration
+    rule #$mods = set();#
+         ((Modifier #$mods.add($0);#)| Annotation)*
+         TypeSpec Id
+         #$ = Parameter();
+          $type = {return resolveType(#lexem($1)#, currentElement);};
+          HasType($, $type);
+          $.modifiers = $mods;
+          $.name = lexem($2);#
+         -> ParamDeclaration
     rule MethodDeclaration -> Member
 
     %% ConstructorDeclaration
-    rule (Modifier | Annotation)* Id "(" {ParamDeclaration ","}* ")" ThrowsClause? Block
+    rule #$mods = set();#
+         ((Modifier #$mods.add($0);#) | Annotation)*
+         Id
+         #$=Constructor();
+          $.modifiers = $mods;
+          $.name = lexem($1);
+          $.qualifiedName = {return curQName + "." + #lexem($1)#;};
+          name2NamedElement.declare($.qualifiedName, $);
+          name2Member.declare($.name, $);#
+         "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
+         ThrowsClause? Block
          -> ConstructorDeclaration
     rule ConstructorDeclaration -> Member
 
