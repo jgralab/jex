@@ -2,7 +2,7 @@ module java/Members
 imports
   java/Modifiers         %% Modifier
   java/Identifiers       %% Id
-  java/Types             %% Type, TypeParams
+  java/Types             %% Type, TypeParam
   java/CharacterLiterals %% CharLiteral
   java/StringLiterals    %% StringLiteral
   java/Comments          %% Comment
@@ -32,8 +32,7 @@ exports
          ((Modifier #$mods.add($0);#)| Annotation)*
          Type Id
          #$=AnnotationElement();
-          $type = {return resolveType(#lexem($1)#, currentElement);};
-          HasType($, $type);
+          HasType($, $1);
           $.modifiers = $mods;
           $.name = lexem($2);
           $classifier = {return resolveClassifier(curQName, currentElement);};
@@ -45,8 +44,7 @@ exports
          ((Modifier #$mods.add($0);#) | Annotation)*
          Type Id
          #$=Field();
-          $type = {return resolveType(#lexem($1)#, currentElement);};
-          HasType($, $type);
+          HasType($, $1);
           $.modifiers = $mods;
           $.name = lexem($2);
           $classifier = {return resolveClassifier(curQName, currentElement);};
@@ -56,21 +54,19 @@ exports
     rule FieldDeclaration -> Member
 
     %% MethodDeclaration
-    rule #$mods = set();#
+    @Symboltable{typeParams}
+    rule #$=Method();
+          $mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
-         TypeParams?
+         ({(TypeParam #HasTypeParam($, $0);#) ","}+)?
          Type Id
-         #$=Method();
-          $type = {return resolveType(#lexem($2)#, currentElement);};
-          HasType($, $type);
+         #HasType($, $2);
           $.modifiers = $mods;
           $.name = lexem($3);
           $classifier = {return resolveClassifier(curQName, currentElement);};
           Declares($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
-         ("throws" {(Type
-          #$ex = {return resolveType(#lexem($0)#, currentElement);};
-           Throws($, $ex);#) ","}+)?
+         ("throws" {(Type #Throws($, $0);#) ","}+)?
          (Block | ";" | (Block ";"))
          -> MethodDeclaration
     %% ParamDeclaration
@@ -78,8 +74,7 @@ exports
          ((Modifier #$mods.add($0);#)| Annotation)*
          Type Id
          #$ = Parameter();
-          $type = {return resolveType(#lexem($1)#, currentElement);};
-          HasType($, $type);
+          HasType($, $1);
           $.modifiers = $mods;
           $.name = lexem($2);#
          -> ParamDeclaration
@@ -95,9 +90,7 @@ exports
           $classifier = {return resolveClassifier(curQName, currentElement);};
           Declares($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
-         ("throws" {(Type
-          #$ex = {return resolveType(#lexem($0)#, currentElement);};
-           Throws($, $ex);#) ","}+)?
+         ("throws" {(Type #Throws($, $0);#) ","}+)?
          Block
          -> ConstructorDeclaration
     rule ConstructorDeclaration -> Member

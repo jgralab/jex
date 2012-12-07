@@ -40,5 +40,5 @@ exports
              }
            }#
            "." #$qualName = $qualName.concat(".");#
-         }+ -> PackageName
+         }+ -> PackageName #$ = $qualName;#
 

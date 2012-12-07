@@ -2,7 +2,7 @@ module java/ClassifierDeclarations
 imports
   java/Modifiers     %% Modifier
   java/Identifiers   %% Id
-  java/Types         %% ClassifierType, TypeParams
+  java/Types         %% ClassifierType, TypeParam
   java/Members       %% Member, InitializerBlock, EnumConstant, AnnotationElementDecl
 
 global actions
@@ -29,41 +29,31 @@ exports
   context-free syntax
 
     %% Classes
+    @Symboltable{typeParams}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
          #$=Class();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
-         TypeParams?
-         ("extends" ClassifierType
-          #$extType = {return resolveType(#lexem($1)#, currentElement);};
-           Extends($, $extType);#)?
-         ("implements" {(ClassifierType
-          #$impledIFace = {return resolveType(#lexem($0)#, currentElement);};
-           Implements($, $impledIFace);#
-          ) ","}+)?
+         ({(TypeParam #HasTypeParam($, $0);#) ","}+)?
+         ("extends" ClassifierType #Extends($, $1);#)?
+         ("implements" {(ClassifierType #Implements($, $0);#) ","}+)?
          ClassifierBody -> ClassDeclaration
 
     %% Enums
     rule ((Modifier #$mods.add($0);#)|Annotation)* "enum" Id
          #$=Enum();
-          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#        
-         ("implements" {(ClassifierType
-          #$impledIFace = {return resolveType(#lexem($0)#, currentElement);};
-           Implements($, $impledIFace);#           
-          ) ","}+)?
+          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
+         ("implements" {(ClassifierType #Implements($, $0);#) ","}+)?
          EnumBody -> EnumDeclaration
     rule "{" EnumConstant+ Member* "}" ";"? -> EnumBody
 
     %% Interfaces
+    @Symboltable{typeParams}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "interface" Id
          #$=Interface();
-          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#        
-         TypeParams?
-         ("extends" {(ClassifierType
-          #$extType = {return resolveType(#lexem($0)#, currentElement);};
-           Extends($, $extType);#
-          ) ","}+)?
+          {curQName += (curQName.isEmpty()? "" : ".") + #$2#;}#
+         ({(TypeParam #HasTypeParam($, $0);#) ","}+)?
+         ("extends" {(ClassifierType #Extends($, $0);#) ","}+)?
          ClassifierBody -> InterfaceDeclaration
-
 
     %% Annotations
     rule ((Modifier #$mods.add($0);#)|Annotation)* "@interface" Id

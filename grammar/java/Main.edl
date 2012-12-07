@@ -11,6 +11,7 @@ symbol tables
   name2NamedElement<NamedElement>
   importedPackages<Package>
   importedClassifiers<Classifier>
+  typeParams<TypeParameter>
 
 default values
   Imports.lineNo = line(omega);
@@ -162,21 +163,7 @@ user code {
         tn = tn.replaceAll("\\s+", " ");
         tn = tn.replaceAll("([,<>])\\s+", "$1");
         tn = tn.replaceAll("\\s+([,<>])", "$1");
-        tn = tn.replaceAll("\\A\\s+", "");
-        tn = tn.replaceAll("\\s+\\z", "");
-        return tn;
-    }
-
-    private Vertex resolveType(Object typeSpec, Object currentElement) {
-        // System.out.println("got type: '" + typeSpec + "'");
-        String tn = canonicalizeQName(typeSpec);
-        if (primTypes.containsKey(tn)) {
-            return primTypes.get(tn);
-        }
-        if (tn.endsWith("[]")) {
-            return resolveArrayType(tn, currentElement);
-        }
-        return resolveClassifier(tn, currentElement);
+        return tn.trim();
     }
 
     private static final Pattern BRACKETS = Pattern.compile("\\[\\s*\\]");
@@ -188,40 +175,12 @@ user code {
         return qn;
     }
 
-    private Vertex resolveArrayType(String tn, Object currentElement) {
-        int dim = 0;
-        Matcher m = BRACKETS.matcher(tn);
-        while (m.find()) {
-            dim++;
-        }
-        int idx = tn.indexOf('[');
-        String baseTypeName = tn.substring(0, idx);
-        String brackets = tn.substring(idx);
-        Vertex baseType = resolveType(baseTypeName, currentElement);
-        String qn = ((String) baseType.getAttribute("qualifiedName")) + brackets;
-
-        // Maybe it exists?
-        SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
-        Vertex vx = stck.use(qn);
-        if (vx != null) {
-            return vx;
-        }
-
-        Vertex x = createVertex("ArrayType", ((StackElement) currentElement).getPosition());
-        x.setAttribute("dimensions", dim);
-        x.setAttribute("qualifiedName", qn);
-        x.setAttribute("name", getSimpleName(qn));
-        createEdge("HasElementType", x, baseType);
-        stck.declare(qn, x);
-        return x;
-    }
-
-    private Vertex resolveClassifier(String tn, Object currentElement) {
+    private Vertex resolveClassifier(Object tn, Object currentElement) {
         StackElement ce = (StackElement) currentElement;
         List<String> triedNames = new LinkedList<String>();
 
         // Is tn already fully qualified?
-        String qn = tn;
+        String qn = canonicalizeQName(tn);
         Class cls = reflectiveGetType(qn);
         if (cls != null) {
             return getOrCreateClassifierVertex(cls, ce);

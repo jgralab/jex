@@ -4,21 +4,24 @@ imports
   java/Packages          %% PackageName
   java/Identifiers       %% Id
 
+global actions
+  pattern _ -> PrimType
+    #$ = {return primTypes.get(#$0#);};#
 
 exports
   sorts
     PrimType
     ArrayType
     ClassifierType
-    TypeArgs
-    TypeParams
+    TypeArg
+    TypeParam
 
   context-free syntax
 
     %% Type
-    rule PrimType       -> Type
-    rule ArrayType      -> Type
-    rule ClassifierType -> Type
+    rule PrimType       -> Type #$=$0;#
+    rule ArrayType      -> Type #$=$0;#
+    rule ClassifierType -> Type #$=$0;#
 
     %% Primitive types
     rule "boolean"                        -> PrimType
@@ -33,20 +36,40 @@ exports
 
     %% ArrayType
     rule Type ("[" "]")+                  -> ArrayType
-    rule Type "..."                       -> ArrayType
+    rule Type "..."
+         #$ = ArrayType();
+          $.name = $0.name.concat("[]");
+          $.qualifiedName = $0.qualifiedName.concat("[]");
+          $.dimensions = 1;
+          HasElementType($, $0);#
+         -> ArrayType
 
     %% ClassifierType
-    rule Id TypeArgs?                   -> ClassifierType
-    rule PackageName "." Id TypeArgs?   -> ClassifierType
+    rule Id                             -> PlainClassifierType
+         #$ = {return resolveClassifier(#$0#, currentElement);};#
+    rule PackageName "." Id             -> PlainClassifierType
+         #$ = {return resolveClassifier(#$0.concat(".").concat($2)#, currentElement);};#
+    rule #$ = ParametrizedType();#
+         PlainClassifierType
+         #HasGenericType($, $0);#
+         "<" {(TypeArg #HasTypeArg($, $0);#) ","}+ ">"
+         -> ClassifierType
 
-    %% TypeArgs
-    rule "<" {ActualTypeArg ","}+ ">" -> TypeArgs
-    rule Type                         -> ActualTypeArg
-    rule "?" WildcardBound?           -> ActualTypeArg
-    rule "extends" ClassifierType     -> WildcardBound
-    rule "super"   ClassifierType     -> WildcardBound
+    %% TypeArg
+    rule Type                         -> TypeArg #$ = $0;#
+    rule "?" #$ = WildcardType();
+              $.name = "?";
+              $.qualifiedName = "?";#
+         ((UpperWildcardBound #HasUpperBound($, $0);#)
+          | (LowerWildcardBound #HasLowerBound($, $0);#))? 
+         -> TypeArg
+    rule "extends" ClassifierType     -> UpperWildcardBound #$ = $1;#
+    rule "super"   ClassifierType     -> LowerWildcardBound #$ = $1;#
 
     %% TypeParam
-    rule "<" {TypeParam ","}+ ">"               -> TypeParams
-    rule Id TypeBound?                          -> TypeParam
-    rule "extends" {ClassifierType "&"}+        -> TypeBound
+    rule Id
+         #$ = TypeParameter();
+          $.name = $0;
+          $.qualifiedName = {return curQName + "." + #$0#;};#
+         ("extends" {(ClassifierType
+                      #HasBound($, $0);#) "&"}+)?  -> TypeParam

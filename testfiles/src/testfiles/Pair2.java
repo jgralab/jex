@@ -17,4 +17,8 @@ public class Pair2<A, B extends A> {
 	public B getB() {
 		return theB;
 	}
+	
+	Iterable<? extends B> foo(){
+		return null;
+	}
 }
