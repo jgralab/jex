@@ -41,7 +41,7 @@ exports
     %% PackageDeclaration
     rule Annotation* "package" PackageName ";"
          -> PackageDeclaration
-            #$=name2Package.use(lexem($2).replaceAll("\\s+", ""));#
+            #$=name2Package.use($2.replaceAll("\\s+", ""));#
 
     %% ImportDeclaration
     rule "import" PlainClassifierType ";"
