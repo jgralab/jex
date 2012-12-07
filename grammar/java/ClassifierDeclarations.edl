@@ -33,7 +33,7 @@ exports
     rule ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
          #$=Class();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
-         ({(TypeParam #HasTypeParam($, $0);#) ","}+)?
+         ("<" {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          ("extends" ClassifierType #Extends($, $1);#)?
          ("implements" {(ClassifierType #Implements($, $0);#) ","}+)?
          ClassifierBody -> ClassDeclaration
@@ -51,7 +51,7 @@ exports
     rule ((Modifier #$mods.add($0);#)|Annotation)* "interface" Id
          #$=Interface();
           {curQName += (curQName.isEmpty()? "" : ".") + #$2#;}#
-         ({(TypeParam #HasTypeParam($, $0);#) ","}+)?
+         ("<" {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          ("extends" {(ClassifierType #Extends($, $0);#) ","}+)?
          ClassifierBody -> InterfaceDeclaration
 

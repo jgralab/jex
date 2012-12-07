@@ -22,6 +22,7 @@ exports
     rule PrimType       -> Type #$=$0;#
     rule ArrayType      -> Type #$=$0;#
     rule ClassifierType -> Type #$=$0;#
+    rule TypeParam      -> Type #$=$0;#
 
     %% Primitive types
     rule "boolean"                        -> PrimType
@@ -70,6 +71,7 @@ exports
     rule Id
          #$ = TypeParameter();
           $.name = $0;
-          $.qualifiedName = {return curQName + "." + #$0#;};#
+          $.qualifiedName = {return curQName + "." + #$0#;};
+          typeParams.declare($.name, $);#
          ("extends" {(ClassifierType
                       #HasBound($, $0);#) "&"}+)?  -> TypeParam
