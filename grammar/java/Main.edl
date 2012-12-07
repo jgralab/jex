@@ -29,286 +29,286 @@ import declarations
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
 
 user code {
-  private Vertex defaultPackage;
+    private Vertex defaultPackage;
 
-  {
-    defaultPackage = createVertex("Package", new Position());
-    defaultPackage.setAttribute("name","");
-    defaultPackage.setAttribute("qualifiedName","");
-  }
-
-  private Map<String, Vertex> primTypes = new HashMap<String, Vertex>();
-  {
-    for (String n : new String[] {"boolean", "char", "byte", "short",
-                                  "int", "long", "float", "double", "void"}) {
-      Vertex p = getGraph().createVertex(de.uni_koblenz.simple_java.schema.PrimitiveType.VC);
-      p.setAttribute("qualifiedName", n);
-      p.setAttribute("name", n);
-      p.setAttribute("type",
-        de.uni_koblenz.simple_java.schema.PrimitiveTypes.valueOf(n.toUpperCase()));
-      primTypes.put(n, p);
-    }
-  }
-
-  private boolean isPackageDeclaration = false;
-  // The qname of the element we are currently parsing
-  private String curQName;
-  private String curPkgQName;
-  private int statements = 0;
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public void finalize() {
-    List<TemporaryVertex> tempVertices = (List<TemporaryVertex>)
-      #name2NamedElement.getTemporaryVertices()#;
-    for (TemporaryVertex tempVert: tempVertices) {
-      if (tempVert.getPreliminaryType() != null) {
-        tempVert.bless();
-      } else {
-        tempVert.bless(getVertexClass("Class"));
-      }
-    }
-    List<TemporaryVertex> tempPackages = (List<TemporaryVertex>)
-      #name2Package.getTemporaryVertices()#;
-    for (TemporaryVertex tempPackage: tempPackages) {
-      tempPackage.bless(getVertexClass("Package"));
-    }
-    for (Vertex tmp : getGraph().vertices(graph.getGraphClass()
-                                .getTemporaryVertexClass())) {
-      System.out.println("Left over TemporaryVertex: " + tmp);
-    }
-    for (Edge tmp : getGraph().edges(graph.getGraphClass()
-                                .getTemporaryEdgeClass())) {
-      System.out.println("Left over TemporaryEdge: " + tmp);
-      System.out.println("  alpha: " + tmp.getAlpha());
-      System.out.println("  omega: " + tmp.getOmega());
-    }
-  }
-
-  static String stripTypeParams(Object typeSpec) {
-    String ts = (String) typeSpec;
-    int idx = ts.indexOf('<');
-    if (idx != -1)
-      ts = ts.substring(0, idx);
-    // System.out.println("Stripped TypeSpec " + typeSpec + " to " + ts);
-    return ts;
-  }
-
-  // Rips out the simple name of a qualified name, possibly including type parameters
-  static String getSimpleName(Object qn) {
-    String qname = stripTypeParams(qn);
-    int idx = qname.lastIndexOf('.');
-    if (idx != -1)
-      qname = qname.substring(idx + 1);
-    // System.out.println("Stripped QName " + qn + " to simple name " + qname);
-    return qname;
-  }
-
-  static boolean isQualified(Object qn) {
-    return ((String) qn).indexOf('.') != -1;
-  }
-
-  Class reflectiveGetType(String qn) {
-    try {
-      return Class.forName(qn, false, Thread.currentThread().getContextClassLoader());
-    } catch (ClassNotFoundException e) {
-      return null;
-    }
-  }
-
-  Vertex getOrCreateClassifierVertex(Class cls, StackElement ce) {
-    assert (cls == null);
-
-    String qn = cls.getName();
-    SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
-    // Maybe there's already an existing vertex for this type
-    Vertex vx = stck.use(qn);
-    if (vx != null) {
-      return vx;
+    {
+        defaultPackage = createVertex("Package", new Position());
+        defaultPackage.setAttribute("name","");
+        defaultPackage.setAttribute("qualifiedName","");
     }
 
-    TemporaryVertex x = createTemporaryVertex(ce.getPosition());
-    if (cls.isInterface())
-      x.setPreliminaryType(getVertexClass("Interface"));
-    else if (cls.isEnum())
-      x.setPreliminaryType(getVertexClass("Enum"));
-    else if (cls.isAnnotation())
-      x.setPreliminaryType(getVertexClass("Annotation"));
-    else
-      x.setPreliminaryType(getVertexClass("Class"));
-
-    x.setAttribute("qualifiedName", qn);
-    x.setAttribute("name", cls.getSimpleName());
-
-    // Declare it in the symbol table!
-    stck.declare(qn, x);
-    return x;
-  }
-
-  static List<String> nestedClassifierNames(String name) {
-    List<String> l = new LinkedList<String>();
-    StringBuilder sb = new StringBuilder(name);
-    int idx = name.lastIndexOf('.');
-    while (idx != -1) {
-      sb.replace(idx, idx + 1, "$");
-      name = sb.toString();
-      l.add(name);
-      idx = name.lastIndexOf('.');
-    }
-    return l;
-  }
-
-  static String canonicalizeQName(Object typeSpec) {
-    String tn = ((String) typeSpec);
-    tn = tn.replaceAll("\\s+", " ");
-    tn = tn.replaceAll("([,<>])\\s+", "$1");
-    tn = tn.replaceAll("\\s+([,<>])", "$1");
-    tn = tn.replaceAll("\\A\\s+", "");
-    tn = tn.replaceAll("\\s+\\z", "");
-    return tn;
-  }
-
-  Vertex resolveType(Object typeSpec, Object currentElement) {
-    // System.out.println("got type: '" + typeSpec + "'");
-    String tn = canonicalizeQName(typeSpec);
-    if (primTypes.containsKey(tn)) {
-      return primTypes.get(tn);
-    } if (tn.endsWith("[]")) {
-      return resolveArrayType(tn, currentElement);
-    }
-    return resolveClassifier(tn, currentElement);
-  }
-
-  private static final Pattern BRACKETS = Pattern.compile("\\[\\s*\\]");
-
-  private String getSimpleName(String qn) {
-    int idx = qn.lastIndexOf('.');
-    if (idx != -1)
-      return qn.substring(idx + 1);
-    return qn;
-  }
-
-  Vertex resolveArrayType(String tn, Object currentElement) {
-    int dim = 0;
-    Matcher m = BRACKETS.matcher(tn);
-    while (m.find()) {
-      dim++;
-    }
-    int idx = tn.indexOf('[');
-    String baseTypeName = tn.substring(0, idx);
-    String brackets = tn.substring(idx);
-    Vertex baseType = resolveType(baseTypeName, currentElement);
-    String qn = ((String) baseType.getAttribute("qualifiedName")) + brackets;
-
-    // Maybe it exists?
-    SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
-    Vertex vx = stck.use(qn);
-    if (vx != null) {
-      return vx;
+    private Map<String, Vertex> primTypes = new HashMap<String, Vertex>();
+    {
+        for (String n : new String[] {"boolean", "char", "byte", "short",
+                                      "int", "long", "float", "double", "void"}) {
+            Vertex p = getGraph().createVertex(de.uni_koblenz.simple_java.schema.PrimitiveType.VC);
+            p.setAttribute("qualifiedName", n);
+            p.setAttribute("name", n);
+            p.setAttribute("type",
+                de.uni_koblenz.simple_java.schema.PrimitiveTypes.valueOf(n.toUpperCase()));
+            primTypes.put(n, p);
+        }
     }
 
-    Vertex x = createVertex("ArrayType", ((StackElement) currentElement).getPosition());
-    x.setAttribute("dimensions", dim);
-    x.setAttribute("qualifiedName", qn);
-    x.setAttribute("name", getSimpleName(qn));
-    createEdge("HasElementType", x, baseType);
-    stck.declare(qn, x);
-    return x;
-  }
+    private boolean isPackageDeclaration = false;
+    // The qname of the element we are currently parsing (a Classifier)
+    private String curQName;
+    // The qname of the current package
+    private String curPkgQName;
 
-  Vertex resolveClassifier(String tn, Object currentElement) {
-    StackElement ce = (StackElement) currentElement;
-    List<String> triedNames = new LinkedList<String>();
-
-    // Is tn already fully qualified?
-    String qn = tn;
-    Class cls = reflectiveGetType(qn);
-    if (cls != null) {
-      return getOrCreateClassifierVertex(cls, ce);
-    }
-    triedNames.add(qn);
-    for (String nqn : nestedClassifierNames(qn)) {
-      cls = reflectiveGetType(nqn);
-      if (cls != null) {
-        return getOrCreateClassifierVertex(cls, ce);
-      }
-      // triedNames.add(nqn);
-    }
-
-    // Is it an imported class foo.bar.Baz?
-    Vertex x = ((SymbolTableStack) #importedClassifiers#).use(qn);
-    if (x != null) {
-      return x;
-    }
-
-    // Is it a class nested in this class?
-    qn = curQName + "." + tn;
-    cls = reflectiveGetType(qn);
-    if (cls != null) {
-      return getOrCreateClassifierVertex(cls, ce);
-    }
-    triedNames.add(qn);
-    for (String nqn : nestedClassifierNames(qn)) {
-      cls = reflectiveGetType(nqn);
-      if (cls != null) {
-        return getOrCreateClassifierVertex(cls, ce);
-      }
-      // triedNames.add(nqn);
+    @SuppressWarnings("unchecked")
+    @Override
+    public void finalize() {
+        List<TemporaryVertex> tempVertices = (List<TemporaryVertex>)
+            #name2NamedElement.getTemporaryVertices()#;
+        for (TemporaryVertex tempVert: tempVertices) {
+            if (tempVert.getPreliminaryType() != null) {
+                tempVert.bless();
+            } else {
+                tempVert.bless(getVertexClass("Class"));
+            }
+        }
+        List<TemporaryVertex> tempPackages = (List<TemporaryVertex>)
+            #name2Package.getTemporaryVertices()#;
+        for (TemporaryVertex tempPackage: tempPackages) {
+            tempPackage.bless(getVertexClass("Package"));
+        }
+        for (Vertex tmp : getGraph().vertices(graph.getGraphClass()
+                                    .getTemporaryVertexClass())) {
+            System.out.println("Left over TemporaryVertex: " + tmp);
+        }
+        for (Edge tmp : getGraph().edges(graph.getGraphClass()
+                                  .getTemporaryEdgeClass())) {
+            System.out.println("Left over TemporaryEdge: " + tmp);
+            System.out.println("  alpha: " + tmp.getAlpha());
+            System.out.println("  omega: " + tmp.getOmega());
+        }
     }
 
-
-    // Is it a class in the same package?
-    qn = curPkgQName + "." + tn;
-    cls = reflectiveGetType(qn);
-    if (cls != null) {
-      return getOrCreateClassifierVertex(cls, ce);
-    }
-    triedNames.add(qn);
-    for (String nqn : nestedClassifierNames(qn)) {
-      cls = reflectiveGetType(nqn);
-      if (cls != null) {
-        return getOrCreateClassifierVertex(cls, ce);
-      }
-      // triedNames.add(nqn);
+    private static String stripTypeParams(Object typeSpec) {
+        String ts = (String) typeSpec;
+        int idx = ts.indexOf('<');
+        if (idx != -1)
+            ts = ts.substring(0, idx);
+        return ts;
     }
 
-    // Is it a class imported by a package import foo.bar.*?
-    for (Object pn : ((SymbolTableStack) #importedPackages#)
-                     .getTop().getMap().keySet()) {
-      qn = pn + "." + tn;
-      cls = reflectiveGetType(qn);
-      if (cls != null) {
-        return getOrCreateClassifierVertex(cls, ce);
-      }
-      triedNames.add(qn);
-    }
-    for (String nqn : nestedClassifierNames(qn)) {
-      cls = reflectiveGetType(nqn);
-      if (cls != null) {
-        return getOrCreateClassifierVertex(cls, ce);
-      }
-      // triedNames.add(nqn);
+    // Rips out the simple name of a qualified name, possibly including type parameters
+    private static String getSimpleName(Object qn) {
+        String qname = stripTypeParams(qn);
+        int idx = qname.lastIndexOf('.');
+        if (idx != -1)
+            qname = qname.substring(idx + 1);
+        return qname;
     }
 
-    // Is it a class from java.lang?
-    qn = "java.lang." + tn;
-    cls = reflectiveGetType(qn);
-    if (cls != null) {
-      return getOrCreateClassifierVertex(cls, ce);
-    }
-    triedNames.add(qn);
-    for (String nqn : nestedClassifierNames(qn)) {
-      cls = reflectiveGetType(nqn);
-      if (cls != null) {
-        return getOrCreateClassifierVertex(cls, ce);
-      }
-      // triedNames.add(nqn);
+    private static boolean isQualified(Object qn) {
+        return ((String) qn).indexOf('.') != -1;
     }
 
-    throw new RuntimeException("Couldn't resolve type " + tn
-      + ".  I've tried " + triedNames
-      + ".  Is your CLASSPATH ok?");
-  }
+    private static Class reflectiveGetType(String qn) {
+        try {
+            return Class.forName(qn, false, Thread.currentThread().getContextClassLoader());
+        } catch (ClassNotFoundException e) {
+            return null;
+        }
+    }
+
+    private Vertex getOrCreateClassifierVertex(Class cls, StackElement ce) {
+        assert (cls == null);
+
+        String qn = cls.getName();
+        SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
+
+        // Maybe there's already an existing vertex for this type
+        Vertex vx = stck.use(qn);
+        if (vx != null) {
+            return vx;
+        }
+
+        TemporaryVertex x = createTemporaryVertex(ce.getPosition());
+        if (cls.isInterface())
+            x.setPreliminaryType(getVertexClass("Interface"));
+        else if (cls.isEnum())
+            x.setPreliminaryType(getVertexClass("Enum"));
+        else if (cls.isAnnotation())
+            x.setPreliminaryType(getVertexClass("Annotation"));
+        else
+            x.setPreliminaryType(getVertexClass("Class"));
+
+        x.setAttribute("qualifiedName", qn);
+        x.setAttribute("name", cls.getSimpleName());
+
+        // Declare it in the symbol table!
+        stck.declare(qn, x);
+        return x;
+    }
+
+    private static List<String> nestedClassifierNames(String name) {
+        List<String> l = new LinkedList<String>();
+        StringBuilder sb = new StringBuilder(name);
+        int idx = name.lastIndexOf('.');
+        while (idx != -1) {
+            sb.replace(idx, idx + 1, "$");
+            name = sb.toString();
+            l.add(name);
+            idx = name.lastIndexOf('.');
+        }
+        return l;
+    }
+
+    private static String canonicalizeQName(Object typeSpec) {
+        String tn = ((String) typeSpec);
+        tn = tn.replaceAll("\\s+", " ");
+        tn = tn.replaceAll("([,<>])\\s+", "$1");
+        tn = tn.replaceAll("\\s+([,<>])", "$1");
+        tn = tn.replaceAll("\\A\\s+", "");
+        tn = tn.replaceAll("\\s+\\z", "");
+        return tn;
+    }
+
+    private Vertex resolveType(Object typeSpec, Object currentElement) {
+        // System.out.println("got type: '" + typeSpec + "'");
+        String tn = canonicalizeQName(typeSpec);
+        if (primTypes.containsKey(tn)) {
+            return primTypes.get(tn);
+        }
+        if (tn.endsWith("[]")) {
+            return resolveArrayType(tn, currentElement);
+        }
+        return resolveClassifier(tn, currentElement);
+    }
+
+    private static final Pattern BRACKETS = Pattern.compile("\\[\\s*\\]");
+
+    private static String getSimpleName(String qn) {
+        int idx = qn.lastIndexOf('.');
+        if (idx != -1)
+            return qn.substring(idx + 1);
+        return qn;
+    }
+
+    private Vertex resolveArrayType(String tn, Object currentElement) {
+        int dim = 0;
+        Matcher m = BRACKETS.matcher(tn);
+        while (m.find()) {
+            dim++;
+        }
+        int idx = tn.indexOf('[');
+        String baseTypeName = tn.substring(0, idx);
+        String brackets = tn.substring(idx);
+        Vertex baseType = resolveType(baseTypeName, currentElement);
+        String qn = ((String) baseType.getAttribute("qualifiedName")) + brackets;
+
+        // Maybe it exists?
+        SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
+        Vertex vx = stck.use(qn);
+        if (vx != null) {
+            return vx;
+        }
+
+        Vertex x = createVertex("ArrayType", ((StackElement) currentElement).getPosition());
+        x.setAttribute("dimensions", dim);
+        x.setAttribute("qualifiedName", qn);
+        x.setAttribute("name", getSimpleName(qn));
+        createEdge("HasElementType", x, baseType);
+        stck.declare(qn, x);
+        return x;
+    }
+
+    private Vertex resolveClassifier(String tn, Object currentElement) {
+        StackElement ce = (StackElement) currentElement;
+        List<String> triedNames = new LinkedList<String>();
+
+        // Is tn already fully qualified?
+        String qn = tn;
+        Class cls = reflectiveGetType(qn);
+        if (cls != null) {
+            return getOrCreateClassifierVertex(cls, ce);
+        }
+        triedNames.add(qn);
+        for (String nqn : nestedClassifierNames(qn)) {
+            cls = reflectiveGetType(nqn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+            // triedNames.add(nqn);
+        }
+
+        // Is it an imported class foo.bar.Baz?
+        Vertex x = ((SymbolTableStack) #importedClassifiers#).use(qn);
+        if (x != null) {
+            return x;
+        }
+
+        // Is it a class nested in this class?
+        qn = curQName + "." + tn;
+        cls = reflectiveGetType(qn);
+        if (cls != null) {
+            return getOrCreateClassifierVertex(cls, ce);
+        }
+        triedNames.add(qn);
+        for (String nqn : nestedClassifierNames(qn)) {
+            cls = reflectiveGetType(nqn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+            // triedNames.add(nqn);
+        }
+
+
+        // Is it a class in the same package?
+        qn = curPkgQName + "." + tn;
+        cls = reflectiveGetType(qn);
+        if (cls != null) {
+            return getOrCreateClassifierVertex(cls, ce);
+        }
+        triedNames.add(qn);
+        for (String nqn : nestedClassifierNames(qn)) {
+            cls = reflectiveGetType(nqn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+            // triedNames.add(nqn);
+        }
+
+        // Is it a class imported by a package import foo.bar.*?
+        for (Object pn : ((SymbolTableStack) #importedPackages#)
+                                     .getTop().getMap().keySet()) {
+            qn = pn + "." + tn;
+            cls = reflectiveGetType(qn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+            triedNames.add(qn);
+        }
+        for (String nqn : nestedClassifierNames(qn)) {
+            cls = reflectiveGetType(nqn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+            // triedNames.add(nqn);
+        }
+
+        // Is it a class from java.lang?
+        qn = "java.lang." + tn;
+        cls = reflectiveGetType(qn);
+        if (cls != null) {
+            return getOrCreateClassifierVertex(cls, ce);
+        }
+        triedNames.add(qn);
+        for (String nqn : nestedClassifierNames(qn)) {
+            cls = reflectiveGetType(nqn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+            // triedNames.add(nqn);
+        }
+
+        throw new RuntimeException("Couldn't resolve type " + tn
+            + ".  I've tried " + triedNames
+            + ".  Is your CLASSPATH ok?");
+    }
 }
 
 exports

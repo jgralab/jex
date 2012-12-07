@@ -16,8 +16,7 @@ exports
   context-free syntax
 
     @Symboltable{importedPackages, importedClassifiers}
-    rule #{statements = 0;}
-          $ = SourceFile();
+    rule #$ = SourceFile();
           $.path = file();
           $packageDecl = {return defaultPackage;};
           {curQName = "";}#
