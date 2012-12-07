@@ -91,7 +91,7 @@ user code {
     if (idx != -1)
       ts = ts.substring(0, idx);
     // System.out.println("Stripped TypeSpec " + typeSpec + " to " + ts);
-    return ts.replaceAll("\\s+", "");
+    return ts;
   }
 
   // Rips out the simple name of a qualified name, possibly including type parameters
@@ -158,10 +158,19 @@ user code {
     return l;
   }
 
+  static String canonicalizeQName(Object typeSpec) {
+    String tn = ((String) typeSpec);
+    tn = tn.replaceAll("\\s+", " ");
+    tn = tn.replaceAll("([,<>])\\s+", "$1");
+    tn = tn.replaceAll("\\s+([,<>])", "$1");
+    tn = tn.replaceAll("\\A\\s+", "");
+    tn = tn.replaceAll("\\s+\\z", "");
+    return tn;
+  }
+
   Vertex resolveType(Object typeSpec, Object currentElement) {
     // System.out.println("got type: '" + typeSpec + "'");
-    String tn = stripTypeParams(typeSpec);
-
+    String tn = canonicalizeQName(typeSpec);
     if (primTypes.containsKey(tn)) {
       return primTypes.get(tn);
     } if (tn.endsWith("[]")) {
