@@ -58,7 +58,7 @@ exports
     rule #$=Method();
           $mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
-         ({(TypeParam #HasTypeParam($, $0);#) ","}+)?
+         ("<" {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          Type Id
          #HasType($, $2);
           $.modifiers = $mods;
