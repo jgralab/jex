@@ -3,7 +3,8 @@ module java/CompilationUnits
 imports
   java/ClassifierDeclarations   %% ClassifierDeclaration
   java/Annotations              %% Annotation
-  java/Names                    %% PackageName
+  java/Packages                 %% PackageName
+  java/Types                    %% ClassifierType
 
 import declarations
 	de.uni_koblenz.jgralab.TemporaryVertex;
@@ -44,14 +45,14 @@ exports
             #$=name2Package.use(lexem($2).replaceAll("\\s+", ""));#
 
     %% ImportDeclaration
-    rule "import" TypeName ";"
+    rule "import" ClassifierType ";"
          #$ = {return resolveType(#lexem($1)#, currentElement);};
-          $.qualifiedName = lexem($1);
+          %% name and qualifiedName are already set by resolveType()
           importedClassifiers.declare($.name, $);#
          -> ImportDeclaration
     rule "import" PackageName       "." "*" ";"  -> ImportDeclaration
       #$ = name2Package.useOrDeclare(lexem($1));
        $.qualifiedName = lexem($1);
        importedPackages.declare(lexem($1), $);#
-    rule "import" "static" TypeName "." Id  ";"  -> ImportDeclaration
-    rule "import" "static" TypeName "." "*" ";"  -> ImportDeclaration
+    rule "import" "static" ClassifierType "." Id  ";"  -> ImportDeclaration
+    rule "import" "static" ClassifierType "." "*" ";"  -> ImportDeclaration

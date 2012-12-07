@@ -1,0 +1,44 @@
+module java/Packages
+imports
+  java/Identifiers
+
+user code{
+  private boolean isContainsPackageAlreadyCreated(Vertex parentPackage, Vertex pack) {
+    for (Edge edge: pack.incidences(getEdgeClass("ContainsPackage"), EdgeDirection.IN)) {
+      if (edge.getThat() == parentPackage) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+exports
+  sorts
+    PackageName
+
+  context-free syntax
+
+    %% PackageName
+    rule #$qualName = "";
+          $parentPackage = {return defaultPackage;};#
+          {
+            Id #{if (isPackageDeclaration) {
+              #$qualName = $qualName.concat(lexem($0));
+               $package = name2Package.use($qualName);#
+               if (#$package#==null) {#
+                 $package = Package();
+                 $package.name = lexem($0);
+                 $package.qualifiedName = $qualName;
+                 $package = name2Package.declare($qualName, $package);#
+               }
+               if (!isContainsPackageAlreadyCreated((Vertex) #$parentPackage#,
+                     (Vertex) #$package#)) {
+                 #ContainsPackage($parentPackage, $package);#
+               }
+               #$parentPackage = $package;#
+             }
+           }#
+           "." #$qualName = $qualName.concat(".");#
+         }+ -> PackageName
+

@@ -1,0 +1,52 @@
+module java/Types
+
+imports
+  java/Packages          %% PackageName
+  java/Identifiers       %% Id
+
+
+exports
+  sorts
+    PrimType
+    ArrayType
+    ClassifierType
+    TypeArgs
+    TypeParams
+
+  context-free syntax
+
+    %% Type
+    rule PrimType       -> Type
+    rule ArrayType      -> Type
+    rule ClassifierType -> Type
+
+    %% Primitive types
+    rule "boolean"                        -> PrimType
+    rule "int"                            -> PrimType
+    rule "long"                           -> PrimType
+    rule "char"                           -> PrimType
+    rule "byte"                           -> PrimType
+    rule "short"                          -> PrimType
+    rule "float"                          -> PrimType
+    rule "double"                         -> PrimType
+    rule "void"                           -> PrimType
+
+    %% ArrayType
+    rule Type ("[" "]")+                  -> ArrayType
+    rule Type "..."                       -> ArrayType
+
+    %% ClassifierType
+    rule Id TypeArgs?                   -> ClassifierType
+    rule PackageName "." Id TypeArgs?   -> ClassifierType
+
+    %% TypeArgs
+    rule "<" {ActualTypeArg ","}+ ">" -> TypeArgs
+    rule Type                         -> ActualTypeArg
+    rule "?" WildcardBound?           -> ActualTypeArg
+    rule "extends" ClassifierType     -> WildcardBound
+    rule "super"   ClassifierType     -> WildcardBound
+
+    %% TypeParam
+    rule "<" {TypeParam ","}+ ">"               -> TypeParams
+    rule Id TypeBound?                          -> TypeParam
+    rule "extends" {ClassifierType "&"}+        -> TypeBound

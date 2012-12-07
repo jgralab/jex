@@ -30,7 +30,7 @@ import declarations
 
 user code {
   private Vertex defaultPackage;
-  
+
   {
     defaultPackage = createVertex("Package", new Position());
     defaultPackage.setAttribute("name","");
@@ -91,7 +91,7 @@ user code {
     if (idx != -1)
       ts = ts.substring(0, idx);
     // System.out.println("Stripped TypeSpec " + typeSpec + " to " + ts);
-    return ts;
+    return ts.replaceAll("\\s+", "");
   }
 
   // Rips out the simple name of a qualified name, possibly including type parameters
@@ -159,6 +159,7 @@ user code {
   }
 
   Vertex resolveType(Object typeSpec, Object currentElement) {
+    // System.out.println("got type: '" + typeSpec + "'");
     String tn = stripTypeParams(typeSpec);
 
     if (primTypes.containsKey(tn)) {
@@ -222,7 +223,7 @@ user code {
       if (cls != null) {
         return getOrCreateClassifierVertex(cls, ce);
       }
-      triedNames.add(nqn);
+      // triedNames.add(nqn);
     }
 
     // Is it an imported class foo.bar.Baz?
@@ -243,7 +244,7 @@ user code {
       if (cls != null) {
         return getOrCreateClassifierVertex(cls, ce);
       }
-      triedNames.add(nqn);
+      // triedNames.add(nqn);
     }
 
 
@@ -259,7 +260,7 @@ user code {
       if (cls != null) {
         return getOrCreateClassifierVertex(cls, ce);
       }
-      triedNames.add(nqn);
+      // triedNames.add(nqn);
     }
 
     // Is it a class imported by a package import foo.bar.*?
@@ -277,7 +278,7 @@ user code {
       if (cls != null) {
         return getOrCreateClassifierVertex(cls, ce);
       }
-      triedNames.add(nqn);
+      // triedNames.add(nqn);
     }
 
     // Is it a class from java.lang?
@@ -292,7 +293,7 @@ user code {
       if (cls != null) {
         return getOrCreateClassifierVertex(cls, ce);
       }
-      triedNames.add(nqn);
+      // triedNames.add(nqn);
     }
 
     throw new RuntimeException("Couldn't resolve type " + tn

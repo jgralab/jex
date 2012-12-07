@@ -2,7 +2,7 @@ module java/ClassifierDeclarations
 imports
   java/Modifiers     %% Modifier
   java/Identifiers   %% Id
-  java/Names         %% TypeSpec, TypeParams
+  java/Types         %% ClassifierType, TypeParams
   java/Members       %% Member, InitializerBlock, EnumConstant, AnnotationElementDecl
 
 global actions
@@ -33,10 +33,10 @@ exports
          #$=Class();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
          TypeParams?
-         ("extends" TypeSpec
+         ("extends" ClassifierType
           #$extType = {return resolveType(#lexem($1)#, currentElement);};
            Extends($, $extType);#)?
-         ("implements" {(TypeSpec
+         ("implements" {(ClassifierType
           #$impledIFace = {return resolveType(#lexem($0)#, currentElement);};
            Implements($, $impledIFace);#
           ) ","}+)?
@@ -46,7 +46,7 @@ exports
     rule ((Modifier #$mods.add($0);#)|Annotation)* "enum" Id
          #$=Enum();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#        
-         ("implements" {(TypeSpec
+         ("implements" {(ClassifierType
           #$impledIFace = {return resolveType(#lexem($0)#, currentElement);};
            Implements($, $impledIFace);#           
           ) ","}+)?
@@ -58,7 +58,7 @@ exports
          #$=Interface();
           {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#        
          TypeParams?
-         ("extends" {(TypeSpec
+         ("extends" {(ClassifierType
           #$extType = {return resolveType(#lexem($0)#, currentElement);};
            Extends($, $extType);#
           ) ","}+)?

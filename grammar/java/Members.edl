@@ -2,7 +2,7 @@ module java/Members
 imports
   java/Modifiers         %% Modifier
   java/Identifiers       %% Id
-  java/Names             %% TypeSpec, TypeParams
+  java/Types             %% Type, TypeParams
   java/CharacterLiterals %% CharLiteral
   java/StringLiterals    %% StringLiteral
   java/Comments          %% Comment
@@ -30,7 +30,7 @@ exports
     %% AnnotationElementDecl
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#)| Annotation)*
-         TypeSpec Id
+         Type Id
          #$=AnnotationElement();
           $type = {return resolveType(#lexem($1)#, currentElement);};
           HasType($, $type);
@@ -43,7 +43,7 @@ exports
     %% FieldDeclaration
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
-         TypeSpec Id
+         Type Id
          #$=Field();
           $type = {return resolveType(#lexem($1)#, currentElement);};
           HasType($, $type);
@@ -59,7 +59,7 @@ exports
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
          TypeParams?
-         TypeSpec Id
+         Type Id
          #$=Method();
           $type = {return resolveType(#lexem($2)#, currentElement);};
           HasType($, $type);
@@ -68,7 +68,7 @@ exports
           $classifier = {return resolveClassifier(curQName, currentElement);};
           Declares($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
-         ("throws" {(TypeSpec
+         ("throws" {(Type
           #$ex = {return resolveType(#lexem($0)#, currentElement);};
            Throws($, $ex);#) ","}+)?
          (Block | ";" | (Block ";"))
@@ -76,7 +76,7 @@ exports
     %% ParamDeclaration
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#)| Annotation)*
-         TypeSpec Id
+         Type Id
          #$ = Parameter();
           $type = {return resolveType(#lexem($1)#, currentElement);};
           HasType($, $type);
@@ -95,7 +95,7 @@ exports
           $classifier = {return resolveClassifier(curQName, currentElement);};
           Declares($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
-         ("throws" {(TypeSpec
+         ("throws" {(Type
           #$ex = {return resolveType(#lexem($0)#, currentElement);};
            Throws($, $ex);#) ","}+)?
          Block
