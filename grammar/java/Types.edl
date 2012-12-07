@@ -50,10 +50,11 @@ exports
          #$ = {return resolveClassifier(#$0#, currentElement);};#
     rule PackageName "." Id             -> PlainClassifierType
          #$ = {return resolveClassifier(#$0.concat(".").concat($2)#, currentElement);};#
+    rule PlainClassifierType -> ClassifierType #$ = $0;#
     rule #$ = ParametrizedType();#
          PlainClassifierType
          #HasGenericType($, $0);#
-         ("<" {(TypeArg #HasTypeArg($, $0);#) ","}+ ">")?
+         "<" {(TypeArg #HasTypeArg($, $0);#) ","}+ ">"
          -> ClassifierType
 
     %% TypeArg
