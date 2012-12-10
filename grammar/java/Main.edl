@@ -24,10 +24,14 @@ import declarations
   java.util.HashMap;
   java.util.regex.Pattern;
   java.util.regex.Matcher;
+  java.lang.reflect.Modifier;
+  de.uni_koblenz.simple_java.schema.Modifiers;
+  de.uni_koblenz.jgralab.JGraLab;
   de.uni_koblenz.jgralab.TemporaryVertex;
   de.uni_koblenz.jgralab.EdgeDirection;
   de.uni_koblenz.edl.parser.Position;
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
+  org.pcollections.PSet;
 
 user code {
     private Vertex defaultPackage;
@@ -139,6 +143,25 @@ user code {
 
         x.setAttribute("qualifiedName", qn);
         x.setAttribute("name", cls.getSimpleName());
+
+        PSet<Modifiers> mods = JGraLab.set();
+        int modifiers = cls.getModifiers();
+        if (Modifier.isAbstract(modifiers) && !Modifier.isInterface(modifiers)) {
+            mods = mods.plus(Modifiers.ABSTRACT);
+        } else if (Modifier.isFinal(modifiers)) {
+            mods = mods.plus(Modifiers.FINAL);
+        } else if (Modifier.isPrivate(modifiers)) {
+            mods = mods.plus(Modifiers.PRIVATE);
+        } else if (Modifier.isProtected(modifiers)) {
+            mods = mods.plus(Modifiers.PROTECTED);
+        } else if (Modifier.isPublic(modifiers)) {
+            mods = mods.plus(Modifiers.PUBLIC);
+        } else if (Modifier.isStatic(modifiers)) {
+            mods = mods.plus(Modifiers.STATIC);
+        } else if (Modifier.isStrict(modifiers)) {
+            mods = mods.plus(Modifiers.STRICTFP);
+        }
+        x.setAttribute("modifiers", mods);
 
         // Declare it in the symbol table!
         stck.declare(qn, x);
