@@ -76,7 +76,7 @@ exports
          #$ = Parameter();
           HasType($, $1);
           $.modifiers = $mods;
-          $.name = lexem($2);#
+          $.name = $2;#
          -> ParamDeclaration
     rule MethodDeclaration -> Member
 
