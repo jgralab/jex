@@ -68,7 +68,7 @@ exports
          PlainClassifierType
          #HasGenericType($, $0);#
          "<" {(TypeArg #HasTypeArg($, $0);#) ","}+ ">"
-         -> ClassifierType
+         -> ClassifierType #{setParametrizedTypeName(#$#);}#
 
     %% TypeArg
     rule Type                         -> TypeArg #$ = $0;#
@@ -83,7 +83,7 @@ exports
               $.name = "?";
               $.qualifiedName = "?";#
          ((UpperWildcardBound #HasUpperBound($, $0);#)
-          | (LowerWildcardBound #HasLowerBound($, $0);#))? 
+          | (LowerWildcardBound #HasLowerBound($, $0);#))?
          -> TypeArg
     rule "extends" ClassifierType     -> UpperWildcardBound #$ = $1;#
     rule "super"   ClassifierType     -> LowerWildcardBound #$ = $1;#

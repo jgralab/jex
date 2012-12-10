@@ -95,6 +95,37 @@ user code {
         }
     }
 
+    private static void setParametrizedTypeName(Object parametrizedType) {
+        Vertex pt = (Vertex) parametrizedType;
+        StringBuilder name = new StringBuilder();
+        StringBuilder qname = new StringBuilder();
+        boolean first = true;
+        boolean firstTA = true;
+        for (Edge inc: pt.incidences(EdgeDirection.OUT)) {
+            Vertex o = inc.getThat();
+            if (first) {
+              first = false;
+              name.append(o.getAttribute("name"));
+              qname.append(o.getAttribute("qualifiedName"));
+              name.append("<");
+              qname.append("<");
+            } else {
+              if (firstTA) {
+                  firstTA = false;
+              } else {
+                  name.append(",");
+                  qname.append(",");
+              }
+              name.append(o.getAttribute("name"));
+              qname.append(o.getAttribute("qualifiedName"));
+            }
+        }
+        name.append(">");
+        qname.append(">");
+        pt.setAttribute("name", name.toString());
+        pt.setAttribute("qualifiedName", qname.toString());
+    }
+
     private static String stripTypeParams(Object typeSpec) {
         String ts = (String) typeSpec;
         int idx = ts.indexOf('<');
