@@ -35,16 +35,18 @@ exports
     rule "void"                           -> PrimType
 
     %% ArrayType
-    rule Type #$ = ArrayType();
-               HasElementType($, $0);
-               $.name = $0.name;
-               $.qualifiedName = $0.qualifiedName;
-               $dims = 0;#
+    rule PrimType        -> NonArrayType #$=$0;#
+    rule ClassifierType  -> NonArrayType #$=$0;#
+    rule NonArrayType #$ = ArrayType();
+                       HasElementType($, $0);
+                       $.name = $0.name;
+                       $.qualifiedName = $0.qualifiedName;
+                       $dims = 0;#
          ("[" "]" #$dims = {return ((Integer) #$dims#) + 1;};
                    $.name = $.name.concat("[]");
                    $.qualifiedName = $.qualifiedName.concat("[]");#)+
          #$.dimensions = $dims;# -> ArrayType
-    rule Type "..."
+    rule NonArrayType "..."
          #$ = ArrayType();
           $.name = $0.name.concat("[]");
           $.qualifiedName = $0.qualifiedName.concat("[]");
