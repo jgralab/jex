@@ -259,6 +259,18 @@ user code {
         }
         triedNames.add(qn);
 
+        // Is it a class nested in this classes' superclass?
+        Class curCls = reflectiveGetType(curQName);
+        Class superCls = curCls.getSuperclass();
+        if (superCls != null) {
+            qn = superCls.getName() + "." + tn;
+            cls = reflectiveGetType(qn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+            triedNames.add(qn);
+        }
+
         // Is it a class in the same package?
         qn = curPkgQName + "." + tn;
         cls = reflectiveGetType(qn);
