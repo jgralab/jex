@@ -70,7 +70,14 @@ exports
 
     %% TypeArg
     rule Type                         -> TypeArg #$ = $0;#
-    rule "?" #$ = WildcardType();
+    rule "?" #$ = {if (#name2NamedElement.use("?")# != null) {
+                       return #name2NamedElement.use("?")#;
+                   } else {
+                       Vertex x = (Vertex) #WildcardType()#;
+                       SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
+                       stck.declare("?", x);
+                       return x;
+                   }};
               $.name = "?";
               $.qualifiedName = "?";#
          ((UpperWildcardBound #HasUpperBound($, $0);#)
