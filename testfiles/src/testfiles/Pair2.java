@@ -1,24 +1,24 @@
 package testfiles;
 
 
-public class Pair2<A, B extends A> {
-	A theA;
-	B theB;
+public class Pair2<Aaa, Bee extends Aaa> {
+	Aaa theA;
+	Bee theB;
 
-	public Pair2(A a, B b) {
+	public Pair2(Aaa a, Bee b) {
 		theA = a;
 		theB = b;
 	}
 
-	public A getA() {
+	public Aaa getA() {
 		return theA;
 	}
 
-	public B getB() {
+	public Bee getB() {
 		return theB;
 	}
 	
-	Iterable<? extends B> foo(){
+	Iterable<? extends Bee> foo(){
 		return null;
 	}
 }

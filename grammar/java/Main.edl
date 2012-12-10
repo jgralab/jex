@@ -30,6 +30,7 @@ import declarations
   de.uni_koblenz.jgralab.TemporaryVertex;
   de.uni_koblenz.jgralab.EdgeDirection;
   de.uni_koblenz.edl.parser.Position;
+  de.uni_koblenz.edl.parser.Rule;
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
   org.pcollections.PSet;
 

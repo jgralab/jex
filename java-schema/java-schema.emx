@@ -2108,7 +2108,7 @@
           <layoutConstraint xmi:type="notation:Location" xmi:id="_Noz9QEBaEeKUR8bUwZ_76A" y="1058"/>
         </children>
         <styles xmi:type="umlnotation:UMLConnectorStyle" xmi:id="_Noz9IUBaEeKUR8bUwZ_76A" routing="Rectilinear" lineWidth="1" showStereotype="Text"/>
-        <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Noz9IkBaEeKUR8bUwZ_76A" points="[-1494, -663, 4944, 20]$[-6258, -663, 180, 20]"/>
+        <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_Noz9IkBaEeKUR8bUwZ_76A" points="[-1494, -566, 5464, -144]$[-6258, -566, 700, -144]"/>
         <targetAnchor xmi:type="notation:IdentityAnchor" xmi:id="_figtIEBbEeKUR8bUwZ_76A" id="(0.871669,0.38693035)"/>
       </edges>
       <edges xmi:id="_xI5xiUBaEeKUR8bUwZ_76A" element="_F00swDihEeKUR8bUwZ_76A" source="_ixY2MEBWEeKUR8bUwZ_76A" target="_xIzD0EBaEeKUR8bUwZ_76A">
@@ -2630,9 +2630,9 @@
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_4m9egkBaEeKUR8bUwZ_76A" value="1"/>
       <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_4m9egUBaEeKUR8bUwZ_76A" value="1"/>
     </ownedAttribute>
-    <ownedAttribute xmi:id="_x1ARcEB5EeKUR8bUwZ_76A" name="type" visibility="private" type="_gR6IUDSrEeKtz5n8JZHypg" association="_x06K0EB5EeKUR8bUwZ_76A">
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_x1ARckB5EeKUR8bUwZ_76A" value="1"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_x1ARcUB5EeKUR8bUwZ_76A"/>
+    <ownedAttribute xmi:id="_x1ARcEB5EeKUR8bUwZ_76A" name="typeArgs" visibility="private" type="_gR6IUDSrEeKtz5n8JZHypg" association="_x06K0EB5EeKUR8bUwZ_76A">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_x1ARckB5EeKUR8bUwZ_76A" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_x1ARcUB5EeKUR8bUwZ_76A" value="1"/>
     </ownedAttribute>
   </packagedElement>
   <packagedElement xmi:type="uml:Association" xmi:id="_4m3-8EBaEeKUR8bUwZ_76A" name="HasGenericType" memberEnd="_4m9egEBaEeKUR8bUwZ_76A _4nDlIEBaEeKUR8bUwZ_76A">
