@@ -25,6 +25,7 @@ import declarations
   java.util.regex.Pattern;
   java.util.regex.Matcher;
   java.lang.reflect.Modifier;
+  java.lang.reflect.TypeVariable;
   de.uni_koblenz.simple_java.schema.Modifiers;
   de.uni_koblenz.jgralab.JGraLab;
   de.uni_koblenz.jgralab.TemporaryVertex;
@@ -33,6 +34,9 @@ import declarations
   de.uni_koblenz.edl.parser.Rule;
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
   org.pcollections.PSet;
+  org.spoofax.jsglr.client.AbstractParseNode;
+  org.spoofax.interpreter.terms.IStrategoTerm;
+
 
 user code {
     private Vertex defaultPackage;
@@ -108,8 +112,16 @@ user code {
         return qname;
     }
 
-    private static boolean isQualified(Object qn) {
-        return ((String) qn).indexOf('.') != -1;
+    private void initTypeParamsSymbolTable(String qname, StackElement ce) {
+        //AbstractParseNode c = ce.getRepresentedNode();
+        //LinkedList<AbstractParseNode> tpns = new LinkedList<AbstractParseNode>();
+        //getTypeParamNodes(c, tpns);
+        //System.out.println(tpns.size() + ":" + tpns);
+        Class c = reflectiveGetType(qname);
+        SymbolTableStack stck = (SymbolTableStack) #typeParams#;
+        for (TypeVariable<Class<?>> tv : c.getTypeParameters()) {
+            stck.useOrDeclare(tv.getName(), ce.getPosition());
+        }
     }
 
     private static Class reflectiveGetType(String qn) {
@@ -215,13 +227,28 @@ user code {
             if (cls != null) {
                 return getOrCreateClassifierVertex(cls, ce);
             }
-            // triedNames.add(nqn);
         }
 
         // Is it an imported class foo.bar.Baz?
         Vertex x = ((SymbolTableStack) #importedClassifiers#).use(qn);
         if (x != null) {
             return x;
+        }
+
+        // class Foo {Foo foo(){...}}
+        qn = curQName;
+        if (curQName.endsWith("." + tn)) {
+           cls = reflectiveGetType(qn);
+           if (cls != null) {
+               return getOrCreateClassifierVertex(cls, ce);
+           }
+           triedNames.add(qn);
+           for (String nqn : nestedClassifierNames(qn)) {
+               cls = reflectiveGetType(nqn);
+               if (cls != null) {
+                   return getOrCreateClassifierVertex(cls, ce);
+               }
+           }
         }
 
         // Is it a class nested in this class?
@@ -236,9 +263,23 @@ user code {
             if (cls != null) {
                 return getOrCreateClassifierVertex(cls, ce);
             }
-            // triedNames.add(nqn);
         }
 
+        // TODO: That's a hack for getting GraphIO parsed...
+        // Maybe a reference to a nested class, and we are currently also in a
+        // nested class?
+        qn = curQName.replaceAll("\\.\\w+$", "." + tn);
+        cls = reflectiveGetType(qn);
+        if (cls != null) {
+            return getOrCreateClassifierVertex(cls, ce);
+        }
+        triedNames.add(qn);
+        for (String nqn : nestedClassifierNames(qn)) {
+            cls = reflectiveGetType(nqn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+        }
 
         // Is it a class in the same package?
         qn = curPkgQName + "." + tn;
@@ -252,7 +293,6 @@ user code {
             if (cls != null) {
                 return getOrCreateClassifierVertex(cls, ce);
             }
-            // triedNames.add(nqn);
         }
 
         // Is it a class imported by a package import foo.bar.*?
@@ -270,7 +310,6 @@ user code {
             if (cls != null) {
                 return getOrCreateClassifierVertex(cls, ce);
             }
-            // triedNames.add(nqn);
         }
 
         // Is it a class from java.lang?
