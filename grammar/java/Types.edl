@@ -68,7 +68,9 @@ exports
          PlainClassifierType
          #HasGenericType($, $0);#
          "<" {(TypeArg #HasTypeArg($, $0);#) ","}+ ">"
-         -> ClassifierType #{setParametrizedTypeName(#$#);}#
+         -> ClassifierType
+            #$.name = {return getParametrizedTypeName(#$#, false);};
+             $.qualifiedName = {return getParametrizedTypeName(#$#, true);};#
 
     %% TypeArg
     rule Type                         -> TypeArg #$ = $0;#
