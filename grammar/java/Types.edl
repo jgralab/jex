@@ -22,7 +22,6 @@ exports
     rule PrimType       -> Type #$=$0;#
     rule ArrayType      -> Type #$=$0;#
     rule ClassifierType -> Type #$=$0;#
-    rule TypeParam      -> Type #$=$0;#
 
     %% Primitive types
     rule "boolean"                        -> PrimType
@@ -47,7 +46,11 @@ exports
 
     %% ClassifierType
     rule Id                             -> PlainClassifierType
-         #$ = {return resolveClassifier(#$0#, currentElement);};#
+         %% This could be a simple name of a Classifier or a type parameter name.
+         #{if (#typeParams.use($0)# != null)
+               #$ = typeParams.use($0);#
+           else
+               #$ = {return resolveClassifier(#$0#, currentElement);};#}#
     rule PackageName "." Id             -> PlainClassifierType
          #$ = {return resolveClassifier(#$0.concat(".").concat($2)#, currentElement);};#
     rule PlainClassifierType -> ClassifierType #$ = $0;#
