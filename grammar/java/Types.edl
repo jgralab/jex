@@ -44,18 +44,17 @@ exports
          ("[" "]" #$dims = {return ((Integer) #$dims#) + 1;};
                    $name = $name.concat("[]");
                    $qualifiedName = $qualifiedName.concat("[]");#)+
-         -> ArrayType #%%name2NamedElement.useOrDeclare($qualifiedName);
-                       $ = ArrayType();
+         -> ArrayType #$ = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
                        $.name = $name;
                        $.qualifiedName = $qualifiedName;
                        $.dimensions = $dims;
-                       %%name2NamedElement.declare($.qualifiedName, $);
-                       #
+                       HasElementType($, $0);#
     rule NonArrayType "..."
-         #$ = ArrayType();
+         #$qualifiedName = $0.qualifiedName.concat("[]");
+          $ = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
+          $.qualifiedName = $qualifiedName;
           $.name = $0.name.concat("[]");
-          $.qualifiedName = $0.qualifiedName.concat("[]");
-          $.dimensions = 1;
+          $dimensions = 1;
           HasElementType($, $0);#
          -> ArrayType
 
@@ -69,37 +68,46 @@ exports
     rule PackageName "." Id             -> PlainClassifierType
          #$ = {return resolveClassifier(#$0.concat(".").concat($2)#, currentElement);};#
     rule PlainClassifierType -> ClassifierType #$ = $0;#
-    rule #$ = ParametrizedType();#
-         PlainClassifierType
-         #HasGenericType($, $0);#
-         "<" {(TypeArg #HasTypeArg($, $0);#) ","}+ ">"
+    rule PlainClassifierType
+         #$qname = $0.qualifiedName.concat("<");
+          $name = $0.name.concat("<");
+          $typeArgs = list();#
+         "<" {(TypeArg #$typeArgs.add($0);
+                        $qname = $qname.concat($0.qualifiedName);
+                        $name = $name.concat($0.name);#)
+              "," #$qname = $qname.concat(",");
+                   $name = $name.concat(",");#}+ ">"
          -> ClassifierType
-            #$.name = {return getParametrizedTypeName(#$#, false);};
-             $.qualifiedName = {return getParametrizedTypeName(#$#, true);};#
+            #$qname = $qname.concat(">");
+             $name = $name.concat(">");
+             $ = name2NamedElement.useOrDeclare($qname, "ParametrizedType");
+             HasGenericType($, $0);
+             HasTypeArg($, $typeArgs);
+             $.name = $name;
+             $.qualifiedName = $qname;#
 
     %% TypeArg
     rule Type                         -> TypeArg #$ = $0;#
-    rule "?" #$ = {if (#name2NamedElement.use("?")# != null) {
-                       return #name2NamedElement.use("?")#;
-                   } else {
-                       Vertex x = (Vertex) #WildcardType()#;
-                       SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
-                       stck.declare("?", x);
-                       return x;
-                   }};
+    rule "?" #$ = WildcardType();
               $.name = "?";
               $.qualifiedName = "?";#
-         ((UpperWildcardBound #HasUpperBound($, $0);#)
-          | (LowerWildcardBound #HasLowerBound($, $0);#))?
+         ((UpperWildcardBound
+           #HasUpperBound($, $0);
+            $.qualifiedName = $.qualifiedName.concat(" extends ")
+                               .concat($0.qualifiedName);
+            $.name = $.name.concat(" extends ").concat($0.name);#)
+          | (LowerWildcardBound
+             #HasLowerBound($, $0);
+              $.qualifiedName = $.qualifiedName.concat(" super ")
+                                 .concat($0.qualifiedName);
+              $.name = $.name.concat(" super ").concat($0.name);#))?
          -> TypeArg
     rule "extends" ClassifierType     -> UpperWildcardBound #$ = $1;#
     rule "super"   ClassifierType     -> LowerWildcardBound #$ = $1;#
 
     %% TypeParam
     rule Id
-         #$ = TypeParameter();
-          $.name = $0;
-          $.qualifiedName = {return curQName + "." + #$0#;};
-          typeParams.declare($.name, $);#
+         %% The typeParams have already been declared by initTypeParamsSymbolTable()
+         #$ = typeParams.use($0);#
          ("extends" {(ClassifierType
                       #HasBound($, $0);#) "&"}+)?  -> TypeParam

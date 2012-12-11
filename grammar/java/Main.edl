@@ -25,6 +25,7 @@ import declarations
   java.util.HashMap;
   java.util.regex.Pattern;
   java.util.regex.Matcher;
+  java.lang.reflect.Method;
   java.lang.reflect.Modifier;
   java.lang.reflect.TypeVariable;
   de.uni_koblenz.simple_java.schema.Modifiers;
@@ -141,13 +142,65 @@ user code {
         return qname;
     }
 
-    private void initTypeParamsSymbolTable(String qname, StackElement ce) {
+    private void initClassTypeParamsSymbolTable(String qname, StackElement ce) {
         Class c = reflectiveGetType(qname);
         SymbolTableStack stck = (SymbolTableStack) #typeParams#;
         for (TypeVariable<Class<?>> tv : c.getTypeParameters()) {
-            stck.useOrDeclare(tv.getName(), ce.getPosition());
+            Vertex tp = stck.useOrDeclare(tv.getName(),
+                                          getVertexClass("TypeParameter"),
+                                          ce.getPosition());
+            tp.setAttribute("name", tv.getName());
+            tp.setAttribute("qualifiedName", c.getName() + "." + tv.getName());
         }
     }
+
+    private void initMethodTypeParamsSymbolTable(StackElement ce) {
+        Class c = reflectiveGetType(curQName);
+
+        char[] content = getFileContent();
+        int i = ce.getOffset();
+        int lastSpace = i;
+        String methodName;
+        while (true) {
+          if (Character.isWhitespace(content[i])) {
+              lastSpace = i;
+          } else if (content[i] == '(') {
+              StringBuilder sb = new StringBuilder();
+              for (int j = lastSpace + 1; j < i; j++) {
+                  sb.append(content[j]);
+              }
+              methodName = sb.toString();
+              break;
+          }
+          i++;
+        }
+        
+        // TODO: we also need to get the parameter types to get the right method.
+        Method theMethod = null;
+        for (Method m : c.getMethods()) {
+            if (m.getName().equals(methodName) && m.getTypeParameters().length > 0) {
+                if (theMethod != null) {
+                    throw new RuntimeException("The generic method '" + methodName
+                        + "' isn't unambiguous in class '" + curQName + "'.");
+                }
+                theMethod = m;
+            }
+        }
+        if (theMethod == null) {
+            throw new RuntimeException("Couldn't find generic method '" + methodName
+                + "' in class '" + curQName + "'.");
+        }
+
+        SymbolTableStack stck = (SymbolTableStack) #typeParams#;
+        for (TypeVariable<Method> tv : theMethod.getTypeParameters()) {
+            Vertex tp = stck.useOrDeclare(tv.getName(),
+                                          getVertexClass("TypeParameter"),
+                                          ce.getPosition());
+            tp.setAttribute("name", tv.getName());
+            tp.setAttribute("qualifiedName", c.getName() + "." + tv.getName());
+        }
+    }
+
 
     private static Class reflectiveGetType(String qn) {
         List<String> l = nestedClassifierNames(qn);
