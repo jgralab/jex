@@ -97,51 +97,6 @@ user code {
         }
     }
 
-    private static String getParametrizedTypeName(Object parametrizedType, boolean qualified) {
-        Vertex pt = (Vertex) parametrizedType;
-        StringBuilder name = new StringBuilder();
-        boolean first = true;
-        boolean firstTA = true;
-        for (Edge inc: pt.incidences(EdgeDirection.OUT)) {
-            Vertex o = inc.getThat();
-            if (first) {
-              first = false;
-              name.append(qualified ?
-                  o.getAttribute("qualifiedName")
-                  : o.getAttribute("name"));
-              name.append("<");
-            } else {
-              if (firstTA) {
-                  firstTA = false;
-              } else {
-                  name.append(",");
-              }
-              name.append(qualified ?
-                  o.getAttribute("qualifiedName")
-                  : o.getAttribute("name"));
-            }
-        }
-        name.append(">");
-        return name.toString();
-    }
-
-    private static String stripTypeParams(Object typeSpec) {
-        String ts = (String) typeSpec;
-        int idx = ts.indexOf('<');
-        if (idx != -1)
-            ts = ts.substring(0, idx);
-        return ts;
-    }
-
-    // Rips out the simple name of a qualified name, possibly including type parameters
-    private static String getSimpleName(Object qn) {
-        String qname = stripTypeParams(qn);
-        int idx = qname.lastIndexOf('.');
-        if (idx != -1)
-            qname = qname.substring(idx + 1);
-        return qname;
-    }
-
     private void initClassTypeParamsSymbolTable(String qname, StackElement ce) {
         Class c = reflectiveGetType(qname);
         SymbolTableStack stck = (SymbolTableStack) #typeParams#;
@@ -154,13 +109,67 @@ user code {
         }
     }
 
+    private Class getTypeClass(String p, StackElement ce) {
+        if (p.contains("[")) {
+            return getArrayTypeClass(p, ce);
+        } else if (primTypes.keySet().contains(p)) {
+            return getPrimTypeClass(p, ce);
+        } else {
+            Vertex v = resolveClassifier(p, ce);
+            return reflectiveGetType((String) v.getAttribute("qualifiedName"));
+        }
+    }
+
+    private Class getArrayTypeClass(String t, StackElement ce) {
+        String[] split = t.split("\\[");
+        Class elemType = getTypeClass(split[0], ce);
+        int dims = split.length - 1;
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < dims; i++) {
+            sb.append('[');
+        }
+        if (elemType.isPrimitive()) {
+            char typeSpec = ' ';
+            if (elemType == int.class)          typeSpec = 'I';
+            else if (elemType == short.class)   typeSpec = 'S';
+            else if (elemType == byte.class)    typeSpec = 'B';
+            else if (elemType == char.class)    typeSpec = 'C';
+            else if (elemType == long.class)    typeSpec = 'J';
+            else if (elemType == float.class)   typeSpec = 'F';
+            else if (elemType == double.class)  typeSpec = 'D';
+            else if (elemType == boolean.class) typeSpec = 'Z';
+            else if (elemType == void.class) throw new RuntimeException("There are no void-arrays.");
+            else throw new RuntimeException("Cannot get class of '" + t + "'.");
+            sb.append(typeSpec);
+        } else {
+            sb.append('L');
+            sb.append(elemType.getName());
+        }
+        return reflectiveGetType(sb.toString());
+    }
+
+    private Class getPrimTypeClass(String t, StackElement ce) {
+        if (t.equals("int")) return int.class;
+        else if (t.equals("short"))   return short.class;
+        else if (t.equals("byte"))    return byte.class;
+        else if (t.equals("char"))    return char.class;
+        else if (t.equals("long"))    return long.class;
+        else if (t.equals("float"))   return float.class;
+        else if (t.equals("double"))  return double.class;
+        else if (t.equals("boolean")) return boolean.class;
+        else if (t.equals("void"))    return void.class;
+        else throw new RuntimeException("Cannot get class of '" + t + "'.");
+    }
+
     private void initMethodTypeParamsSymbolTable(StackElement ce) {
         Class c = reflectiveGetType(curQName);
 
         char[] content = getFileContent();
         int i = ce.getOffset();
         int lastSpace = i;
-        String methodName;
+        int startOfParamList = i;
+        String methodName = null;
+        String params = null;
         while (true) {
           if (Character.isWhitespace(content[i])) {
               lastSpace = i;
@@ -170,25 +179,43 @@ user code {
                   sb.append(content[j]);
               }
               methodName = sb.toString();
+              startOfParamList = i;
+          } else if (content[i] == ')') {
+              StringBuilder sb = new StringBuilder();
+              for (int j = startOfParamList + 1; j < i; j++) {
+                  sb.append(content[j]);
+              }
+              params = sb.toString().replaceAll("\\s+", " ");
               break;
           }
           i++;
         }
-        
-        // TODO: we also need to get the parameter types to get the right method.
-        Method theMethod = null;
-        for (Method m : c.getMethods()) {
-            if (m.getName().equals(methodName) && m.getTypeParameters().length > 0) {
-                if (theMethod != null) {
-                    throw new RuntimeException("The generic method '" + methodName
-                        + "' isn't unambiguous in class '" + curQName + "'.");
-                }
-                theMethod = m;
+
+        // Kill spaces before [, e.g., "int  []    []"
+        params = params.replaceAll("\\s+\\[", "[");
+        String[] typeNamePairs = params.split(",");
+        List<Class> paramTypes = new LinkedList<Class>();
+        for (String p : typeNamePairs) {
+            p = p.trim();
+            int idx = p.indexOf('<');
+            if (idx != -1) {
+                p = p.substring(0, idx);
             }
+            idx = p.indexOf(" ");
+            if (idx != -1) {
+                p = p.substring(0, idx);
+            }
+            paramTypes.add(getTypeClass(p, ce));
+            i++;
         }
-        if (theMethod == null) {
+
+        Method theMethod = null;
+        try {
+            theMethod = c.getMethod(methodName,
+                                    paramTypes.toArray(new Class[paramTypes.size()]));
+        } catch (Exception e) {
             throw new RuntimeException("Couldn't find generic method '" + methodName
-                + "' in class '" + curQName + "'.");
+                + "' in class '" + curQName + "'.", e);
         }
 
         SymbolTableStack stck = (SymbolTableStack) #typeParams#;
@@ -284,15 +311,6 @@ user code {
         tn = tn.replaceAll("([,<>])\\s+", "$1");
         tn = tn.replaceAll("\\s+([,<>])", "$1");
         return tn.trim();
-    }
-
-    private static final Pattern BRACKETS = Pattern.compile("\\[\\s*\\]");
-
-    private static String getSimpleName(String qn) {
-        int idx = qn.lastIndexOf('.');
-        if (idx != -1)
-            return qn.substring(idx + 1);
-        return qn;
     }
 
     private Vertex resolveClassifier(Object tn, Object currentElement) {
