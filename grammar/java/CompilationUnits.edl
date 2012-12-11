@@ -15,7 +15,7 @@ exports
 
   context-free syntax
 
-    @Symboltable{importedPackages, importedClassifiers}
+    @Symboltable{importedPackages, importedClassifiers, importedClassifiersQN}
     rule #$ = SourceFile();
           $.path = file();
           $packageDecl = {return defaultPackage;};
@@ -47,7 +47,8 @@ exports
     rule "import" PlainClassifierType ";"
          -> ImportDeclaration
          #$ = $1;
-          importedClassifiers.declare($.name, $);#
+          importedClassifiers.declare($.name, $);
+          importedClassifiersQN.declare($.qualifiedName, $);#
     rule "import" PackageName       "." "*" ";"  -> ImportDeclaration
       #$ = name2Package.useOrDeclare($1);
        $.qualifiedName = $1;

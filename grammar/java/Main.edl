@@ -9,8 +9,9 @@ imports
 symbol tables
   name2Package<Package>
   name2NamedElement<NamedElement>
-  importedPackages<Package>
-  importedClassifiers<Classifier>
+  importedPackages<Package>             %% QName
+  importedClassifiers<Classifier>       %% SimpleName
+  importedClassifiersQN<Classifier>     %% QName
   typeParams<TypeParameter>
 
 default values
@@ -254,12 +255,23 @@ user code {
         triedNames.add(qn);
 
         // Is it an imported class foo.bar.Baz?
-        Vertex x = ((SymbolTableStack) #importedClassifiers#).use(qn);
-        if (x != null) {
-            return x;
+        Vertex theClass = ((SymbolTableStack) #importedClassifiers#).use(qn);
+        if (theClass != null) {
+            return theClass;
         }
 
-        // class Foo {Foo foo(){...}}
+        // Is it a class nested in some imported class?
+        for (Object iqn : ((SymbolTableStack) #importedClassifiersQN#)
+                          .getTop().getMap().keySet()) {
+            qn = iqn + "." + tn;
+            cls = reflectiveGetType(qn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+            triedNames.add(qn);
+        }
+
+        // Is it this class itself?
         qn = curQName;
         if (curQName.endsWith("." + tn)) {
            cls = reflectiveGetType(qn);
@@ -287,16 +299,25 @@ user code {
         }
         triedNames.add(qn);
 
-        // Is it a class nested in this classes' superclass?
+        // Is it a class nested in this classes' superclass or implemented
+        // interfaces (transitively, including also the interfaces of
+        // superclasses)?
         Class curCls = reflectiveGetType(curQName);
-        Class superCls = curCls.getSuperclass();
-        if (superCls != null) {
-            qn = superCls.getName() + "." + tn;
+        LinkedList<Class> supers = new LinkedList<Class>();
+        Class superClass = curCls.getSuperclass();
+        if (superClass != null) { supers.offer(superClass); }
+        for (Class iface : curCls.getInterfaces()) { supers.offer(iface); }
+        while (!supers.isEmpty()) {
+            Class superType = supers.poll();
+            qn = superType.getName() + "." + tn;
             cls = reflectiveGetType(qn);
             if (cls != null) {
                 return getOrCreateClassifierVertex(cls, ce);
             }
             triedNames.add(qn);
+            superClass = superType.getSuperclass();
+            if (superClass != null) { supers.offer(superClass); }
+            for (Class superIface : superType.getInterfaces()) { supers.offer(superIface); }
         }
 
         // Is it a class in the same package?
