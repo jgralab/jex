@@ -112,9 +112,9 @@ user code {
         List<String> tps = new LinkedList<String>();
         while (true) {
             char c = content[i];
-            if (inName && (c == '>' || Character.isWhitespace(c))) {
+            if (inName && (c == '>' || Character.isWhitespace(c) || c == ',')) {
                 inName = false;
-                tps.add(String.valueOf(content, start, i - start));
+                tps.add(String.valueOf(content, start, i - start).trim());
             }
 
             if (c == '<') {
@@ -127,6 +127,10 @@ user code {
             }
             if (nesting == 0) break;
             i++;
+        }
+        // System.out.println("TypeParams: " + tps);
+        if (tps.isEmpty()) {
+            throw new RuntimeException("No type parameters found tho there should be some!");
         }
 
         SymbolTableStack stck = (SymbolTableStack) #typeParams#;
