@@ -278,6 +278,7 @@ user code {
         triedNames.add(qn);
 
         // TODO: That's a hack for getting GraphIO parsed...
+        // FIXME: Create a stack of parent classes when parsing and use it here!
         // Maybe a reference to a nested class, and we are currently also in a
         // nested class?
         qn = curQName.replaceAll("\\.\\w+$", "." + tn);
@@ -291,21 +292,27 @@ user code {
         // interfaces (transitively, including also the interfaces of
         // superclasses)?
         Class curCls = reflectiveGetType(curQName);
-        LinkedList<Class> supers = new LinkedList<Class>();
-        Class superClass = curCls.getSuperclass();
-        if (superClass != null) { supers.offer(superClass); }
-        for (Class iface : curCls.getInterfaces()) { supers.offer(iface); }
-        while (!supers.isEmpty()) {
-            Class superType = supers.poll();
-            qn = superType.getName() + "." + tn;
-            cls = reflectiveGetType(qn);
-            if (cls != null) {
-                return getOrCreateClassifierVertex(cls, ce);
-            }
-            triedNames.add(qn);
-            superClass = superType.getSuperclass();
+        if (curCls != null) {
+            // curCls may be null when a class declaration has an annotation, and now
+            // we're looking up the annotation type.
+            LinkedList<Class> supers = new LinkedList<Class>();
+            Class superClass = curCls.getSuperclass();
             if (superClass != null) { supers.offer(superClass); }
-            for (Class superIface : superType.getInterfaces()) { supers.offer(superIface); }
+            for (Class iface : curCls.getInterfaces()) { supers.offer(iface); }
+            while (!supers.isEmpty()) {
+                Class superType = supers.poll();
+                qn = superType.getName() + "." + tn;
+                cls = reflectiveGetType(qn);
+                if (cls != null) {
+                    return getOrCreateClassifierVertex(cls, ce);
+                }
+                triedNames.add(qn);
+                superClass = superType.getSuperclass();
+                if (superClass != null) { supers.offer(superClass); }
+                for (Class superIface : superType.getInterfaces()) {
+                    supers.offer(superIface);
+                }
+            }
         }
 
         // Is it a class in the same package?
