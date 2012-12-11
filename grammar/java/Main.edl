@@ -23,9 +23,6 @@ import declarations
   java.util.LinkedList;
   java.util.Map;
   java.util.HashMap;
-  java.util.regex.Pattern;
-  java.util.regex.Matcher;
-  java.lang.reflect.Method;
   java.lang.reflect.Modifier;
   java.lang.reflect.TypeVariable;
   de.uni_koblenz.simple_java.schema.Modifiers;
@@ -33,11 +30,8 @@ import declarations
   de.uni_koblenz.jgralab.TemporaryVertex;
   de.uni_koblenz.jgralab.EdgeDirection;
   de.uni_koblenz.edl.parser.Position;
-  de.uni_koblenz.edl.parser.Rule;
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
   org.pcollections.PSet;
-  org.spoofax.jsglr.client.AbstractParseNode;
-  org.spoofax.interpreter.terms.IStrategoTerm;
 
 
 user code {
@@ -109,122 +103,41 @@ user code {
         }
     }
 
-    private Class getTypeClass(String p, StackElement ce) {
-        if (p.contains("[")) {
-            return getArrayTypeClass(p, ce);
-        } else if (primTypes.keySet().contains(p)) {
-            return getPrimTypeClass(p, ce);
-        } else {
-            Vertex v = resolveClassifier(p, ce);
-            return reflectiveGetType((String) v.getAttribute("qualifiedName"));
-        }
-    }
-
-    private Class getArrayTypeClass(String t, StackElement ce) {
-        String[] split = t.split("\\[");
-        Class elemType = getTypeClass(split[0], ce);
-        int dims = split.length - 1;
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < dims; i++) {
-            sb.append('[');
-        }
-        if (elemType.isPrimitive()) {
-            char typeSpec = ' ';
-            if (elemType == int.class)          typeSpec = 'I';
-            else if (elemType == short.class)   typeSpec = 'S';
-            else if (elemType == byte.class)    typeSpec = 'B';
-            else if (elemType == char.class)    typeSpec = 'C';
-            else if (elemType == long.class)    typeSpec = 'J';
-            else if (elemType == float.class)   typeSpec = 'F';
-            else if (elemType == double.class)  typeSpec = 'D';
-            else if (elemType == boolean.class) typeSpec = 'Z';
-            else if (elemType == void.class) throw new RuntimeException("There are no void-arrays.");
-            else throw new RuntimeException("Cannot get class of '" + t + "'.");
-            sb.append(typeSpec);
-        } else {
-            sb.append('L');
-            sb.append(elemType.getName());
-        }
-        return reflectiveGetType(sb.toString());
-    }
-
-    private Class getPrimTypeClass(String t, StackElement ce) {
-        if (t.equals("int")) return int.class;
-        else if (t.equals("short"))   return short.class;
-        else if (t.equals("byte"))    return byte.class;
-        else if (t.equals("char"))    return char.class;
-        else if (t.equals("long"))    return long.class;
-        else if (t.equals("float"))   return float.class;
-        else if (t.equals("double"))  return double.class;
-        else if (t.equals("boolean")) return boolean.class;
-        else if (t.equals("void"))    return void.class;
-        else throw new RuntimeException("Cannot get class of '" + t + "'.");
-    }
-
     private void initMethodTypeParamsSymbolTable(StackElement ce) {
-        Class c = reflectiveGetType(curQName);
-
         char[] content = getFileContent();
-        int i = ce.getOffset();
-        int lastSpace = i;
-        int startOfParamList = i;
-        String methodName = null;
-        String params = null;
+        int i = ce.getOffset() + 1;
+        int start = i;
+        int nesting = 1;
+        boolean inName = true;
+        List<String> tps = new LinkedList<String>();
         while (true) {
-          if (Character.isWhitespace(content[i])) {
-              lastSpace = i;
-          } else if (content[i] == '(') {
-              StringBuilder sb = new StringBuilder();
-              for (int j = lastSpace + 1; j < i; j++) {
-                  sb.append(content[j]);
-              }
-              methodName = sb.toString();
-              startOfParamList = i;
-          } else if (content[i] == ')') {
-              StringBuilder sb = new StringBuilder();
-              for (int j = startOfParamList + 1; j < i; j++) {
-                  sb.append(content[j]);
-              }
-              params = sb.toString().replaceAll("\\s+", " ");
-              break;
-          }
-          i++;
-        }
+            char c = content[i];
+            if (inName && (c == '>' || Character.isWhitespace(c))) {
+                inName = false;
+                tps.add(String.valueOf(content, start, i - start));
+            }
 
-        // Kill spaces before [, e.g., "int  []    []"
-        params = params.replaceAll("\\s+\\[", "[");
-        String[] typeNamePairs = params.split(",");
-        List<Class> paramTypes = new LinkedList<Class>();
-        for (String p : typeNamePairs) {
-            p = p.trim();
-            int idx = p.indexOf('<');
-            if (idx != -1) {
-                p = p.substring(0, idx);
+            if (c == '<') {
+                nesting++;
+            } else if (c == '>') {
+                nesting--;
+            } else if ((c == ',') && (nesting == 1)) {
+                start = ++i;
+                inName = true;
             }
-            idx = p.indexOf(" ");
-            if (idx != -1) {
-                p = p.substring(0, idx);
-            }
-            paramTypes.add(getTypeClass(p, ce));
+            if (nesting == 0) break;
             i++;
         }
 
-        Method theMethod = null;
-        try {
-            theMethod = c.getMethod(methodName,
-                                    paramTypes.toArray(new Class[paramTypes.size()]));
-        } catch (Exception e) {
-            throw new RuntimeException("Couldn't find generic method '" + methodName
-                + "' in class '" + curQName + "'.", e);
-        }
-
         SymbolTableStack stck = (SymbolTableStack) #typeParams#;
-        for (TypeVariable<Method> tv : theMethod.getTypeParameters()) {
-            Vertex tp = stck.useOrDeclare(tv.getName(),
-                                          getVertexClass("TypeParameter"),
-                                          ce.getPosition());
-            tp.setAttribute("name", tv.getName());
-            tp.setAttribute("qualifiedName", c.getName() + "." + tv.getName());
+        for (String tp : tps) {
+            Vertex tpv = stck.useOrDeclare(tp,
+                                           getVertexClass("TypeParameter"),
+                                           ce.getPosition());
+            tpv.setAttribute("name", tp);
+            // TODO: hm, the type parameter of a method has no real qname...
+            // at least encode the method name in it, too
+            tpv.setAttribute("qualifiedName", curQName + "." + tp);
         }
     }
 
