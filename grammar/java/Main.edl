@@ -156,7 +156,7 @@ user code {
     private Vertex getOrCreateClassifierVertex(Class cls, StackElement ce) {
         assert (cls == null);
 
-        String qn = cls.getName();
+        String qn = cls.getCanonicalName();
         SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
 
         // Maybe there's already an existing vertex for this type
@@ -224,11 +224,17 @@ user code {
     }
 
     private Class findNestedClass(Class cls, String tn) {
-        for (Class nested : cls.getClasses()) {
+        for (Class nested : cls.getDeclaredClasses()) {
+            if (nested.isAnonymousClass()) {
+                continue;
+            }
             if (nested.getCanonicalName().endsWith("." + tn)) {
                 return nested;
             }
-            return findNestedClass(nested, tn);
+            Class result = findNestedClass(nested, tn);
+            if (result != null) {
+                return result;
+            }
         }
         return null;
     }
@@ -348,7 +354,7 @@ user code {
         }
 
         throw new RuntimeException("Couldn't resolve type " + tn
-            + " in " + curQName + ".");
+            + " in " + curQName + " at position " + ce.getPosition() + ".");
     }
 }
 
