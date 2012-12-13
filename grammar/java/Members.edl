@@ -42,13 +42,13 @@ exports
     %% FieldDeclaration
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
-         Type Id
-         #$=Field();
-          HasType($, $1);
-          $.modifiers = $mods;
-          $.name = lexem($2);
-          $classifier = {return resolveClassifier(curQName, currentElement);};
-          Declares($classifier, $);#
+         (Type #$type = $0;#)
+         {(Id #$field=Field();
+               HasType($field, $type);
+               $field.modifiers = $mods;
+               $field.name = $0;
+               $classifier = {return resolveClassifier(curQName, currentElement);};
+               Declares($classifier, $field);#) ","}+
          Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
