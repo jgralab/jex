@@ -132,16 +132,26 @@ user code {
                 else if (Character.isWhitespace(c)) lastSpace = i;
                 i++;
             }
-            prefix += String.valueOf(content, lastSpace + 1, i - lastSpace - 1) + ".";
+            prefix += String.valueOf(content, lastSpace + 1, i - lastSpace - 1);
         }
 
         SymbolTableStack stck = (SymbolTableStack) #typeParams#;
         for (String tp : tps) {
             Vertex tpv = createVertex(getVertexClass("TypeParameter"), ce.getPosition());
             tpv.setAttribute("name", tp);
-            tpv.setAttribute("qualifiedName", prefix + tp);
+            if (method) {
+                tpv.setAttribute("qualifiedName", prefix + "|" + tp);
+            } else {
+                tpv.setAttribute("qualifiedName", prefix + tp);
+            }
             stck.declare(tp, tpv);
         }
+    }
+
+    // TODO: Implement me!
+    private void recalcMethodTypeParamQNames(Object theMethodVertex) {
+        Vertex m = (Vertex) theMethodVertex;
+        System.out.println("Recalcing TPs of " + m);
     }
 
     private static Class reflectiveGetType(String qn) {

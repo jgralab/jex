@@ -69,7 +69,8 @@ exports
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ("throws" {(Type #Throws($, $0);#) ","}+)?
          (Block | ";" | (Block ";"))
-         -> MethodDeclaration
+         -> MethodDeclaration #{recalcMethodTypeParamQNames(#$#);}#
+
     %% ParamDeclaration
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#)| Annotation)*
