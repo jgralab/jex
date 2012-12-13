@@ -137,11 +137,10 @@ user code {
 
         SymbolTableStack stck = (SymbolTableStack) #typeParams#;
         for (String tp : tps) {
-            Vertex tpv = stck.useOrDeclare(tp,
-                                           getVertexClass("TypeParameter"),
-                                           ce.getPosition());
+            Vertex tpv = createVertex(getVertexClass("TypeParameter"), ce.getPosition());
             tpv.setAttribute("name", tp);
             tpv.setAttribute("qualifiedName", prefix + tp);
+            stck.declare(tp, tpv);
         }
     }
 
