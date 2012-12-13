@@ -58,7 +58,7 @@ exports
     rule #$=Method();
           $mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
-         ("<" #{initMethodTypeParamsSymbolTable(currentElement);}#
+         ("<" #{initTypeParamsSymbolTable(currentElement, true);}#
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          Type Id
          #HasType($, $2);

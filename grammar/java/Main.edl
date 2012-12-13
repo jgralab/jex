@@ -91,19 +91,7 @@ user code {
         }
     }
 
-    private void initClassTypeParamsSymbolTable(String qname, StackElement ce) {
-        Class c = reflectiveGetType(qname);
-        SymbolTableStack stck = (SymbolTableStack) #typeParams#;
-        for (TypeVariable<Class<?>> tv : c.getTypeParameters()) {
-            Vertex tp = stck.useOrDeclare(tv.getName(),
-                                          getVertexClass("TypeParameter"),
-                                          ce.getPosition());
-            tp.setAttribute("name", tv.getName());
-            tp.setAttribute("qualifiedName", c.getName() + "." + tv.getName());
-        }
-    }
-
-    private void initMethodTypeParamsSymbolTable(StackElement ce) {
+    private void initTypeParamsSymbolTable(StackElement ce, boolean method) {
         char[] content = getFileContent();
         int i = ce.getOffset() + 1;
         int start = i;
