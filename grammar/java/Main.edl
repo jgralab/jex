@@ -133,10 +133,15 @@ user code {
         }
     }
 
-
     private static Class reflectiveGetType(String qn) {
-        List<String> l = nestedClassifierNames(qn);
-        l.add(qn);
+        try {
+            return Class.forName(qn, false,
+                Thread.currentThread().getContextClassLoader());
+        } catch (ClassNotFoundException e) {
+            // ignore
+        }
+        List<String> l = new LinkedList<String>();
+        l.addAll(nestedClassifierNames(qn));
         for (String qname : l) {
             try {
                 return Class.forName(qname, false,
@@ -218,89 +223,44 @@ user code {
         return tn.trim();
     }
 
-    private Vertex resolveClassifier(Object tn, Object currentElement) {
+    private Class findNestedClass(Class cls, String tn) {
+        for (Class nested : cls.getClasses()) {
+            if (nested.getCanonicalName().endsWith("." + tn)) {
+                return nested;
+            }
+            return findNestedClass(nested, tn);
+        }
+        return null;
+    }
+
+    private Class findClassInEnclosingClass(Class cls, String tn) {
+        Class enclosing = cls.getEnclosingClass();
+        if (enclosing == null) return null;
+        if (enclosing.getCanonicalName().endsWith("." + tn)) {
+            return enclosing;
+        }
+        // It could also be nested in the enclosing class
+        Class result = findNestedClass(enclosing, tn);
+        if (result != null) return result;
+        return findClassInEnclosingClass(enclosing, tn);
+    }
+
+    private Vertex resolveClassifier(Object typeName, Object currentElement) {
         StackElement ce = (StackElement) currentElement;
-        List<String> triedNames = new LinkedList<String>();
+        final String tn = canonicalizeQName(typeName);
 
         // Is tn already fully qualified?
-        String qn = canonicalizeQName(tn);
+        String qn = tn;
         Class cls = reflectiveGetType(qn);
         if (cls != null) {
             return getOrCreateClassifierVertex(cls, ce);
         }
-        triedNames.add(qn);
-
-        // Is it an imported class foo.bar.Baz?
-        Vertex theClass = ((SymbolTableStack) #importedClassifiers#).use(qn);
-        if (theClass != null) {
-            return theClass;
-        }
-
-        // Is it a class nested in some imported class?
-        for (Object iqn : ((SymbolTableStack) #importedClassifiersQN#)
-                          .getTop().getMap().keySet()) {
-            qn = iqn + "." + tn;
-            cls = reflectiveGetType(qn);
-            if (cls != null) {
-                return getOrCreateClassifierVertex(cls, ce);
-            }
-            triedNames.add(qn);
-        }
 
         // Is it this class itself?
         qn = curQName;
-        if (curQName.endsWith("." + tn)) {
-           cls = reflectiveGetType(qn);
-           if (cls != null) {
-               return getOrCreateClassifierVertex(cls, ce);
-           }
-           triedNames.add(qn);
-        }
-
-        // Is it a class nested in this class?
-        qn = curQName + "." + tn;
-        cls = reflectiveGetType(qn);
-        if (cls != null) {
-            return getOrCreateClassifierVertex(cls, ce);
-        }
-        triedNames.add(qn);
-
-        // TODO: That's a hack for getting GraphIO parsed...
-        // FIXME: Create a stack of parent classes when parsing and use it here!
-        // Maybe a reference to a nested class, and we are currently also in a
-        // nested class?
-        qn = curQName.replaceAll("\\.\\w+$", "." + tn);
-        cls = reflectiveGetType(qn);
-        if (cls != null) {
-            return getOrCreateClassifierVertex(cls, ce);
-        }
-        triedNames.add(qn);
-
-        // Is it a class nested in this classes' superclass or implemented
-        // interfaces (transitively, including also the interfaces of
-        // superclasses)?
-        Class curCls = reflectiveGetType(curQName);
-        if (curCls != null) {
-            // curCls may be null when a class declaration has an annotation, and now
-            // we're looking up the annotation type.
-            LinkedList<Class> supers = new LinkedList<Class>();
-            Class superClass = curCls.getSuperclass();
-            if (superClass != null) { supers.offer(superClass); }
-            for (Class iface : curCls.getInterfaces()) { supers.offer(iface); }
-            while (!supers.isEmpty()) {
-                Class superType = supers.poll();
-                qn = superType.getName() + "." + tn;
-                cls = reflectiveGetType(qn);
-                if (cls != null) {
-                    return getOrCreateClassifierVertex(cls, ce);
-                }
-                triedNames.add(qn);
-                superClass = superType.getSuperclass();
-                if (superClass != null) { supers.offer(superClass); }
-                for (Class superIface : superType.getInterfaces()) {
-                    supers.offer(superIface);
-                }
-            }
+        final Class currentClass = reflectiveGetType(curQName);
+        if (currentClass != null && currentClass.getCanonicalName().endsWith("." + tn)) {
+           return getOrCreateClassifierVertex(currentClass, ce);
         }
 
         // Is it a class in the same package?
@@ -309,7 +269,66 @@ user code {
         if (cls != null) {
             return getOrCreateClassifierVertex(cls, ce);
         }
-        triedNames.add(qn);
+
+        // Is it an imported class foo.bar.Baz?
+        qn = tn;
+        Vertex theClass = ((SymbolTableStack) #importedClassifiers#).use(qn);
+        if (theClass != null) {
+            return theClass;
+        }
+
+        // Is it a class nested in this class?
+        if (currentClass != null) {
+            cls = findNestedClass(currentClass, tn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+        }
+
+        // Is the current class a nested class and we're looking for the
+        // parent class or a neighbor nested class thereof?
+        if (currentClass != null) {
+            cls = findClassInEnclosingClass(currentClass, tn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+        }
+
+        // Is it a class nested in some imported class? E.g., we imported
+        // java.util.Map, so we may refer to java.util.Map$Entry with
+        // Map.Entry.
+        for (Object iqn : ((SymbolTableStack) #importedClassifiersQN#)
+                          .getTop().getMap().keySet()) {
+            String iqns = (String) iqn;
+            int idx = iqns.lastIndexOf('.');
+            qn = iqns.substring(0, idx + 1) + tn; 
+            cls = reflectiveGetType(qn);
+            if (cls != null) {
+                return getOrCreateClassifierVertex(cls, ce);
+            }
+        }
+
+        // Is it a class nested in this classes' superclass or implemented
+        // interfaces (transitively, including also the interfaces of
+        // superclasses)?
+        if (currentClass != null) {
+            LinkedList<Class> supers = new LinkedList<Class>();
+            Class superClass = currentClass.getSuperclass();
+            if (superClass != null) { supers.offer(superClass); }
+            for (Class iface : currentClass.getInterfaces()) { supers.offer(iface); }
+            while (!supers.isEmpty()) {
+                Class superType = supers.poll();
+                cls = findNestedClass(superType, tn);
+                if (cls != null) {
+                    return getOrCreateClassifierVertex(cls, ce);
+                }
+                superClass = superType.getSuperclass();
+                if (superClass != null) { supers.offer(superClass); }
+                for (Class superIface : superType.getInterfaces()) {
+                    supers.offer(superIface);
+                }
+            }
+        }
 
         // Is it a class imported by a package import foo.bar.*?
         for (Object pn : ((SymbolTableStack) #importedPackages#)
@@ -319,7 +338,6 @@ user code {
             if (cls != null) {
                 return getOrCreateClassifierVertex(cls, ce);
             }
-            triedNames.add(qn);
         }
 
         // Is it a class from java.lang?
@@ -328,11 +346,9 @@ user code {
         if (cls != null) {
             return getOrCreateClassifierVertex(cls, ce);
         }
-        triedNames.add(qn);
 
         throw new RuntimeException("Couldn't resolve type " + tn
-            + ".  I've tried " + triedNames
-            + ".  Is your CLASSPATH ok?");
+            + " in " + curQName + ".");
     }
 }
 
