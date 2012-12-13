@@ -121,13 +121,27 @@ user code {
             throw new RuntimeException("No type parameters found tho there should be some!");
         }
 
+        String prefix = curQName + ".";
+        if (method) {
+            // FIXME: Just the method name is not enough!  There might be more than one
+            // parametrized foo() method.
+            int lastSpace = i;
+            while (true) {
+                char c = content[i];
+                if (c == '(') break;
+                else if (Character.isWhitespace(c)) lastSpace = i;
+                i++;
+            }
+            prefix += String.valueOf(content, lastSpace + 1, i - lastSpace - 1) + ".";
+        }
+
         SymbolTableStack stck = (SymbolTableStack) #typeParams#;
         for (String tp : tps) {
             Vertex tpv = stck.useOrDeclare(tp,
                                            getVertexClass("TypeParameter"),
                                            ce.getPosition());
             tpv.setAttribute("name", tp);
-            tpv.setAttribute("qualifiedName", tp);
+            tpv.setAttribute("qualifiedName", prefix + tp);
         }
     }
 
