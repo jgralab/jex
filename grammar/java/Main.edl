@@ -127,9 +127,7 @@ user code {
                                            getVertexClass("TypeParameter"),
                                            ce.getPosition());
             tpv.setAttribute("name", tp);
-            // TODO: hm, the type parameter of a method has no real qname...
-            // at least encode the method name in it, too
-            tpv.setAttribute("qualifiedName", curQName + "." + tp);
+            tpv.setAttribute("qualifiedName", tp);
         }
     }
 
@@ -139,6 +137,8 @@ user code {
                 Thread.currentThread().getContextClassLoader());
         } catch (ClassNotFoundException e) {
             // ignore
+        } catch (NoClassDefFoundError e) {
+            // ignore
         }
         List<String> l = new LinkedList<String>();
         l.addAll(nestedClassifierNames(qn));
@@ -147,6 +147,8 @@ user code {
                 return Class.forName(qname, false,
                     Thread.currentThread().getContextClassLoader());
             } catch (ClassNotFoundException e) {
+                // ignore
+            } catch (NoClassDefFoundError e) {
                 // ignore
             }
         }
@@ -353,8 +355,20 @@ user code {
             return getOrCreateClassifierVertex(cls, ce);
         }
 
-        throw new RuntimeException("Couldn't resolve type " + tn
+        System.err.println("Couldn't resolve type " + tn
             + " in " + curQName + " at position " + ce.getPosition() + ".");
+
+        SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
+        qn = tn + " (UNKNOWN)";
+        Vertex v = stck.use(qn);
+        if (v != null) {
+            return v;
+        }
+        v = createVertex(getVertexClass("Class"), ce.getPosition());
+        v.setAttribute("name", qn);
+        v.setAttribute("qualifiedName", qn);
+        stck.declare(qn, v);
+        return v;
     }
 }
 
