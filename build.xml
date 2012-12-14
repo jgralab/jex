@@ -17,10 +17,14 @@
 	  <pathelement location="../edl/build/jar/edl.jar"/>
 	</path>
 	    
-
-	<target name="veryclean" depends="cleanall">
-	  <delete dir="src/de"/>
+	<target name="clean" depends="customAntTasks">
+	  <delete dir="src/de/uni_koblenz/simple_java/schema/" />
+	  <delete dir="src/de/uni_koblenz/simple_java/builder/" />
+	  <delete dir="${tmp.dir}" />
+	  <delete dir="${testclasses.dir}" />
+	  <antcall target="deleteGeneratedSchemaFiles" />
 	</target>
+
 
 	<target name="process-edl">
 	  <mkdir dir="src/de/uni_koblenz/simple_java/builder"/>
@@ -38,5 +42,7 @@
 		 classpathref="classpath" debug="true"
 		 srcdir="src" destdir="build/classes"/>
 	</target>
+
+	<target name="build" depends="jgralab,clean,compile,process-edl,jar" />
 
 </project>

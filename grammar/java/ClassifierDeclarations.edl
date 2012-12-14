@@ -70,5 +70,9 @@ exports
     rule AnnotationDeclaration -> ClassifierDeclaration #$ = $0;#
 
     rule ClassifierDeclaration -> Member
+         #$ = $0;
+          {System.out.println(curQName);}
+          $parent = {return resolveClassifier(curQName, currentElement);};
+          DeclaresNestedClassifier($parent, $);#
 
     rule "{" (Member | InitializerBlock)* "}" ";"? -> ClassifierBody

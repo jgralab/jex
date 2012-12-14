@@ -148,7 +148,6 @@ user code {
 
     private void recalcMethodTypeParamQNames(Object theMethodVertex) {
         Vertex m = (Vertex) theMethodVertex;
-        System.out.println("Recalcing TPs of " + m);
         StringBuilder sb = new StringBuilder();
         sb.append('(');
         boolean first = true;
@@ -167,7 +166,6 @@ user code {
             sb2.append(split[1]);
             String qn = sb2.toString();
             tp.setAttribute("qualifiedName", qn);
-            System.out.println(qn);
         }
     }
 

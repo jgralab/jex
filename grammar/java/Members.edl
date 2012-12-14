@@ -23,7 +23,7 @@ exports
          #$=EnumConst();
           $.name = lexem($0);
           $classifier = {return resolveClassifier(curQName, currentElement);};
-          Declares($classifier, $);#
+          DeclaresEnumConst($classifier, $);#
     rule LeadingEnumConstant                                    -> EnumConstant
     rule LastEnumConstant                                       -> EnumConstant
 
@@ -36,7 +36,7 @@ exports
           $.modifiers = $mods;
           $.name = lexem($2);
           $classifier = {return resolveClassifier(curQName, currentElement);};
-          Declares($classifier, $);#
+          DeclaresAnnotationElement($classifier, $);#
          "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration
@@ -48,7 +48,7 @@ exports
                $field.modifiers = $mods;
                $field.name = $0;
                $classifier = {return resolveClassifier(curQName, currentElement);};
-               Declares($classifier, $field);#) ","}+
+               DeclaresField($classifier, $field);#) ","}+
          Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
@@ -65,7 +65,7 @@ exports
           $.modifiers = $mods;
           $.name = lexem($3);
           $classifier = {return resolveClassifier(curQName, currentElement);};
-          Declares($classifier, $);#
+          DeclaresMethod($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ("throws" {(Type #Throws($, $0);#) ","}+)?
          (Block | ";" | (Block ";"))
@@ -90,7 +90,7 @@ exports
           $.modifiers = $mods;
           $.name = lexem($1);
           $classifier = {return resolveClassifier(curQName, currentElement);};
-          Declares($classifier, $);#
+          DeclaresConstructor($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ("throws" {(Type #Throws($, $0);#) ","}+)?
          Block
