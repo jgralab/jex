@@ -115,7 +115,7 @@ user code {
             if (nesting == 0) break;
             i++;
         }
-        // System.out.println("TypeParams: " + tps);
+
         if (tps.isEmpty()) {
             throw new RuntimeException("No type parameters found tho there should be some!");
         }
@@ -211,7 +211,7 @@ user code {
             type = "Interface";
         else if (cls.isEnum())
             type = "Enum";
-        else 
+        else
             type = "Class";
 
         Vertex x = createVertex(getVertexClass(type), ce.getPosition());
@@ -292,6 +292,14 @@ user code {
         return findClassInEnclosingClass(enclosing, tn);
     }
 
+    private Vertex resolveClassifier(Object typeName, Object currentElement, Object expectedType) {
+        Vertex x = resolveClassifier(typeName, currentElement);
+        if (x.getAttributedElementClass() != getVertexClass((String) expectedType)) {
+            throw new RuntimeException("Expected classifier type was " + expectedType
+                + " but was " + x.getAttributedElementClass());
+        }
+        return x;
+    }
     private Vertex resolveClassifier(Object typeName, Object currentElement) {
         StackElement ce = (StackElement) currentElement;
         final String tn = canonicalizeQName(typeName);
@@ -348,7 +356,7 @@ user code {
                           .getTop().getMap().keySet()) {
             String iqns = (String) iqn;
             int idx = iqns.lastIndexOf('.');
-            qn = iqns.substring(0, idx + 1) + tn; 
+            qn = iqns.substring(0, idx + 1) + tn;
             cls = reflectiveGetType(qn);
             if (cls != null) {
                 return getOrCreateClassifierVertex(cls, ce);
