@@ -24,7 +24,6 @@ import declarations
   java.util.Map;
   java.util.HashMap;
   java.lang.reflect.Modifier;
-  java.lang.reflect.TypeVariable;
   de.uni_koblenz.simple_java.schema.Modifiers;
   de.uni_koblenz.jgralab.JGraLab;
   de.uni_koblenz.jgralab.TemporaryVertex;
@@ -205,15 +204,17 @@ user code {
             return vx;
         }
 
-        TemporaryVertex x = createTemporaryVertex(ce.getPosition());
-        if (cls.isInterface())
-            x.setPreliminaryType(getVertexClass("Interface"));
+        String type = null;
+        if (cls.isAnnotation())
+            type = "Annotation";
+        else if (cls.isInterface())
+            type = "Interface";
         else if (cls.isEnum())
-            x.setPreliminaryType(getVertexClass("Enum"));
-        else if (cls.isAnnotation())
-            x.setPreliminaryType(getVertexClass("Annotation"));
-        else
-            x.setPreliminaryType(getVertexClass("Class"));
+            type = "Enum";
+        else 
+            type = "Class";
+
+        Vertex x = createVertex(getVertexClass(type), ce.getPosition());
 
         x.setAttribute("qualifiedName", qn);
         x.setAttribute("name", cls.getSimpleName());

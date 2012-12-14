@@ -8,9 +8,6 @@ imports
 global actions
   pattern _ (1..*) Id _ (0..*) -> _
     #$.modifiers = $mods;
-     $.name = lexem($2);
-     $.qualifiedName = {return curQName;};
-     name2NamedElement.declare($.qualifiedName, $);
      {curQName = (String) #$prevQName#;}#
 
  @Before
@@ -31,8 +28,8 @@ exports
     %% Classes
     @Symboltable{typeParams}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
-         #$=Class();
-          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
+         #{curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}
+          $ = {return resolveClassifier(#$2#, currentElement);};#
          ("<" #{initTypeParamsSymbolTable(currentElement, false);}#
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          ("extends" ClassifierType #Extends($, $1);#)?
@@ -41,8 +38,8 @@ exports
 
     %% Enums
     rule ((Modifier #$mods.add($0);#)|Annotation)* "enum" Id
-         #$=Enum();
-          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
+         #{curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}
+          $ = {return resolveClassifier(#$2#, currentElement);};#
          ("implements" {(ClassifierType #Implements($, $0);#) ","}+)?
          EnumBody -> EnumDeclaration
     rule "{" EnumConstant+ Member* "}" ";"? -> EnumBody
@@ -50,8 +47,8 @@ exports
     %% Interfaces
     @Symboltable{typeParams}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "interface" Id
-         #$=Interface();
-          {curQName += (curQName.isEmpty()? "" : ".") + #$2#;}#
+         #{curQName += (curQName.isEmpty()? "" : ".") + #$2#;}
+          $ = {return resolveClassifier(#$2#, currentElement);};#
          ("<" #{initTypeParamsSymbolTable(currentElement, false);}#
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          ("extends" {(ClassifierType #Extends($, $0);#) ","}+)?
@@ -59,8 +56,8 @@ exports
 
     %% Annotations
     rule ((Modifier #$mods.add($0);#)|Annotation)* "@interface" Id
-         #$=Annotation();
-          {curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}#
+         #{curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}
+          $ = {return resolveClassifier(#$2#, currentElement);};#
          AnnotationBody -> AnnotationDeclaration
     rule "{" AnnotationElementDecl* "}" ";"? -> AnnotationBody
 
