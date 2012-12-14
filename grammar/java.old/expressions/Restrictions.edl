@@ -1,6 +1,0 @@
-module java/expressions/Restrictions
-exports
-  lexical restrictions
-    "+" -/- [\+]
-    "-" -/- [\-]
-    "/" -/- [\/]
