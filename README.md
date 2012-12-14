@@ -24,7 +24,10 @@ Before building JEx, be sure to build common, jgralab, and edl.  Thereafter, bui
 
 ## Using JEx
 
-To parse your java source files, you can either use the `jex.sh` script or invoke java from the command line.  JEx uses reflection for type resolution, so be sure to put the class files compiled from you source files including all dependencies into CLASSPATH.
+To parse your java source files, you can either use the `jex.sh` script or
+invoke java from the command line.  JEx uses reflection for type resolution, so
+be sure to put the class files compiled from you source files including all
+dependencies into CLASSPATH.
 
     $ CLASSPATH="foo.jar:bar.jar" ./jex.sh -o my-asg.tg src/**/*.java
 
