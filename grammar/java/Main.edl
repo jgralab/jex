@@ -1,5 +1,5 @@
 module java/Main
-schema de.uni_koblenz.simple_java.schema.JavaSchema
+schema de.uni_koblenz.jgralab.jex.schema.JavaSchema
 
 imports
   java/CompilationUnits   %% CompilationUnit
@@ -24,7 +24,7 @@ import declarations
   java.util.Map;
   java.util.HashMap;
   java.lang.reflect.Modifier;
-  de.uni_koblenz.simple_java.schema.Modifiers;
+  de.uni_koblenz.jgralab.jex.schema.Modifiers;
   de.uni_koblenz.jgralab.JGraLab;
   de.uni_koblenz.jgralab.TemporaryVertex;
   de.uni_koblenz.jgralab.EdgeDirection;
@@ -46,11 +46,11 @@ user code {
     {
         for (String n : new String[] {"boolean", "char", "byte", "short",
                                       "int", "long", "float", "double", "void"}) {
-            Vertex p = getGraph().createVertex(de.uni_koblenz.simple_java.schema.PrimitiveType.VC);
+            Vertex p = getGraph().createVertex(getVertexClass("PrimitiveType"));
             p.setAttribute("qualifiedName", n);
             p.setAttribute("name", n);
             p.setAttribute("type",
-                de.uni_koblenz.simple_java.schema.PrimitiveTypes.valueOf(n.toUpperCase()));
+                de.uni_koblenz.jgralab.jex.schema.PrimitiveTypes.valueOf(n.toUpperCase()));
             primTypes.put(n, p);
         }
     }

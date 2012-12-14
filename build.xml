@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="mini-java-parser" basedir="." default="build">
+<project name="jex" basedir="." default="build">
 
-	<property name="projectname" value="mini-java-parser" />
+	<property name="projectname" value="jex" />
 	<property name="main" value="" />
 
 	<import file="../common/common.xml" />
@@ -18,8 +18,8 @@
 	</path>
 	    
 	<target name="clean" depends="customAntTasks">
-	  <delete dir="src/de/uni_koblenz/simple_java/schema/" />
-	  <delete dir="src/de/uni_koblenz/simple_java/builder/" />
+	  <delete dir="src/de/uni_koblenz/jgralab/jex/schema/" />
+	  <delete dir="src/de/uni_koblenz/jgralab/jex/builder/" />
 	  <delete dir="${tmp.dir}" />
 	  <delete dir="${testclasses.dir}" />
 	  <antcall target="deleteGeneratedSchemaFiles" />
@@ -27,14 +27,14 @@
 
 
 	<target name="process-edl">
-	  <mkdir dir="src/de/uni_koblenz/simple_java/builder"/>
+	  <mkdir dir="src/de/uni_koblenz/jgralab/jex/builder"/>
 	  <java fork="true"
 		classname="de.uni_koblenz.edl.preprocessor.EDLPreprocessor"
 		classpathref="classpath">
 	    <arg value="-i"/> <arg value="grammar"/>
 	    <arg value="-m"/> <arg value="java/Main"/>
-	    <arg value="-o"/> <arg value="src/de/uni_koblenz/simple_java/builder"/>
-	    <arg value="-p"/> <arg value="de.uni_koblenz.simple_java.builder"/>
+	    <arg value="-o"/> <arg value="src/de/uni_koblenz/jgralab/jex/builder"/>
+	    <arg value="-p"/> <arg value="de.uni_koblenz.jgralab.jex.builder"/>
 	    <arg value="-s"/> <arg value="java-schema/java-schema.rsa.tg"/>
 	    <arg value="-n"/> <!-- no default mappings -->
 	  </java>
