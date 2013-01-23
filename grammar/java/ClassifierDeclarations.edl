@@ -60,7 +60,7 @@ exports
           $ = {return resolveClassifier(#$2#, currentElement, "Annotation");};#
          AnnotationBody -> AnnotationDeclaration
     %% Yes, there may be enums in annotations
-    rule "{" (AnnotationElementDecl | EnumDeclaration)* "}" ";"? -> AnnotationBody
+    rule "{" (AnnotationElementDecl | ClassifierDeclaration)* "}" ";"? -> AnnotationBody
 
     rule ClassDeclaration      -> ClassifierDeclaration #$ = $0;#
     rule EnumDeclaration       -> ClassifierDeclaration #$ = $0;#
