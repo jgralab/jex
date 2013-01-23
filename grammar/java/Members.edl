@@ -14,18 +14,23 @@ exports
     AnnotationElementDecl
     EnumConstant
 
+  context-free restrictions
+
+    %% To distinguish enum constants "FOO(12)," from constructors
+    LastEnumConstant -/- [\{]
+
   context-free syntax
 
     %% EnumConstant
-    rule EnumConst "," (LeadingEnumConstant | LastEnumConstant) -> LeadingEnumConstant
+    rule LeadingEnumConstant? LastEnumConstant -> EnumConstant
+    rule EnumConst "," -> LeadingEnumConstant
+    rule EnumConst "," LeadingEnumConstant "," -> LeadingEnumConstant
     rule EnumConst ";"?                                         -> LastEnumConstant
     rule Id ParenBlock?                                         -> EnumConst
          #$=EnumConst();
           $.name = lexem($0);
           $classifier = {return resolveClassifier(curQName, currentElement);};
           DeclaresEnumConst($classifier, $);#
-    rule LeadingEnumConstant                                    -> EnumConstant
-    rule LastEnumConstant                                       -> EnumConstant
 
     %% AnnotationElementDecl
     rule #$mods = set();#
@@ -91,7 +96,7 @@ exports
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          Id
          #$.modifiers = $mods;
-          $.name = lexem($1);
+          $.name = $2;
           $classifier = {return resolveClassifier(curQName, currentElement);};
           DeclaresConstructor($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"

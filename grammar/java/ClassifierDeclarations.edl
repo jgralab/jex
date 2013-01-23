@@ -42,7 +42,11 @@ exports
           $ = {return resolveClassifier(#$2#, currentElement, "Enum");};#
          ("implements" {(ClassifierType #Implements($, $0);#) ","}+)?
          EnumBody -> EnumDeclaration
-    rule "{" EnumConstant+ (Member | InitializerBlock)* "}" ";"? -> EnumBody
+    rule "{" EnumConstant+
+             %% All kinds of Members except for EnumConstants may follow
+             (FieldDeclaration |
+              MethodDeclaration | ConstructorDeclaration |
+              InitializerBlock)* "}" ";"? -> EnumBody
 
     %% Interfaces
     @Symboltable{typeParams}
