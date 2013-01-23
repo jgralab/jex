@@ -46,7 +46,8 @@ exports
              %% All kinds of Members except for EnumConstants may follow
              (FieldDeclaration |
               MethodDeclaration | ConstructorDeclaration |
-              InitializerBlock)* "}" ";"? -> EnumBody
+              InitializerBlock |
+              ClassifierDeclaration)* "}" ";"? -> EnumBody
 
     %% Interfaces
     @Symboltable{typeParams}
