@@ -27,7 +27,10 @@ import declarations
   de.uni_koblenz.jgralab.jex.schema.Modifiers;
   de.uni_koblenz.jgralab.JGraLab;
   de.uni_koblenz.jgralab.TemporaryVertex;
+  de.uni_koblenz.jgralab.TemporaryEdge;
+  de.uni_koblenz.jgralab.exception.TemporaryGraphElementException;
   de.uni_koblenz.jgralab.EdgeDirection;
+  de.uni_koblenz.jgralab.schema.EdgeClass;
   de.uni_koblenz.edl.parser.Position;
   de.uni_koblenz.edl.parser.stack.elements.StackElement;
   org.pcollections.PSet;
@@ -73,17 +76,41 @@ user code {
                 tempVert.bless(getVertexClass("Class"));
             }
         }
+
+        VertexClass tvc = getGraph().getGraphClass().getTemporaryVertexClass();
+        EdgeClass tec = getGraph().getGraphClass().getTemporaryEdgeClass();
+
+        // FIXME: Workaround, some tmp packages don't have their preliminary type set...
+        for (Edge e : getGraph().edges(tec)) {
+            TemporaryEdge te = (TemporaryEdge) e;
+            if (te.getPreliminaryType() == getEdgeClass("ContainsPackage")) {
+                if (te.getAlpha().isTemporary()) {
+                    ((TemporaryVertex) te.getAlpha())
+                        .setPreliminaryType(getVertexClass("Package"));
+                }
+                if (te.getOmega().isTemporary()) {
+                    ((TemporaryVertex) te.getOmega())
+                        .setPreliminaryType(getVertexClass("Package"));
+                }
+            }
+        }
+
         List<TemporaryVertex> tempPackages = (List<TemporaryVertex>)
             #name2Package.getTemporaryVertices()#;
         for (TemporaryVertex tempPackage: tempPackages) {
-            tempPackage.bless(getVertexClass("Package"));
+            try {
+                tempPackage.bless(getVertexClass("Package"));
+            } catch (TemporaryGraphElementException e) {
+                System.out.println("Couldn't bless Package "
+                    + tempPackage.getAttribute("qualifiedName"));
+                e.printStackTrace();
+            }
         }
-        for (Vertex tmp : getGraph().vertices(graph.getGraphClass()
-                                    .getTemporaryVertexClass())) {
+
+        for (Vertex tmp : getGraph().vertices(tvc)) {
             System.out.println("Left over TemporaryVertex: " + tmp);
         }
-        for (Edge tmp : getGraph().edges(graph.getGraphClass()
-                                  .getTemporaryEdgeClass())) {
+        for (Edge tmp : getGraph().edges(tec)) {
             System.out.println("Left over TemporaryEdge: " + tmp);
             System.out.println("  alpha: " + tmp.getAlpha());
             System.out.println("  omega: " + tmp.getOmega());
