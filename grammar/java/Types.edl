@@ -102,12 +102,11 @@ exports
                                  .concat($0.qualifiedName);
               $.name = $.name.concat(" super ").concat($0.name);#))?
          -> TypeArg
-    rule "extends" ClassifierType     -> UpperWildcardBound #$ = $1;#
-    rule "super"   ClassifierType     -> LowerWildcardBound #$ = $1;#
+    rule "extends" Type     -> UpperWildcardBound #$ = $1;#
+    rule "super"   Type     -> LowerWildcardBound #$ = $1;#
 
     %% TypeParam
     rule Id
          %% The typeParams have already been declared by initTypeParamsSymbolTable()
          #$ = typeParams.use($0);#
-         ("extends" {(ClassifierType
-                      #HasBound($, $0);#) "&"}+)?  -> TypeParam
+         ("extends" {(Type #HasBound($, $0);#) "&"}+)?  -> TypeParam
