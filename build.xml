@@ -7,7 +7,7 @@
 
 	<import file="../jgralab/common.xml" />
 
-	<property name="schema.file" value="${project.dir}/java-schema/java-schema.rsa.tg" />
+	<property name="schema.file" value="${src.dir}/java-schema.rsa.tg" />
 	<property name="xmi.schema.file" value="${project.dir}/java-schema/java-schema.xmi" />
 
 	<path id="classpath">
@@ -35,7 +35,7 @@
 	    <arg value="-m"/> <arg value="java/Main"/>
 	    <arg value="-o"/> <arg value="src/de/uni_koblenz/jgralab/jex/builder"/>
 	    <arg value="-p"/> <arg value="de.uni_koblenz.jgralab.jex.builder"/>
-	    <arg value="-s"/> <arg value="java-schema/java-schema.rsa.tg"/>
+	    <!--<arg value="-s"/> <arg value="${src.dir}/java-schema.rsa.tg"/>-->
 	    <arg value="-n"/> <!-- no default mappings -->
 	  </java>
 	  <javac includeantruntime="false" fork="true"
