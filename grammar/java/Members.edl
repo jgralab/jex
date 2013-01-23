@@ -83,17 +83,20 @@ exports
     rule MethodDeclaration -> Member
 
     %% ConstructorDeclaration
-    rule #$mods = set();#
+    @Symboltable{typeParams}
+    rule #$=Constructor();
+          $mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
+         ("<" #{initTypeParamsSymbolTable(currentElement, true);}#
+          {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          Id
-         #$=Constructor();
-          $.modifiers = $mods;
+         #$.modifiers = $mods;
           $.name = lexem($1);
           $classifier = {return resolveClassifier(curQName, currentElement);};
           DeclaresConstructor($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ("throws" {(Type #Throws($, $0);#) ","}+)?
-         Block
+         Block ";"?
          -> ConstructorDeclaration
     rule ConstructorDeclaration -> Member
 
