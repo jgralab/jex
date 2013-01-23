@@ -23,10 +23,10 @@ exports
 
     %% EnumConstant
     rule LeadingEnumConstant? LastEnumConstant -> EnumConstant
-    rule EnumConst "," -> LeadingEnumConstant
-    rule EnumConst "," LeadingEnumConstant "," -> LeadingEnumConstant
-    rule EnumConst ";"?                                         -> LastEnumConstant
-    rule Id ParenBlock?                                         -> EnumConst
+    rule EnumConst ","                         -> LeadingEnumConstant
+    rule EnumConst "," LeadingEnumConstant     -> LeadingEnumConstant
+    rule EnumConst ";"?                        -> LastEnumConstant
+    rule Id ParenBlock?                        -> EnumConst
          #$=EnumConst();
           $.name = lexem($0);
           $classifier = {return resolveClassifier(curQName, currentElement);};
