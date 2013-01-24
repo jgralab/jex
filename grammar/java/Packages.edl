@@ -4,12 +4,19 @@ imports
 
 user code{
   private boolean isContainsPackageAlreadyCreated(Vertex parentPackage, Vertex pack) {
-    for (Edge edge: pack.incidences(getEdgeClass("ContainsPackage"), EdgeDirection.IN)) {
-      if (edge.getThat() == parentPackage) {
-        return true;
+      EdgeClass cp = getEdgeClass("ContainsPackage");
+      for (Edge edge: pack.incidences(EdgeDirection.IN)) {
+          if (edge.getThat() == parentPackage) {
+              if (edge.isInstanceOf(cp)) {
+                  return true;
+              } else if (edge.isTemporary() &&
+                           ((TemporaryEdge) edge).getPreliminaryType() == cp) {
+                  // System.out.println(edge);
+                  return true;
+              }
+          }
       }
-    }
-    return false;
+      return false;
   }
 }
 
