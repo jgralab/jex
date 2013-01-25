@@ -7,13 +7,12 @@ signature level to abstract syntax graphs.
 
 The project structure should be like this:
 
-    jgsrc/               # your jgralab workspace
-    +-> common/          # the common project
+    jgsrc/               # your jgralab workspace (the name doesn't matter)
     +-> jgralab/         # jgralab itself
     +-> edl/             # the EDL project (extractor description language)
     `-> jex/             # this project
 
-Before building JEx, be sure to build common, jgralab, and edl.  Thereafter, build JEx:
+Before building JEx, be sure to build jgralab, and edl.  Thereafter, build JEx:
 
     $ pwd
     /path/to/jgsrc/

@@ -26,6 +26,7 @@ import declarations
   java.lang.reflect.Modifier;
   de.uni_koblenz.jgralab.jex.schema.Modifiers;
   de.uni_koblenz.jgralab.JGraLab;
+  de.uni_koblenz.jgralab.GraphElement;
   de.uni_koblenz.jgralab.TemporaryVertex;
   de.uni_koblenz.jgralab.TemporaryEdge;
   de.uni_koblenz.jgralab.exception.TemporaryGraphElementException;
@@ -80,21 +81,6 @@ user code {
         VertexClass tvc = getGraph().getGraphClass().getTemporaryVertexClass();
         EdgeClass tec = getGraph().getGraphClass().getTemporaryEdgeClass();
 
-        // FIXME: Workaround, some tmp packages don't have their preliminary type set...
-        for (Edge e : getGraph().edges(tec)) {
-            TemporaryEdge te = (TemporaryEdge) e;
-            if (te.getPreliminaryType() == getEdgeClass("ContainsPackage")) {
-                if (te.getAlpha().isTemporary()) {
-                    ((TemporaryVertex) te.getAlpha())
-                        .setPreliminaryType(getVertexClass("Package"));
-                }
-                if (te.getOmega().isTemporary()) {
-                    ((TemporaryVertex) te.getOmega())
-                        .setPreliminaryType(getVertexClass("Package"));
-                }
-            }
-        }
-
         List<TemporaryVertex> tempPackages = (List<TemporaryVertex>)
             #name2Package.getTemporaryVertices()#;
         for (TemporaryVertex tempPackage: tempPackages) {
@@ -107,13 +93,19 @@ user code {
             }
         }
 
+        List<GraphElement> temps = new LinkedList<GraphElement>(); 
         for (Vertex tmp : getGraph().vertices(tvc)) {
             System.out.println("Left over TemporaryVertex: " + tmp);
+            temps.add(tmp);
         }
         for (Edge tmp : getGraph().edges(tec)) {
             System.out.println("Left over TemporaryEdge: " + tmp);
             System.out.println("  alpha: " + tmp.getAlpha());
             System.out.println("  omega: " + tmp.getOmega());
+            temps.add(tmp);
+        }
+        for (GraphElement e : temps) {
+            if (e.isValid()) e.delete();
         }
     }
 
