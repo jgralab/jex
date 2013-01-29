@@ -36,27 +36,27 @@ For more options, check out `./jex.sh --help`.
 
 ### The type hierarchy
 
-![Type Hierarchy](java-schema/TypeHierarchy.png)
+![Type Hierarchy](jex/blob/master/java-schema/TypeHierarchy.png)
 
 ### Classifiers and extends/implements
 
-![Classifiers and extends/implements](java-schema/ClassifierInheritance.png)
+![Classifiers and extends/implements](jex/blob/master/java-schema/ClassifierInheritance.png)
 
 ### Members
 
-![Members](java-schema/Members.png)
+![Members](jex/blob/master/java-schema/Members.png)
 
 ### Methods
 
-![Methods](java-schema/Methods.png)
+![Methods](jex/blob/master/java-schema/Methods.png)
 
 ### Modifieable and typed elements
 
-![Modifiable and types elements](java-schema/ModifiableAndTypedElements.png)
+![Modifiable and types elements](jex/blob/master/java-schema/ModifiableAndTypedElements.png)
 
 ### Generics
 
-![Generics](java-schema/TypeParameters.png)
+![Generics](jex/blob/master/java-schema/TypeParameters.png)
 
 ## License
 
