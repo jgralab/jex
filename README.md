@@ -32,6 +32,32 @@ dependencies into CLASSPATH.
 
 For more options, check out `./jex.sh --help`.
 
+## The Schema
+
+### The type hierarchy
+
+![Type Hierarchy](java-schema/TypeHierarchy.png)
+
+### Classifiers and extends/implements
+
+![Classifiers and extends/implements](java-schema/ClassifierInheritance.png)
+
+### Members
+
+![Members](java-schema/Members.png)
+
+### Methods
+
+![Methods](java-schema/Methods.png)
+
+### Modifieable and typed elements
+
+![Modifiable and types elements](java-schema/ModifiableAndTypedElements.png)
+
+### Generics
+
+![Generics](java-schema/TypeParameters.png)
+
 ## License
 
 Copyright (C) 2007-2012 The JGraLab Team <ist@uni-koblenz.de>
