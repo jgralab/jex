@@ -1939,7 +1939,7 @@
         <bendpoints xmi:type="notation:RelativeBendpoints" xmi:id="_YlJfZWoREeKUVtNGqJce4Q" points="[0, 0, 0, 0]$[0, 0, 0, 0]"/>
       </edges>
     </contents>
-    <contents xmi:type="notation:Diagram" xmi:id="_rKgGYGbbEeKvvJBVhUf0aw" type="Class" name="InheritanceRels">
+    <contents xmi:type="notation:Diagram" xmi:id="_rKgGYGbbEeKvvJBVhUf0aw" type="Class" name="ClassifierInheritance">
       <children xmi:id="_uRSRIGbbEeKvvJBVhUf0aw" element="_CSJ3QDihEeKUR8bUwZ_76A">
         <children xmi:id="_uRSRI2bbEeKvvJBVhUf0aw" type="ImageCompartment">
           <layoutConstraint xmi:type="notation:Size" xmi:id="_uRSRJGbbEeKvvJBVhUf0aw" width="1320" height="1320"/>
