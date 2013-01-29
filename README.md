@@ -36,27 +36,27 @@ For more options, check out `./jex.sh --help`.
 
 ### The type hierarchy
 
-![Type Hierarchy](https://raw.github.com/jgralab/jex/blob/master/java-schema/TypeHierarchy.png)
+![Type Hierarchy](https://raw.github.com/jgralab/jex/master/java-schema/TypeHierarchy.png)
 
 ### Classifiers and extends/implements
 
-![Classifiers and extends/implements](https://raw.github.com/jgralab/jex/blob/master/java-schema/ClassifierInheritance.png)
+![Classifiers and extends/implements](https://raw.github.com/jgralab/jex/master/java-schema/ClassifierInheritance.png)
 
 ### Members
 
-![Members](https://raw.github.com/jgralab/jex/blob/master/java-schema/Members.png)
+![Members](https://raw.github.com/jgralab/jex/master/java-schema/Members.png)
 
 ### Methods
 
-![Methods](https://raw.github.com/jgralab/jex/blob/master/java-schema/Methods.png)
+![Methods](https://raw.github.com/jgralab/jex/master/java-schema/Methods.png)
 
 ### Modifieable and typed elements
 
-![Modifiable and types elements](https://raw.github.com/jgralab/jex/blob/master/java-schema/ModifiableAndTypedElements.png)
+![Modifiable and types elements](https://raw.github.com/jgralab/jex/master/java-schema/ModifiableAndTypedElements.png)
 
 ### Generics
 
-![Generics](https://raw.github.com/jgralab/jex/blob/master/java-schema/TypeParameters.png)
+![Generics](https://raw.github.com/jgralab/jex/master/java-schema/TypeParameters.png)
 
 ## License
 
