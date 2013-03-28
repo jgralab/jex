@@ -49,12 +49,12 @@ exports
                        $.qualifiedName = $qualifiedName;
                        $.dimensions = $dims;
                        HasElementType($, $0);#
-    rule NonArrayType "..."
+    rule Type "..."
          #$qualifiedName = $0.qualifiedName.concat("[]");
           $ = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
           $.qualifiedName = $qualifiedName;
           $.name = $0.name.concat("[]");
-          $dimensions = 1;
+          $.dimensions = {return ((Integer) #$0.dimensions#) + 1;};
           HasElementType($, $0);#
          -> ArrayType
 
@@ -66,9 +66,39 @@ exports
            else
                #$ = {return resolveClassifier(#$0#, currentElement);};#}#
     rule PackageName "." Id             -> PlainClassifierType
+    rule Id                             -> ClassifierType
+         %% This could be a simple name of a Classifier or a type parameter name.
+         #{if (#typeParams.use($0)# != null)
+               #$ = typeParams.use($0);#
+           else
+               #$ = {return resolveClassifier(#$0#, currentElement);};#}#
+    rule PackageName "." Id             -> ClassifierType
          #$ = {return resolveClassifier(#$0.concat(".").concat($2)#, currentElement);};#
-    rule PlainClassifierType -> ClassifierType #$ = $0;#
-    rule PlainClassifierType
+    rule Id
+		 #{if (#typeParams.use($0)# != null)
+               #$res = typeParams.use($0);#
+           else
+               #$res = {return resolveClassifier(#$0#, currentElement);};#}
+		  $0 = $res;
+          $qname = $0.qualifiedName.concat("<");
+          $name = $0.name.concat("<");
+          $typeArgs = list();#
+         "<" {(TypeArg #$typeArgs.add($0);
+                        $qname = $qname.concat($0.qualifiedName);
+                        $name = $name.concat($0.name);#)
+              "," #$qname = $qname.concat(",");
+                   $name = $name.concat(",");#}+ ">"
+         -> ClassifierType
+            #$qname = $qname.concat(">");
+             $name = $name.concat(">");
+             $ = name2NamedElement.useOrDeclare($qname, "ParametrizedType");
+             HasGenericType($, $0);
+             HasTypeArg($, $typeArgs);
+             $.name = $name;
+             $.qualifiedName = $qname;#
+    rule (PackageName "." Id
+			#lift({return resolveClassifier(#$0.concat(".").concat($2)#, currentElement);});#
+		 )
          #$qname = $0.qualifiedName.concat("<");
           $name = $0.name.concat("<");
           $typeArgs = list();#
@@ -85,6 +115,7 @@ exports
              HasTypeArg($, $typeArgs);
              $.name = $name;
              $.qualifiedName = $qname;#
+    rule ClassifierType "." ClassifierType -> ClassifierType {left, avoid}
 
     %% TypeArg
     rule Type                         -> TypeArg #$ = $0;#
@@ -110,3 +141,10 @@ exports
          %% The typeParams have already been declared by initTypeParamsSymbolTable()
          #$ = typeParams.use($0);#
          ("extends" {(Type #HasBound($, $0);#) "&"}+)?  -> TypeParam
+	
+	context-free priorities
+		ClassifierType "." ClassifierType -> ClassifierType {left, avoid}
+		<2>> {
+			PackageName "." Id             -> ClassifierType
+			(PackageName "." Id) "<" {TypeArg "," }+ ">" -> ClassifierType
+		}

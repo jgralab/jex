@@ -37,6 +37,7 @@
 	    <arg value="-p"/> <arg value="de.uni_koblenz.jgralab.jex.builder"/>
 	    <!--<arg value="-s"/> <arg value="${src.dir}/java-schema.rsa.tg"/>-->
 	    <arg value="-n"/> <!-- no default mappings -->
+	  	<!--<arg value="-ds"/> -->
 	  </java>
 	  <javac includeantruntime="false" fork="true"
 		 classpathref="classpath" debug="true"

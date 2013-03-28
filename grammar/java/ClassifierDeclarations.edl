@@ -3,7 +3,7 @@ imports
   java/Modifiers     %% Modifier
   java/Identifiers   %% Id
   java/Types         %% ClassifierType, TypeParam
-  java/Members       %% Member, InitializerBlock, EnumConstant, AnnotationElementDecl
+  java/Members       %% Member, InitializerBlock, EnumConstants, AnnotationElementDecl
 
 global actions
   pattern _ (1..*) Id _ (0..*) -> _
@@ -22,6 +22,7 @@ exports
     EnumDeclaration
     AnnotationDeclaration
     ClassifierDeclaration
+	ClassifierBody
 
   context-free syntax
 
@@ -42,12 +43,12 @@ exports
           $ = {return resolveClassifier(#$2#, currentElement, "Enum");};#
          ("implements" {(ClassifierType #Implements($, $0);#) ","}+)?
          EnumBody -> EnumDeclaration
-    rule "{" EnumConstant+
+    rule "{" EnumConstants
              %% All kinds of Members except for EnumConstants may follow
-             (FieldDeclaration |
+             (";" (FieldDeclaration |
               MethodDeclaration | ConstructorDeclaration |
               InitializerBlock |
-              ClassifierDeclaration)* "}" ";"? -> EnumBody
+              ClassifierDeclaration  ";"* )* )? "}" -> EnumBody
 
     %% Interfaces
     @Symboltable{typeParams}
@@ -65,7 +66,7 @@ exports
           $ = {return resolveClassifier(#$2#, currentElement, "Annotation");};#
          AnnotationBody -> AnnotationDeclaration
     %% Yes, there may be enums in annotations
-    rule "{" (AnnotationElementDecl | ClassifierDeclaration)* "}" ";"? -> AnnotationBody
+    rule "{" (AnnotationElementDecl | ClassifierDeclaration | FieldDeclaration ";"* )* "}" -> AnnotationBody
 
     rule ClassDeclaration      -> ClassifierDeclaration #$ = $0;#
     rule EnumDeclaration       -> ClassifierDeclaration #$ = $0;#
@@ -77,4 +78,4 @@ exports
           $parent = {return resolveClassifier(curQName, currentElement);};
           DeclaresNestedClassifier($parent, $);#
 
-    rule "{" (Member | InitializerBlock)* "}" ";"? -> ClassifierBody
+    rule "{" (Member | InitializerBlock ";"* )* "}" -> ClassifierBody

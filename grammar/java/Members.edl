@@ -6,6 +6,7 @@ imports
   java/CharacterLiterals %% CharLiteral
   java/StringLiterals    %% StringLiteral
   java/Comments          %% Comment
+  java/Annotations       %% Annotation
 
 exports
   sorts
@@ -22,13 +23,10 @@ exports
   context-free syntax
 
     %% EnumConstant
-    rule LeadingEnumConstant? LastEnumConstant -> EnumConstant
-    rule EnumConst ","                         -> LeadingEnumConstant
-    rule EnumConst "," LeadingEnumConstant     -> LeadingEnumConstant
-    rule EnumConst ";"?                        -> LastEnumConstant
-    rule Id ParenBlock?                        -> EnumConst
+	rule {EnumConst ","}* ","? -> EnumConstants
+    rule Annotation* Id ParenBlock? ClassifierBody? -> EnumConst
          #$=EnumConst();
-          $.name = lexem($0);
+          $.name = lexem($1);
           $classifier = {return resolveClassifier(curQName, currentElement);};
           DeclaresEnumConst($classifier, $);#
 
@@ -48,7 +46,7 @@ exports
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
          (Type #$type = $0;#)
-         {(Id #$field=Field();
+         {(Id ("[" "]")* #$field=Field();
                HasType($field, $type);
                $field.modifiers = $mods;
                $field.name = $0;
@@ -72,14 +70,15 @@ exports
           $classifier = {return resolveClassifier(curQName, currentElement);};
           DeclaresMethod($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
+		 ("[" "]")* 
          ("throws" {(Type #Throws($, $0);#) ","}+)?
-         (Block | ";" | (Block ";"))
+         (Block | ";")
          -> MethodDeclaration #{recalcMethodTypeParamQNames(#$#);}#
 
     %% ParamDeclaration
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#)| Annotation)*
-         Type Id
+         Type Id ("[" "]")*
          #$ = Parameter();
           HasType($, $1);
           $.modifiers = $mods;
@@ -101,16 +100,16 @@ exports
           DeclaresConstructor($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ("throws" {(Type #Throws($, $0);#) ","}+)?
-         Block ";"?
+         Block
          -> ConstructorDeclaration
     rule ConstructorDeclaration -> Member
 
     %% StaticInitializer
-    rule "static" Block ";"?                       -> StaticInitializer
+    rule "static" Block                            -> StaticInitializer
     rule StaticInitializer                         -> InitializerBlock
 
     %% InstanceInitializer
-    rule Block ";"?                                -> InstanceInitializer
+    rule Block                                     -> InstanceInitializer
     rule InstanceInitializer                       -> InitializerBlock
 
   lexical syntax

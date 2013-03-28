@@ -29,13 +29,13 @@ exports
             curPkgQName = curQName;}#)?
 
           (ImportDeclaration
-           #{if (#$0# != null) { // There's no $0 for static imports
+           #{if (#$0# != null) { // There is no $0 for static imports
               #Imports($, $0);#
             }};#
            )*
 
           (ClassifierDeclaration #Defines($,$0);
-                                  ContainsClassifier($packageDecl, $0);#)*
+                                  ContainsClassifier($packageDecl, $0);# ";"*)*
          -> CompilationUnit #$.lines = {return currentElement.getLastLine();};#
 
     %% PackageDeclaration
