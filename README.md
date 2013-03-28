@@ -42,6 +42,10 @@ For more options, check out `./jex.sh --help`.
 
 ![Classifiers and extends/implements](https://raw.github.com/jgralab/jex/master/java-schema/ClassifierInheritance.png)
 
+### Array types
+
+![Array types](https://raw.github.com/jgralab/jex/master/java-schema/Arrays.png)
+
 ### Members
 
 ![Members](https://raw.github.com/jgralab/jex/master/java-schema/Members.png)
