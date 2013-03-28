@@ -3351,7 +3351,7 @@
           <styles xmi:type="umlnotation:UMLShapeCompartmentStyle" xmi:id="_TpbUr5eiEeK2s9KuqcWxVQ"/>
         </children>
         <styles xmi:type="umlnotation:UMLShapeStyle" xmi:id="_TpbUoZeiEeK2s9KuqcWxVQ" showListStereotype="Text" showListVisibility="Text" showListSignature="true" showStereotype="Text"/>
-        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_TpbUopeiEeK2s9KuqcWxVQ" x="10296" y="3432"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_TpbUopeiEeK2s9KuqcWxVQ" x="660" y="660"/>
       </children>
       <children xmi:id="_fYwpkJeiEeK2s9KuqcWxVQ" element="_gR6IUDSrEeKtz5n8JZHypg">
         <children xmi:id="_fYwpk5eiEeK2s9KuqcWxVQ" type="ImageCompartment">
@@ -3373,7 +3373,7 @@
           <styles xmi:type="umlnotation:UMLShapeCompartmentStyle" xmi:id="_fYwpn5eiEeK2s9KuqcWxVQ"/>
         </children>
         <styles xmi:type="umlnotation:UMLShapeStyle" xmi:id="_fYwpkZeiEeK2s9KuqcWxVQ" showListStereotype="Text" showListVisibility="Text" showListSignature="true" showStereotype="Text"/>
-        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_fYwpkpeiEeK2s9KuqcWxVQ" x="15972" y="3432"/>
+        <layoutConstraint xmi:type="notation:Bounds" xmi:id="_fYwpkpeiEeK2s9KuqcWxVQ" x="6336" y="660"/>
       </children>
       <styles xmi:type="umlnotation:UMLDiagramStyle" xmi:id="_SriJAZeiEeK2s9KuqcWxVQ"/>
       <element xsi:nil="true"/>
@@ -3620,10 +3620,6 @@
       <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_y6eyMpehEeK2s9KuqcWxVQ" value="1"/>
       <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_y6eyMZehEeK2s9KuqcWxVQ"/>
     </ownedAttribute>
-    <ownedAttribute xmi:id="_y6k40JehEeK2s9KuqcWxVQ" name="enclosedType" visibility="private" type="_CSJ3QDihEeKUR8bUwZ_76A" association="_y6YrkJehEeK2s9KuqcWxVQ">
-      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_y6k40pehEeK2s9KuqcWxVQ" value="*"/>
-      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_y6k40ZehEeK2s9KuqcWxVQ"/>
-    </ownedAttribute>
   </packagedElement>
   <packagedElement xmi:type="uml:Association" xmi:id="_QYdOIDiiEeKUR8bUwZ_76A" name="Extends" memberEnd="_QYjUwDiiEeKUR8bUwZ_76A _QYpbYjiiEeKUR8bUwZ_76A">
     <ownedEnd xmi:id="_QYpbYjiiEeKUR8bUwZ_76A" name="subclasses" visibility="private" type="_E118kELUEeKUR8bUwZ_76A" association="_QYdOIDiiEeKUR8bUwZ_76A">
@@ -3831,7 +3827,12 @@
       <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_1mDEQEXWEeKUR8bUwZ_76A"/>
     </ownedEnd>
   </packagedElement>
-  <packagedElement xmi:type="uml:Association" xmi:id="_y6YrkJehEeK2s9KuqcWxVQ" name="HasEnclosingType" memberEnd="_y6eyMJehEeK2s9KuqcWxVQ _y6k40JehEeK2s9KuqcWxVQ"/>
+  <packagedElement xmi:type="uml:Association" xmi:id="_y6YrkJehEeK2s9KuqcWxVQ" name="HasEnclosingType" memberEnd="_y6eyMJehEeK2s9KuqcWxVQ _y6k40JehEeK2s9KuqcWxVQ">
+    <ownedEnd xmi:id="_y6k40JehEeK2s9KuqcWxVQ" name="enclosedType" visibility="private" type="_CSJ3QDihEeKUR8bUwZ_76A" association="_y6YrkJehEeK2s9KuqcWxVQ">
+      <upperValue xmi:type="uml:LiteralUnlimitedNatural" xmi:id="_y6k40pehEeK2s9KuqcWxVQ" value="*"/>
+      <lowerValue xmi:type="uml:LiteralInteger" xmi:id="_y6k40ZehEeK2s9KuqcWxVQ"/>
+    </ownedEnd>
+  </packagedElement>
   <profileApplication xmi:id="_8YsCRTSqEeKtz5n8JZHypg">
     <eAnnotations xmi:id="_8YsCRjSqEeKtz5n8JZHypg" source="http://www.eclipse.org/uml2/2.0.0/UML">
       <references xmi:type="ecore:EPackage" href="pathmap://UML_PROFILES/Standard.profile.uml#_yzU58YinEdqtvbnfB2L_5w"/>
