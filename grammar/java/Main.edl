@@ -212,12 +212,12 @@ user code {
     }
 
     private Vertex getOrCreateClassifierVertex(Class cls, StackElement ce) {
-        assert (cls == null);
+        assert (cls != null);
 
         String qn = cls.getCanonicalName();
         SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
 
-        // Maybe there's already an existing vertex for this type
+        // Maybe there is already an existing vertex for this type
         Vertex vx = stck.use(qn);
         if (vx != null) {
             return vx;
@@ -359,7 +359,7 @@ user code {
             }
         }
 
-        // Is the current class a nested class and we're looking for the
+        // Is the current class a nested class and we are looking for the
         // parent class or a neighbor nested class thereof?
         if (currentClass != null) {
             cls = findClassInEnclosingClass(currentClass, tn);

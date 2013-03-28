@@ -1,6 +1,7 @@
 module java/Identifiers
 imports
   java/Keywords
+  java/UnicodeEscapes %% UnicodeEscape
 
 exports
   sorts
@@ -11,7 +12,7 @@ exports
     rule ID -> Id #$ = lexem($0);#
 
   lexical syntax
-    rule [A-Za-z\_\$\255][A-Za-z0-9\_\$\255\254]* -> ID
+    rule ([A-Za-z\_\$\255]|UnicodeEscape)([A-Za-z0-9\_\$\255\254]|UnicodeEscape)* -> ID
     
     rule Keyword -> ID {reject}
     rule "true"  -> ID {reject}
@@ -19,4 +20,4 @@ exports
     rule "null"  -> ID {reject}
 
   lexical restrictions
-    ID -/- [a-zA-Z0-9\_\$]
+    ID -/- [a-zA-Z0-9\_\$\\]

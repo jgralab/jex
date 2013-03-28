@@ -3,6 +3,13 @@ module java/Types
 imports
   java/Packages          %% PackageName
   java/Identifiers       %% Id
+  
+user code {
+	private String getSimpleName(String qualifiedName, String simpleName){
+		String genericName = simpleName.split("<")[0];
+		return qualifiedName.substring(qualifiedName.indexOf(genericName));
+	}
+}
 
 global actions
   pattern _ -> PrimType
@@ -66,6 +73,7 @@ exports
            else
                #$ = {return resolveClassifier(#$0#, currentElement);};#}#
     rule PackageName "." Id             -> PlainClassifierType
+         #$ = {return resolveClassifier(#$0.concat(".").concat($2)#, currentElement);};#
     rule Id                             -> ClassifierType
          %% This could be a simple name of a Classifier or a type parameter name.
          #{if (#typeParams.use($0)# != null)
@@ -116,6 +124,10 @@ exports
              $.name = $name;
              $.qualifiedName = $qname;#
     rule ClassifierType "." ClassifierType -> ClassifierType {left, avoid}
+		#$ = $2;
+		 HasEnclosingType($, $0);
+		 $.qualifiedName = $0.qualifiedName.concat(".").concat({return getSimpleName((String) #$2.qualifiedName#, (String) #$2.name#);});
+		#
 
     %% TypeArg
     rule Type                         -> TypeArg #$ = $0;#
