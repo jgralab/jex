@@ -44,25 +44,32 @@ exports
     %% ArrayType
     rule PrimType        -> NonArrayType #$=$0;#
     rule ClassifierType  -> NonArrayType #$=$0;#
-    rule NonArrayType #$elemType = $0; %% HasElementType($, $0);
-                       $name = $0.name;
+    rule NonArrayType #$name = $0.name;
                        $qualifiedName = $0.qualifiedName;
-                       $dims = 0;#
-         ("[" "]" #$dims = {return ((Integer) #$dims#) + 1;};
-                   $name = $name.concat("[]");
-                   $qualifiedName = $qualifiedName.concat("[]");#)+
-         -> ArrayType #$ = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
-                       $.name = $name;
-                       $.qualifiedName = $qualifiedName;
-                       $.dimensions = $dims;
-                       HasElementType($, $0);#
+					   $resultType = $0;#
+         ("[" "]" #$name = $name.concat("[]");
+                   $qualifiedName = $qualifiedName.concat("[]");
+				   $prevResultType = $resultType;
+				   $resultType = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
+                   $resultType.name = $name;
+                   $resultType.qualifiedName = $qualifiedName;
+				   {
+					if (((Vertex) #$resultType#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
+						#HasElementType($resultType, $prevResultType);#
+				    }
+				   }#
+		 )+
+         -> ArrayType #$ = $resultType;#
     rule Type "..."
          #$qualifiedName = $0.qualifiedName.concat("[]");
           $ = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
           $.qualifiedName = $qualifiedName;
           $.name = $0.name.concat("[]");
-          $.dimensions = {return ((Integer) #$0.dimensions#) + 1;};
-          HasElementType($, $0);#
+		  {
+			if (((Vertex) #$#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
+			  #HasElementType($, $0);#
+			}
+		  }#
          -> ArrayType
 
     %% ClassifierType

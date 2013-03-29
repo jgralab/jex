@@ -46,12 +46,31 @@ exports
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
          (Type #$type = $0;#)
-         {(Id ("[" "]")* #$field=Field();
+         {(Id
+		  #
+		   $baseType = $type;
+		   $name = $type.name;
+           $qualifiedName = $type.qualifiedName;#
+		  ("[" "]"
+		   #$name = $name.concat("[]");
+            $qualifiedName = $qualifiedName.concat("[]");
+		    $prevType = $type;
+		    $type = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
+            $type.name = $name;
+            $type.qualifiedName = $qualifiedName;
+		    {
+			   if (((Vertex) #$type#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
+				   #HasElementType($type, $prevType);#
+			   }
+		    }#
+		  )* 
+		      #$field=Field();
                HasType($field, $type);
                $field.modifiers = $mods;
                $field.name = $0;
                $classifier = {return resolveClassifier(curQName, currentElement);};
-               DeclaresField($classifier, $field);#) ","}+
+               DeclaresField($classifier, $field);
+			   $type = $baseType;#) ","}+
          Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
@@ -64,13 +83,32 @@ exports
          ("<" #{initTypeParamsSymbolTable(currentElement, true);}#
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          Type Id
-         #HasType($, $2);
+		 #
+		  $name = $2.name;
+          $qualifiedName = $2.qualifiedName;
+		  $resultType = $2;
           $.modifiers = $mods;
           $.name = lexem($3);
           $classifier = {return resolveClassifier(curQName, currentElement);};
-          DeclaresMethod($classifier, $);#
-         "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
-		 ("[" "]")* 
+		  $params = list();#
+         "(" {(ParamDeclaration #$params.add($0);#) ","}* ")"
+		 ("[" "]"
+		 #$name = $name.concat("[]");
+          $qualifiedName = $qualifiedName.concat("[]");
+		  $prevResultType = $resultType;
+		  $resultType = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
+          $resultType.name = $name;
+          $resultType.qualifiedName = $qualifiedName;
+		  {
+			 if (((Vertex) #$resultType#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
+				 #HasElementType($resultType, $prevResultType);#
+			 }
+		  }#
+		 )* 
+		 #HasType($, $resultType);
+          DeclaresMethod($classifier, $);
+		  HasParam($, $params);
+		 #
          ("throws" {(Type #Throws($, $0);#) ","}+)?
          (Block | ";")
          -> MethodDeclaration #{recalcMethodTypeParamQNames(#$#);}#
@@ -78,9 +116,26 @@ exports
     %% ParamDeclaration
     rule #$mods = set();#
          ((Modifier #$mods.add($0);#)| Annotation)*
-         Type Id ("[" "]")*
+         Type Id
+		 #
+		  $name = $1.name;
+          $qualifiedName = $1.qualifiedName;
+		  $resultType = $1;#
+		 ("[" "]"
+		 #$name = $name.concat("[]");
+          $qualifiedName = $qualifiedName.concat("[]");
+		  $prevResultType = $resultType;
+		  $resultType = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
+          $resultType.name = $name;
+          $resultType.qualifiedName = $qualifiedName;
+		  {
+			 if (((Vertex) #$resultType#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
+				 #HasElementType($resultType, $prevResultType);#
+			 }
+		  }#
+		 )*
          #$ = Parameter();
-          HasType($, $1);
+          HasType($, $resultType);
           $.modifiers = $mods;
           $.name = $2;#
          -> ParamDeclaration
