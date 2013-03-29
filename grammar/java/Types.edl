@@ -100,8 +100,13 @@ exports
             #$qname = $qname.concat(">");
              $name = $name.concat(">");
              $ = name2NamedElement.useOrDeclare($qname, "ParametrizedType");
-             HasGenericType($, $0);
-             HasTypeArg($, $typeArgs);
+			 {
+				if (((Vertex) #$#).getDegree(getEdgeClass("HasGenericType"), EdgeDirection.OUT) == 0){
+					#HasGenericType($, $0);
+					 HasTypeArg($, $typeArgs);
+					#
+				}
+			 }
              $.name = $name;
              $.qualifiedName = $qname;#
     rule (PackageName "." Id
@@ -119,14 +124,29 @@ exports
             #$qname = $qname.concat(">");
              $name = $name.concat(">");
              $ = name2NamedElement.useOrDeclare($qname, "ParametrizedType");
-             HasGenericType($, $0);
-             HasTypeArg($, $typeArgs);
+			 {
+				if (((Vertex) #$#).getDegree(getEdgeClass("HasGenericType"), EdgeDirection.OUT) == 0){
+					#HasGenericType($, $0);
+					 HasTypeArg($, $typeArgs);
+					#
+				}
+			 }
              $.name = $name;
              $.qualifiedName = $qname;#
     rule ClassifierType "." ClassifierType -> ClassifierType {left, avoid}
-		#$ = $2;
-		 HasEnclosingType($, $0);
-		 $.qualifiedName = $0.qualifiedName.concat(".").concat({return getSimpleName((String) #$2.qualifiedName#, (String) #$2.name#);});
+		#$qualifiedName = $0.qualifiedName.concat(".").concat(getSimpleName($2.qualifiedName, $2.name));
+		 $ = name2NamedElement.use($qualifiedName);
+		 {
+			if (#$# == null) {
+				#$ = EnclosedType();
+				 HasEnclosingType($, $0);
+				 HasEnclosedType($, $2);
+				 $.name = lexem($).replaceAll("\\s+", "");
+				 $.qualifiedName = $qualifiedName;
+				 name2NamedElement.declare($qualifiedName, $);
+				#
+			}
+		 }
 		#
 
     %% TypeArg
