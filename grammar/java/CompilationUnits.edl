@@ -47,11 +47,25 @@ exports
     rule "import" PlainClassifierType ";"
          -> ImportDeclaration
          #$ = $1;
-          importedClassifiers.declare($.name, $);
-          importedClassifiersQN.declare($.qualifiedName, $);#
+          %% Double-imports are allowed
+          $cls = importedClassifiers.use($.name);
+          {if (#$cls# == null)
+               #importedClassifiers.declare($.name, $);#
+           else
+               assert #$cls# == #$#;};
+          $cls = importedClassifiersQN.use($.qualifiedName);
+          {if (#$cls# == null)
+               #importedClassifiersQN.declare($.qualifiedName, $);#
+           else
+               assert #$cls# == #$#;};#
     rule "import" PackageName       "." "*" ";"  -> ImportDeclaration
       #$ = name2Package.useOrDeclare($1);
        $.qualifiedName = $1;
-       importedPackages.declare($1, $);#
+       %% Double-imports are allowed
+       $pkg = importedPackages.use($1);
+       {if (#$pkg# == null)
+               #importedPackages.declare($1, $);#
+           else
+               assert #$pkg# == #$#;};#
     rule "import" "static" PlainClassifierType "." Id  ";"  -> ImportDeclaration
     rule "import" "static" PlainClassifierType "." "*" ";"  -> ImportDeclaration
