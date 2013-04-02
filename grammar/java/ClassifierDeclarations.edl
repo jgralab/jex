@@ -22,7 +22,7 @@ exports
     EnumDeclaration
     AnnotationDeclaration
     ClassifierDeclaration
-	ClassifierBody
+	  ClassifierBody
 
   context-free syntax
 
@@ -30,7 +30,7 @@ exports
     @Symboltable{typeParams}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "class" Id
          #{curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}
-          $ = {return resolveClassifier(#$2#, currentElement, "Class");};#
+          $ = {return resolveClassifier(curQName, currentElement, "Class");};#
          ("<" #{initTypeParamsSymbolTable(currentElement, false);}#
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          ("extends" ClassifierType #Extends($, $1);#)?
@@ -40,21 +40,20 @@ exports
     %% Enums
     rule ((Modifier #$mods.add($0);#)|Annotation)* "enum" Id
          #{curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}
-          $ = {return resolveClassifier(#$2#, currentElement, "Enum");};#
+          $ = {return resolveClassifier(curQName, currentElement, "Enum");};#
          ("implements" {(ClassifierType #Implements($, $0);#) ","}+)?
          EnumBody -> EnumDeclaration
     rule "{" EnumConstants
              %% All kinds of Members except for EnumConstants may follow
-             (";" (FieldDeclaration |
-              MethodDeclaration | ConstructorDeclaration |
-              InitializerBlock |
-              ClassifierDeclaration  ";"* )* )? "}" -> EnumBody
+             (";" (FieldDeclaration | MethodDeclaration | ConstructorDeclaration |
+              InitializerBlock | ClassifierDeclaration  ";"* )* )?
+         "}" -> EnumBody
 
     %% Interfaces
     @Symboltable{typeParams}
     rule ((Modifier #$mods.add($0);#)|Annotation)* "interface" Id
          #{curQName += (curQName.isEmpty()? "" : ".") + #$2#;}
-          $ = {return resolveClassifier(#$2#, currentElement, "Interface");};#
+          $ = {return resolveClassifier(curQName, currentElement, "Interface");};#
          ("<" #{initTypeParamsSymbolTable(currentElement, false);}#
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          ("extends" {(ClassifierType #Extends($, $0);#) ","}+)?
@@ -63,7 +62,7 @@ exports
     %% Annotations
     rule ((Modifier #$mods.add($0);#)|Annotation)* "@interface" Id
          #{curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}
-          $ = {return resolveClassifier(#$2#, currentElement, "Annotation");};#
+          $ = {return resolveClassifier(curQName, currentElement, "Annotation");};#
          AnnotationBody -> AnnotationDeclaration
     %% Yes, there may be enums in annotations
     rule "{" (AnnotationElementDecl | ClassifierDeclaration | FieldDeclaration ";"* )* "}" -> AnnotationBody

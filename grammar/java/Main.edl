@@ -71,10 +71,12 @@ user code {
         List<TemporaryVertex> tempVertices = (List<TemporaryVertex>)
             #name2NamedElement.getTemporaryVertices()#;
         for (TemporaryVertex tempVert: tempVertices) {
-            if (tempVert.getPreliminaryType() != null) {
-                tempVert.bless();
+            if (!tempVert.isValid()) continue;
+            if (tempVert.getPreliminaryType() != null
+                  && !tempVert.getPreliminaryType().isAbstract()) {
+                blessTemporaryVertex(tempVert, tempVert.getPreliminaryType());
             } else {
-                tempVert.bless(getVertexClass("Class"));
+                blessTemporaryVertex(tempVert, getVertexClass("Class"));
             }
         }
 
@@ -84,13 +86,8 @@ user code {
         List<TemporaryVertex> tempPackages = (List<TemporaryVertex>)
             #name2Package.getTemporaryVertices()#;
         for (TemporaryVertex tempPackage: tempPackages) {
-            try {
-                tempPackage.bless(getVertexClass("Package"));
-            } catch (TemporaryGraphElementException e) {
-                System.out.println("Couldn't bless Package "
-                    + tempPackage.getAttribute("qualifiedName"));
-                e.printStackTrace();
-            }
+            if (!tempPackage.isValid()) continue;
+            blessTemporaryVertex(tempPackage, getVertexClass("Package"));
         }
 
         List<GraphElement> temps = new LinkedList<GraphElement>(); 
@@ -164,13 +161,26 @@ user code {
         }
     }
 
+    private Vertex getTypeOfTypedElement(Vertex v) {
+        EdgeClass ht = getEdgeClass("HasType");
+        for (Edge e : v.incidences(EdgeDirection.OUT)) {
+            if (e.isInstanceOf(ht) ||
+                (e.isTemporary() &&
+                 (((TemporaryEdge)e).getPreliminaryType() == ht ||
+                  ((TemporaryEdge)e).getPreliminaryType().isSubClassOf(ht)))) {
+                return e.getOmega();
+            }
+        }
+        throw new RuntimeException(v + " has no type associated!");
+    }
+
     private void recalcMethodTypeParamQNames(Object theMethodVertex) {
         Vertex m = (Vertex) theMethodVertex;
         StringBuilder sb = new StringBuilder();
         sb.append('(');
         boolean first = true;
         for (Vertex param : m.adjacences("params")) {
-            Vertex pt = param.adjacences("type").get(0);
+            Vertex pt = getTypeOfTypedElement(param);
             if (first) first = false;
             else sb.append(',');
             sb.append(pt.getAttribute("name"));
@@ -313,12 +323,24 @@ user code {
 
     private Vertex resolveClassifier(Object typeName, Object currentElement, Object expectedType) {
         Vertex x = resolveClassifier(typeName, currentElement);
-        if (x.getAttributedElementClass() != getVertexClass((String) expectedType)) {
-            throw new RuntimeException("Expected classifier type was " + expectedType
-                + " but was " + x.getAttributedElementClass());
+        VertexClass expectedVC = getVertexClass((String) expectedType);
+        if (x.getAttributedElementClass() != expectedVC) {
+            if (x.isTemporary()) {
+                TemporaryVertex tx = (TemporaryVertex) x;
+                x = blessTemporaryVertex(tx, expectedVC,
+                       (SymbolTableStack) #name2NamedElement#,
+                       (SymbolTableStack) #importedClassifiers#,
+                       (SymbolTableStack) #importedClassifiersQN#);
+            } else {
+                throw new RuntimeException("Expected classifier type " + expectedType
+                    + " for classifier " + typeName + " but was "
+                    + x.getAttributedElementClass()
+                    + " (qualifiedName = " + x.getAttribute("qualifiedName") + ").");
+            }
         }
         return x;
     }
+
     private Vertex resolveClassifier(Object typeName, Object currentElement) {
         StackElement ce = (StackElement) currentElement;
         final String tn = canonicalizeQName(typeName);
@@ -425,12 +447,12 @@ user code {
             + " in " + curQName + " at position " + ce.getPosition() + ".");
 
         SymbolTableStack stck = (SymbolTableStack) #name2NamedElement#;
-        qn = tn + " (UNKNOWN)";
+        qn = tn;
         Vertex v = stck.use(qn);
         if (v != null) {
             return v;
         }
-        v = createVertex(getVertexClass("Class"), ce.getPosition());
+        v = createTemporaryVertex(getVertexClass("Classifier"), ce.getPosition());
         v.setAttribute("name", qn);
         v.setAttribute("qualifiedName", qn);
         stck.declare(qn, v);
