@@ -161,6 +161,12 @@ user code {
         }
     }
 
+    private void addAnnotations(Object annotated, Object annotations) {
+        for (Vertex a : (Iterable<Vertex>) annotations) {
+            createEdge(getEdgeClass("HasAnnotation"), (Vertex) annotated, a);
+        }
+    }
+
     private Vertex getTypeOfTypedElement(Vertex v) {
         EdgeClass ht = getEdgeClass("HasType");
         for (Edge e : v.incidences(EdgeDirection.OUT)) {

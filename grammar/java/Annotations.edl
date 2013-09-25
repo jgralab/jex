@@ -10,9 +10,28 @@ exports
 
   context-free syntax
     rule "@" PlainClassifierType
-         ("(" {(Id "=" AnnotationValue) ","}+ ")")?
          -> Annotation
+            #$ = Annotation();
+             $.name = lexem($1);
+             HasType($, $1);#
+    rule "@" PlainClassifierType #$params = map();#
+         "(" {(Id "=" AnnotationValue #$params.put($0, $2);#) ","}+ ")"
+         -> Annotation
+            #$ = Annotation();
+             $.name = lexem($1);
+             $.params = $params;
+             HasType($, $1);#
+
+    rule "@" PlainClassifierType
+         "(" AnnotationValue ")" %% implicit value of value AnnotationElement
+         -> Annotation
+            #$ = Annotation();
+             $.name = lexem($1);
+             $params = map();
+             $params.put("value", $3);
+             $.params = $params;
+             HasType($, $1);#
 
   lexical syntax
-    rule Block   -> AnnotationValue
-    rule Literal -> AnnotationValue
+    rule Block   -> AnnotationValue #$=lexem($0);#
+    rule Literal -> AnnotationValue #$=lexem($0);#

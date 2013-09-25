@@ -23,7 +23,7 @@ exports
   context-free syntax
 
     %% EnumConstant
-	rule {EnumConst ","}* ","? -> EnumConstants
+    rule {EnumConst ","}* ","? -> EnumConstants
     rule Annotation* Id ParenBlock? ClassifierBody? -> EnumConst
          #$=EnumConst();
           $.name = lexem($1);
@@ -31,46 +31,50 @@ exports
           DeclaresEnumConst($classifier, $);#
 
     %% AnnotationElementDecl
-    rule #$mods = set();#
-         ((Modifier #$mods.add($0);#)| Annotation)*
+    rule #$mods = set();
+          $annos = set();#
+         ((Modifier #$mods.add($0);#)|(Annotation #$annos.add($0);#))*
          Type Id
          #$=AnnotationElement();
           HasType($, $1);
           $.modifiers = $mods;
+          {addAnnotations(#$#, #$annos#);};
           $.name = lexem($2);
           $classifier = {return resolveClassifier(curQName, currentElement);};
           DeclaresAnnotationElement($classifier, $);#
          "(" ")" AnnoInitializer? ";" -> AnnotationElementDecl
 
     %% FieldDeclaration
-    rule #$mods = set();#
-         ((Modifier #$mods.add($0);#) | Annotation)*
+    rule #$mods = set();
+          $annos = set();#
+         ((Modifier #$mods.add($0);#)|(Annotation #$annos.add($0);#))*
          (Type #$type = $0;#)
          {(Id
-		  #
-		   $baseType = $type;
-		   $name = $type.name;
-           $qualifiedName = $type.qualifiedName;#
-		  ("[" "]"
-		   #$name = $name.concat("[]");
-            $qualifiedName = $qualifiedName.concat("[]");
-		    $prevType = $type;
-		    $type = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
-            $type.name = $name;
-            $type.qualifiedName = $qualifiedName;
-		    {
-			   if (((Vertex) #$type#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
-				   #HasElementType($type, $prevType);#
-			   }
-		    }#
-		  )* 
-		      #$field=Field();
-               HasType($field, $type);
-               $field.modifiers = $mods;
-               $field.name = $0;
-               $classifier = {return resolveClassifier(curQName, currentElement);};
-               DeclaresField($classifier, $field);
-			   $type = $baseType;#) ","}+
+      #$baseType = $type;
+       $name = $type.name;
+       $qualifiedName = $type.qualifiedName;#
+      ("[" "]"
+       #$name = $name.concat("[]");
+        $qualifiedName = $qualifiedName.concat("[]");
+        $prevType = $type;
+        $type = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
+        $type.name = $name;
+        $type.qualifiedName = $qualifiedName;
+        {
+         if (((Vertex) #$type#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
+           #HasElementType($type, $prevType);#
+         }
+        }#
+      )* 
+          #$=Field();
+           HasType($, $type);
+           $.modifiers = $mods;
+           $.name = $0;
+           $classifier = {return resolveClassifier(curQName, currentElement);};
+           {addAnnotations(#$#, #$annos#);};
+           DeclaresField($classifier, $);
+           $type = $baseType;#
+      ) ","}+
          Initializer? ";"
          -> FieldDeclaration
     rule FieldDeclaration -> Member
@@ -78,65 +82,66 @@ exports
     %% MethodDeclaration
     @Symboltable{typeParams}
     rule #$=Method();
-          $mods = set();#
-         ((Modifier #$mods.add($0);#) | Annotation)*
+          $mods = set();
+          $annos = set();#
+         ((Modifier #$mods.add($0);#)|(Annotation #$annos.add($0);#))*
          ("<" #{initTypeParamsSymbolTable(currentElement, true);}#
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
          Type Id
-		 #
-		  $name = $2.name;
-          $qualifiedName = $2.qualifiedName;
-		  $resultType = $2;
-          $.modifiers = $mods;
-          $.name = lexem($3);
-          $classifier = {return resolveClassifier(curQName, currentElement);};
-		  $params = list();#
+     #$name = $2.name;
+      $qualifiedName = $2.qualifiedName;
+      $resultType = $2;
+      $.modifiers = $mods;
+      $.name = lexem($3);
+      $classifier = {return resolveClassifier(curQName, currentElement);};
+      {addAnnotations(#$#, #$annos#);};
+      $params = list();#
          "(" {(ParamDeclaration #$params.add($0);#) ","}* ")"
-		 ("[" "]"
-		 #$name = $name.concat("[]");
-          $qualifiedName = $qualifiedName.concat("[]");
-		  $prevResultType = $resultType;
-		  $resultType = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
-          $resultType.name = $name;
-          $resultType.qualifiedName = $qualifiedName;
-		  {
-			 if (((Vertex) #$resultType#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
-				 #HasElementType($resultType, $prevResultType);#
-			 }
-		  }#
-		 )* 
-		 #HasType($, $resultType);
-          DeclaresMethod($classifier, $);
-		  HasParam($, $params);
-		 #
-         ("throws" {(Type #Throws($, $0);#) ","}+)?
-         (Block | ";")
-         -> MethodDeclaration #{recalcMethodTypeParamQNames(#$#);}#
+     ("[" "]"
+      #$name = $name.concat("[]");
+       $qualifiedName = $qualifiedName.concat("[]");
+       $prevResultType = $resultType;
+       $resultType = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
+       $resultType.name = $name;
+       $resultType.qualifiedName = $qualifiedName;
+      {
+       if (((Vertex) #$resultType#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
+         #HasElementType($resultType, $prevResultType);#
+       }
+      }#
+     )* 
+     #HasType($, $resultType);
+      DeclaresMethod($classifier, $);
+      HasParam($, $params);#
+     ("throws" {(Type #Throws($, $0);#) ","}+)?
+     (Block | ";")
+     -> MethodDeclaration #{recalcMethodTypeParamQNames(#$#);}#
 
     %% ParamDeclaration
-    rule #$mods = set();#
-         ((Modifier #$mods.add($0);#)| Annotation)*
+    rule #$mods = set();
+          $annos = set();#
+         ((Modifier #$mods.add($0);#)|(Annotation #$annos.add($0);#))*
          Type Id
-		 #
-		  $name = $1.name;
-          $qualifiedName = $1.qualifiedName;
-		  $resultType = $1;#
-		 ("[" "]"
-		 #$name = $name.concat("[]");
-          $qualifiedName = $qualifiedName.concat("[]");
-		  $prevResultType = $resultType;
-		  $resultType = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
-          $resultType.name = $name;
-          $resultType.qualifiedName = $qualifiedName;
-		  {
-			 if (((Vertex) #$resultType#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
-				 #HasElementType($resultType, $prevResultType);#
-			 }
-		  }#
-		 )*
+     #$name = $1.name;
+      $qualifiedName = $1.qualifiedName;
+      $resultType = $1;#
+     ("[" "]"
+     #$name = $name.concat("[]");
+      $qualifiedName = $qualifiedName.concat("[]");
+      $prevResultType = $resultType;
+      $resultType = name2NamedElement.useOrDeclare($qualifiedName, "ArrayType");
+      $resultType.name = $name;
+      $resultType.qualifiedName = $qualifiedName;
+      {
+       if (((Vertex) #$resultType#).getDegree(getEdgeClass("HasElementType"), EdgeDirection.OUT) == 0) {
+         #HasElementType($resultType, $prevResultType);#
+       }
+      }#
+     )*
          #$ = Parameter();
           HasType($, $resultType);
           $.modifiers = $mods;
+          {addAnnotations(#$#, #$annos#);};
           $.name = $2;#
          -> ParamDeclaration
     rule MethodDeclaration -> Member
@@ -144,7 +149,8 @@ exports
     %% ConstructorDeclaration
     @Symboltable{typeParams}
     rule #$=Constructor();
-          $mods = set();#
+          $mods = set();
+          $annos = set();#
          ((Modifier #$mods.add($0);#) | Annotation)*
          ("<" #{initTypeParamsSymbolTable(currentElement, true);}#
           {(TypeParam #HasTypeParam($, $0);#) ","}+ ">")?
@@ -152,6 +158,7 @@ exports
          #$.modifiers = $mods;
           $.name = $2;
           $classifier = {return resolveClassifier(curQName, currentElement);};
+          {addAnnotations(#$#, #$annos#);};
           DeclaresConstructor($classifier, $);#
          "(" {(ParamDeclaration #HasParam($, $0);#) ","}* ")"
          ("throws" {(Type #Throws($, $0);#) ","}+)?
