@@ -2,12 +2,11 @@ module java/IntegerLiterals
 exports
   sorts IntLiteral DeciLiteral HexaLiteral OctaLiteral DeciNumeral HexaNumeral OctaNumeral
 
-  context-free syntax
+  lexical syntax
     rule DeciLiteral -> IntLiteral
     rule HexaLiteral -> IntLiteral
     rule OctaLiteral -> IntLiteral
 
-  lexical syntax
     rule DeciNumeral [lL]? -> DeciLiteral
     rule HexaNumeral [lL]? -> HexaLiteral
     rule OctaNumeral [lL]? -> OctaLiteral

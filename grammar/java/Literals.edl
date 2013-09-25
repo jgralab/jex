@@ -11,7 +11,7 @@ imports
 exports
   sorts Literal
 
-  context-free syntax
+  lexical syntax
     rule BoolLiteral   -> Literal
     rule CharLiteral   -> Literal
     rule IntLiteral    -> Literal

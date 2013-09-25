@@ -2,11 +2,10 @@ module java/FloatingPointLiterals
 exports
   sorts FloatLiteral DeciFloatLiteral HexaFloatLiteral      
   
-  context-free syntax
+  lexical syntax
     rule DeciFloatLiteral -> FloatLiteral
     rule HexaFloatLiteral -> FloatLiteral
 
-  lexical syntax
     rule DeciFloatNumeral [fFdD]? -> DeciFloatLiteral
     rule HexaFloatNumeral [fFdD]? -> HexaFloatLiteral
     
