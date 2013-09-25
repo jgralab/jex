@@ -1,0 +1,20 @@
+module java/Literals
+
+imports
+  java/BooleanLiterals
+  java/CharacterLiterals
+  java/FloatingPointLiterals
+  java/IntegerLiterals
+  java/NullLiteral
+  java/StringLiterals
+
+exports
+  sorts Literal
+
+  context-free syntax
+    rule BoolLiteral   -> Literal
+    rule CharLiteral   -> Literal
+    rule IntLiteral    -> Literal
+    rule FloatLiteral  -> Literal
+    rule NullLiteral   -> Literal
+    rule StringLiteral -> Literal

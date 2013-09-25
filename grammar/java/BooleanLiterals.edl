@@ -1,0 +1,7 @@
+module java/BooleanLiterals
+exports
+  sorts BoolLiteral
+
+  context-free syntax
+    rule "true"  -> BoolLiteral
+    rule "false" -> BoolLiteral

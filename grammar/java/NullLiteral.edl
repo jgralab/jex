@@ -1,0 +1,6 @@
+module java/NullLiteral
+exports
+  sorts NullLiteral
+
+  context-free syntax
+    rule "null"  -> NullLiteral

@@ -1,12 +1,19 @@
 module java/Annotations
 imports
   java/Types     %% PlainClassifierType
-  java/Members   %% ParenBlock
+  java/Members   %% Block
+  java/Literals  %% Literal
 
 exports
   sorts
     Annotation
 
   context-free syntax
+    rule "@" PlainClassifierType
+         ("(" {(Id "=" AnnotationValue+) ","}+ ")")?
+         -> Annotation
 
-    rule "@" PlainClassifierType ParenBlock? -> Annotation
+  lexical syntax
+    rule Block   -> AnnotationValue
+    rule Literal -> AnnotationValue
+
