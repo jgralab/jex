@@ -22,6 +22,7 @@ exports
     ClassifierType
     TypeArg
     TypeParam
+    PlainClassifierType
 
   context-free syntax
 

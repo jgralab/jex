@@ -10,10 +10,9 @@ exports
 
   context-free syntax
     rule "@" PlainClassifierType
-         ("(" {(Id "=" AnnotationValue+) ","}+ ")")?
+         ("(" {(Id "=" AnnotationValue) ","}+ ")")?
          -> Annotation
 
   lexical syntax
-    rule Block   -> AnnotationValue
+%%    rule Block   -> AnnotationValue
     rule Literal -> AnnotationValue
-

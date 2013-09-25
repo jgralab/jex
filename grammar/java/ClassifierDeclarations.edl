@@ -59,7 +59,7 @@ exports
          ("extends" {(ClassifierType #Extends($, $0);#) ","}+)?
          ClassifierBody -> InterfaceDeclaration
 
-    %% Annotations
+    %% AnnotationDeclarations
     rule ((Modifier #$mods.add($0);#)|Annotation)* "@interface" Id
          #{curQName += (curQName.isEmpty()? "" : ".") + #lexem($2)#;}
           $ = {return resolveClassifier(curQName, currentElement, "Annotation");};#

@@ -235,7 +235,7 @@ user code {
 
         String type = null;
         if (cls.isAnnotation())
-            type = "Annotation";
+            type = "AnnotationDeclaration";
         else if (cls.isInterface())
             type = "Interface";
         else if (cls.isEnum())
