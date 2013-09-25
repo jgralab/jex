@@ -14,5 +14,5 @@ exports
          -> Annotation
 
   lexical syntax
-%%    rule Block   -> AnnotationValue
+    rule Block   -> AnnotationValue
     rule Literal -> AnnotationValue
